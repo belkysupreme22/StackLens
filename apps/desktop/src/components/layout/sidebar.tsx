@@ -27,14 +27,14 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "devices", label: "Device Manager", icon: Smartphone },
-  { id: "analyzer", label: "Package Analyzer", icon: PackageSearch },
-  { id: "inspector", label: "APK Inspector", icon: FileSearch },
-  { id: "batch", label: "Batch Analysis", icon: Layers },
-  { id: "comparison", label: "Comparison Studio", icon: GitCompare },
-  { id: "explorer", label: "Framework Explorer", icon: BookOpen },
-  { id: "history", label: "Analysis History", icon: History },
-  { id: "signatures", label: "Custom Signatures", icon: Fingerprint },
+  { id: "devices", label: "Device manager", icon: Smartphone },
+  { id: "analyzer", label: "Package analyzer", icon: PackageSearch },
+  { id: "inspector", label: "APK inspector", icon: FileSearch },
+  { id: "batch", label: "Batch analysis", icon: Layers },
+  { id: "comparison", label: "Comparison studio", icon: GitCompare },
+  { id: "explorer", label: "Framework explorer", icon: BookOpen },
+  { id: "history", label: "Analysis history", icon: History },
+  { id: "signatures", label: "Custom signatures", icon: Fingerprint },
   { id: "settings", label: "Settings", icon: Settings },
   { id: "about", label: "About", icon: Info },
 ];

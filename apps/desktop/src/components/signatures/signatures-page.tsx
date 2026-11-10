@@ -223,7 +223,7 @@ export function CustomSignaturesPage() {
             ].map((f) => (
               <span
                 key={f}
-                className="px-2.5 py-1 rounded bg-neutral-950 border border-neutral-800 text-neutral-300 font-mono text-[11px]"
+                className="px-2 py-0.5 rounded-[2px] bg-[#000000] border border-[#1f1f1f] text-[#7a7a7a] font-mono text-[10px]"
               >
                 {f}
               </span>
@@ -236,93 +236,93 @@ export function CustomSignaturesPage() {
       <Dialog
         open={addDialogOpen}
         onOpenChange={setAddDialogOpen}
-        title="Add Custom Signature"
-        description="Define patterns for identifying proprietary, private, or novel application runtimes."
+        title="Add custom signature"
+        description="Define patterns for identifying proprietary or private runtimes."
       >
-        <div className="space-y-3 text-xs">
+        <div className="space-y-3 text-xs font-mono">
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              Signature Name
+            <label className="text-[#ffffff] block mb-1">
+              Signature name
             </label>
             <Input
-              placeholder="e.g. In-House Game Engine"
+              placeholder="e.g. In-house game engine"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="text-xs h-8 border-neutral-700 bg-neutral-950"
+              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              Framework Identifier
+            <label className="text-[#ffffff] block mb-1">
+              Framework identifier
             </label>
             <Input
               placeholder="e.g. MyCustomEngine"
               value={framework}
               onChange={(e) => setFramework(e.target.value)}
-              className="text-xs h-8 border-neutral-700 bg-neutral-950 font-mono"
+              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] font-mono"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              Native Library Names (comma-separated)
+            <label className="text-[#ffffff] block mb-1">
+              Native library names (comma-separated)
             </label>
             <Input
               placeholder="e.g. libengine.so, libgame_core.so"
               value={nativeLibPatterns}
               onChange={(e) => setNativeLibPatterns(e.target.value)}
-              className="text-xs h-8 border-neutral-700 bg-neutral-950 font-mono"
+              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] font-mono"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              DEX Class Name Prefixes (comma-separated)
+            <label className="text-[#ffffff] block mb-1">
+              DEX class name prefixes (comma-separated)
             </label>
             <Input
               placeholder="e.g. com.company.engine., org.custom.runtime."
               value={classPatterns}
               onChange={(e) => setClassPatterns(e.target.value)}
-              className="text-xs h-8 border-neutral-700 bg-neutral-950 font-mono"
+              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] font-mono"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              Asset File Paths (comma-separated)
+            <label className="text-[#ffffff] block mb-1">
+              Asset file paths (comma-separated)
             </label>
             <Input
               placeholder="e.g. assets/engine.bundle, assets/data.bin"
               value={filePatterns}
               onChange={(e) => setFilePatterns(e.target.value)}
-              className="text-xs h-8 border-neutral-700 bg-neutral-950 font-mono"
+              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] font-mono"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              Evidence Description
+            <label className="text-[#ffffff] block mb-1">
+              Evidence description
             </label>
             <Input
               placeholder="e.g. Verified proprietary in-house engine runtime"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="text-xs h-8 border-neutral-700 bg-neutral-950"
+              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex justify-end gap-2 pt-3">
             <Button
               size="sm"
               variant="outline"
               onClick={() => setAddDialogOpen(false)}
-              className="text-xs border-neutral-700"
+              className="text-xs font-mono h-8 border-[#1f1f1f] bg-[#070707] rounded-[3px]"
             >
               Cancel
             </Button>
-            <Button size="sm" onClick={handleCreate} className="text-xs">
-              Save Signature
+            <Button size="sm" onClick={handleCreate} className="text-xs font-mono h-8 rounded-[3px]">
+              Save signature
             </Button>
           </div>
         </div>

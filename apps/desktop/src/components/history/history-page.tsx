@@ -232,15 +232,15 @@ export function HistoryPage() {
       <Dialog
         open={clearDialogOpen}
         onOpenChange={setClearDialogOpen}
-        title="Clear Analysis History"
-        description="Are you sure you want to permanently clear all previous analysis records from the local SQLite database? This action cannot be undone."
+        title="Clear analysis history"
+        description="Permanently deletes all saved analysis records from local SQLite storage."
       >
-        <div className="flex justify-end gap-2 pt-4">
+        <div className="flex justify-end gap-2 pt-3">
           <Button
             size="sm"
             variant="outline"
             onClick={() => setClearDialogOpen(false)}
-            className="text-xs border-neutral-700"
+            className="text-xs font-mono h-8 border-[#1f1f1f] bg-[#070707] rounded-[3px]"
           >
             Cancel
           </Button>
@@ -248,9 +248,9 @@ export function HistoryPage() {
             size="sm"
             variant="destructive"
             onClick={handleClearAll}
-            className="text-xs"
+            className="text-xs font-mono h-8 rounded-[3px]"
           >
-            Yes, Clear History
+            Clear history
           </Button>
         </div>
       </Dialog>

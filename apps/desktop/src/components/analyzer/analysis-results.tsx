@@ -86,16 +86,16 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           {onBack && (
-            <Button variant="outline" size="sm" onClick={onBack}>
-              ← Back
+            <Button variant="outline" size="sm" onClick={onBack} className="text-xs font-mono h-8 rounded-[3px] border-[#1f1f1f] bg-[#070707]">
+              Back
             </Button>
           )}
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-neutral-100 flex items-center gap-2">
+            <h2 className="text-lg font-mono font-medium tracking-tight text-[#ffffff] flex items-center gap-2">
               {result.apk.app_label || result.apk.package_name || result.apk.filename}
             </h2>
-            <p className="text-xs font-mono text-neutral-400">
-              {result.apk.package_name || "Unknown Package"} • v{result.apk.version_name || "?"} (code {result.apk.version_code ?? "?"})
+            <p className="text-xs font-mono text-[#7a7a7a]">
+              {result.apk.package_name || "Unknown package"} • v{result.apk.version_name || "?"} (code {result.apk.version_code ?? "?"})
             </p>
           </div>
         </div>
@@ -190,17 +190,17 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
           <TabsTrigger value="frameworks">
             Frameworks ({result.detections.length})
           </TabsTrigger>
-          <TabsTrigger value="metadata">Overview & Manifest</TabsTrigger>
+          <TabsTrigger value="metadata">Manifest</TabsTrigger>
           <TabsTrigger value="binaries">
-            Native Libraries ({result.apk_structure.native_libraries.length})
+            Libraries ({result.apk_structure.native_libraries.length})
           </TabsTrigger>
           <TabsTrigger value="dex">
-            DEX Files ({result.apk_structure.dex_files.length})
+            DEX files ({result.apk_structure.dex_files.length})
           </TabsTrigger>
           <TabsTrigger value="permissions">
             Permissions ({result.apk.permissions.length})
           </TabsTrigger>
-          <TabsTrigger value="signing">Signing & Security</TabsTrigger>
+          <TabsTrigger value="signing">Signing</TabsTrigger>
         </TabsList>
 
         {/* TAB 1: FRAMEWORKS & EVIDENCE */}

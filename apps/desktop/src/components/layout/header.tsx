@@ -7,47 +7,47 @@ import { Badge } from "@/components/ui/badge";
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   dashboard: {
     title: "System dashboard",
-    subtitle: "At-a-glance framework metrics, recent analyses, and inspection distribution",
+    subtitle: "Metrics, framework distribution, and recent analyses.",
   },
   devices: {
     title: "Connected devices",
-    subtitle: "Manage Android hardware and emulators via Android Debug Bridge",
+    subtitle: "Manage connected Android hardware and emulators.",
   },
   analyzer: {
     title: "Package analyzer",
-    subtitle: "Inspect installed applications from connected Android devices",
+    subtitle: "Pull and inspect applications from connected devices.",
   },
   inspector: {
     title: "APK inspector",
-    subtitle: "Direct local APK file reverse engineering, structure, and framework detection",
+    subtitle: "Reverse-engineer and detect frameworks from APK binaries.",
   },
   batch: {
     title: "Batch analysis",
-    subtitle: "Simultaneous automated inspection of multiple Android application packages",
+    subtitle: "Concurrently inspect multiple Android application packages.",
   },
   comparison: {
     title: "Comparison studio",
-    subtitle: "Side-by-side structural, dependency, and framework diff analysis",
+    subtitle: "Compare application architectures and dependencies side-by-side.",
   },
   explorer: {
     title: "Framework explorer",
-    subtitle: "Comprehensive knowledge base of runtime signatures, indicators, and architectures",
+    subtitle: "Reference signatures and heuristics for 14 runtimes.",
   },
   history: {
     title: "Analysis history",
-    subtitle: "Local record of previous analyses, detections, and exported reports",
+    subtitle: "Locally saved records and exported reports.",
   },
   signatures: {
     title: "Custom signatures",
-    subtitle: "Manage, create, and calibrate framework detection rules and patterns",
+    subtitle: "Author custom patterns and native library indicators.",
   },
   settings: {
     title: "Preferences and tooling",
-    subtitle: "Configure ADB paths, storage locations, external tools, and engine limits",
+    subtitle: "Configure ADB, directories, concurrency, and logging.",
   },
   about: {
     title: "About StackLens",
-    subtitle: "Application intelligence platform information and license details",
+    subtitle: "Offline application intelligence suite built with Rust.",
   },
 };
 
