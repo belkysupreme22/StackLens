@@ -154,40 +154,41 @@ export function DevicePage() {
               <Card
                 key={device.serial}
                 onClick={() => handleSelectDevice(device.serial)}
-                className={`p-4 border cursor-pointer transition-all duration-150 ${
+                className={`p-3.5 border rounded-[3px] cursor-pointer transition-colors ${
                   isSelected
-                    ? "border-indigo-500/50 bg-indigo-950/20 shadow-md"
-                    : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700"
+                    ? "border-[#4ade80] bg-[#0e0e0e]"
+                    : "border-[#1f1f1f] bg-[#070707] hover:border-[#2a2a2a]"
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div
-                      className={`p-2 rounded-lg ${
-                        isOnline ? "bg-emerald-500/10 text-emerald-400" : "bg-neutral-800 text-neutral-400"
-                      }`}
-                    >
-                      <Smartphone className="h-5 w-5" />
+                    <div className="p-1.5 rounded-[2px] bg-[#000000] border border-[#1f1f1f] text-[#4ade80]">
+                      <Smartphone className="h-4 w-4" strokeWidth={1.5} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-neutral-100">
-                        {device.model || "Android Device"}
+                      <h4 className="text-xs font-mono font-medium text-[#ffffff]">
+                        {device.model || "Android device"}
                       </h4>
-                      <p className="text-xs text-neutral-400">
-                        {device.manufacturer || "Manufacturer"}
+                      <p className="text-[11px] font-mono text-[#7a7a7a]">
+                        {device.manufacturer || "Unknown manufacturer"}
                       </p>
                     </div>
                   </div>
 
-                  <Badge
-                    variant={isOnline ? "success" : "secondary"}
-                    className="text-[10px]"
-                  >
-                    {device.state}
-                  </Badge>
+                  <div className="flex items-center gap-1.5">
+                    {isOnline && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#4ade80] animate-status-pulse" />
+                    )}
+                    <Badge
+                      variant={isOnline ? "success" : "secondary"}
+                      className="text-[9px]"
+                    >
+                      {device.state}
+                    </Badge>
+                  </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-neutral-800/80 grid grid-cols-2 gap-2 text-[11px] font-mono text-neutral-400">
+                <div className="mt-3 pt-2.5 border-t border-[#1f1f1f] grid grid-cols-2 gap-2 text-[11px] font-mono text-[#7a7a7a]">
                   <div>
                     <span className="text-neutral-400 block">Serial:</span>
                     <span className="truncate block text-neutral-200">{device.serial}</span>
