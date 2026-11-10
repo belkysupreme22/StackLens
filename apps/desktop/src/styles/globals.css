@@ -2,74 +2,183 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Geist Fonts */
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('/fonts/002-geist-variable-he24cec106619.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/001-geistmono-variable-h5f687a5dd4c8.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel Square';
+  src: url('/fonts/003-geistpixel-square-h04f9cf917a82.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
-  --color-brand-950: #1e1b4b;
+  --font-sans: 'Geist Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-display: 'Geist Pixel Square', 'Geist Mono', monospace;
 
-  --color-surface-50: #fafafa;
-  --color-surface-100: #f5f5f5;
-  --color-surface-200: #e5e5e5;
-  --color-surface-300: #d4d4d4;
-  --color-surface-400: #a3a3a3;
-  --color-surface-500: #737373;
-  --color-surface-600: #525252;
-  --color-surface-700: #404040;
-  --color-surface-800: #262626;
-  --color-surface-850: #1a1a1a;
-  --color-surface-900: #171717;
-  --color-surface-950: #0a0a0a;
+  /* farmjs.dev dark palette */
+  --color-farm-bg: #000000;
+  --color-farm-surface: #070707;
+  --color-farm-surface-alt: #0e0e0e;
+  --color-farm-surface-hover: #141414;
+  --color-farm-border: #1f1f1f;
+  --color-farm-border-hover: #2a2a2a;
+  
+  --color-farm-text: #ffffff;
+  --color-farm-muted: #7a7a7a;
+  --color-farm-subtle: #4d4d4d;
+  
+  /* Signature FarmJS Green Accent */
+  --color-farm-accent: #4ade80;
+  --color-farm-accent-hover: #22c55e;
+  --color-farm-on-accent: #000000;
 
-  --radius-lg: 0.5rem;
-  --radius-md: calc(var(--radius-lg) - 2px);
-  --radius-sm: calc(var(--radius-lg) - 4px);
+  /* Strict 3px default radius family */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 5px;
+  --radius-xl: 6px;
+  --radius-full: 9999px;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-surface-700);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-surface-600);
-}
-
-/* Ensure smooth transitions for theme switching */
-* {
-  transition-property: background-color, border-color;
-  transition-duration: 150ms;
-  transition-timing-function: ease;
-}
-
-/* Reset transitions for elements that shouldn't animate */
-input, textarea, select, button {
-  transition: none;
+:root {
+  color-scheme: dark;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: var(--font-sans);
   overflow: hidden;
   user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Allow text selection in specific areas */
+/* Allow text selection in inspection views */
 .selectable {
   user-select: text;
+}
+
+/* Scrollbar styling - neutral, unobtrusive */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f1f1f;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2a2a;
+}
+
+/* Soft neutral depth shadows (un-tinted) */
+.farm-shadow-inset {
+  box-shadow: rgba(255, 255, 255, 0.68) 2px 0px 0px 0px inset;
+}
+
+.farm-shadow-pop {
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 18px 50px 0px;
+}
+
+.farm-shadow-bottom {
+  box-shadow: rgba(255, 255, 255, 0.85) 0px -1px 0px 0px inset;
+}
+
+/* Default 150ms transitions */
+* {
+  transition-property: background-color, border-color, color, stroke, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Signature farmjs keyframe animations */
+
+/* 1. Terminal Typing Effect */
+@keyframes farm-terminal-command-type {
+  0% { opacity: 1; width: 0; }
+  2% { opacity: 1; width: 0; animation-timing-function: steps(8); }
+  7%, 88% { opacity: 1; width: 100%; }
+  94%, 99.99% { opacity: 0; width: 100%; }
+  100% { opacity: 1; width: 0; }
+}
+
+.animate-typewriter {
+  animation: farm-terminal-command-type 9600ms ease infinite;
+}
+
+/* 2. Cursor Hard Blink */
+@keyframes farm-terminal-cursor-blink {
+  0%, 48% { opacity: 1; }
+  49%, 100% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: farm-terminal-cursor-blink 800ms linear infinite;
+}
+
+/* 3. Refusal Shake (for invalid inputs) */
+@keyframes iso-refuse {
+  20%, 60% { transform: translate(-2px); }
+  40%, 80% { transform: translate(2px); }
+}
+
+.animate-refusal {
+  animation: iso-refuse 450ms ease-in-out both;
+}
+
+/* 4. Pulse Pip */
+@keyframes farm-status-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.animate-status-pulse {
+  animation: farm-status-pulse 2000ms ease-in-out infinite;
+}
+
+/* 5. Line Drawing Reveal */
+@keyframes farm-route-draw {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-draw {
+  animation: farm-route-draw 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Disable motion when prefers-reduced-motion is active */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
