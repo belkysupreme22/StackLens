@@ -85,20 +85,20 @@ export function PackageAnalyzerPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Card className="p-6 border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-5">
+      <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-5">
         <div>
           <h3 className="text-sm font-mono font-medium text-[#ffffff] flex items-center gap-2">
-            <PackageSearch className="h-4 w-4 text-[#4ade80]" />
+            <PackageSearch className="h-4 w-4 text-[#47ab61]" />
             Extract and analyze application
           </h3>
-          <p className="text-xs text-[#7a7a7a] mt-1 font-mono">
+          <p className="text-xs text-[#8c8b8f] mt-1 font-mono">
             Extract installed package APK over ADB and inspect runtime framework signatures.
           </p>
         </div>
 
         {/* Error message */}
         {errorMessage && (
-          <div className="p-3 rounded-[3px] border border-rose-900/50 bg-[#120507] text-xs font-mono text-rose-300 flex items-start gap-2">
+          <div className="p-3 rounded-[20px] border border-rose-900/50 bg-[#120507] text-xs font-mono text-rose-300 flex items-start gap-2">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" />
             <div>{errorMessage}</div>
           </div>
@@ -110,14 +110,14 @@ export function PackageAnalyzerPage() {
             <span>Target device</span>
             <button
               onClick={() => refreshDevices()}
-              className="text-[11px] font-mono text-[#4ade80] hover:underline flex items-center gap-1"
+              className="text-[11px] font-mono text-[#47ab61] hover:underline flex items-center gap-1"
             >
               <RefreshCw className="h-3 w-3" /> Refresh
             </button>
           </label>
 
           {devices.length === 0 ? (
-            <div className="p-4 rounded-[3px] border border-[#1f1f1f] bg-[#000000] text-xs font-mono text-[#7a7a7a] text-center">
+            <div className="p-4 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] text-xs font-mono text-[#8c8b8f] text-center">
               No devices online. Connect hardware via USB or start an emulator.
             </div>
           ) : (
@@ -126,10 +126,10 @@ export function PackageAnalyzerPage() {
                 <div
                   key={dev.serial}
                   onClick={() => setSelectedDeviceSerial(dev.serial)}
-                  className={`p-2.5 rounded-[3px] border cursor-pointer text-xs font-mono transition-colors ${
+                  className={`p-2.5 rounded-[20px] border cursor-pointer text-xs font-mono transition-colors ${
                     dev.serial === selectedDeviceSerial
-                      ? "border-[#4ade80] bg-[#0e0e0e] text-[#ffffff]"
-                      : "border-[#1f1f1f] bg-[#000000] text-[#7a7a7a] hover:border-[#2a2a2a] hover:text-[#ffffff]"
+                      ? "border-[#47ab61] bg-[#18181b] text-[#ffffff]"
+                      : "border-[#26262a] bg-[#0a0a0b] text-[#8c8b8f] hover:border-[#333338] hover:text-[#ffffff]"
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -138,7 +138,7 @@ export function PackageAnalyzerPage() {
                       {dev.state}
                     </Badge>
                   </div>
-                  <div className="text-[11px] text-[#7a7a7a] mt-1 truncate">
+                  <div className="text-[11px] text-[#8c8b8f] mt-1 truncate">
                     {dev.serial}
                   </div>
                 </div>
@@ -162,13 +162,13 @@ export function PackageAnalyzerPage() {
                   handleAnalyze();
                 }
               }}
-              className="font-mono text-xs h-9 border-[#1f1f1f] bg-[#000000] rounded-[3px] focus-visible:border-[#4ade80]"
+              className="font-mono text-xs h-9 border-[#26262a] bg-[#0a0a0b] rounded-[20px] focus-visible:border-[#47ab61]"
               disabled={isAnalyzing}
             />
             <Button
               onClick={handleAnalyze}
               disabled={isAnalyzing || !isValidPackage || !selectedDeviceSerial}
-              className="h-9 px-4 text-xs font-mono shrink-0 rounded-[3px]"
+              className="h-9 px-4 text-xs font-mono shrink-0 rounded-[20px]"
             >
               {isAnalyzing ? (
                 <>
@@ -183,23 +183,23 @@ export function PackageAnalyzerPage() {
               )}
             </Button>
           </div>
-          <p className="text-[11px] font-mono text-[#7a7a7a]">
+          <p className="text-[11px] font-mono text-[#8c8b8f]">
             Consolidates split APKs and native architecture binaries automatically.
           </p>
         </div>
 
         {/* Live Status indicator */}
         {isAnalyzing && (
-          <div className="p-3 rounded-[3px] border border-[#1f1f1f] bg-[#070707] text-xs font-mono text-[#ffffff] flex items-center gap-3">
-            <span className="h-2 w-2 rounded-full bg-[#4ade80] animate-status-pulse shrink-0" />
+          <div className="p-3 rounded-[20px] border border-[#26262a] bg-[#131315] text-xs font-mono text-[#ffffff] flex items-center gap-3">
+            <span className="h-2 w-2 rounded-full bg-[#47ab61] animate-status-pulse shrink-0" />
             <span className="truncate">{statusMessage}</span>
           </div>
         )}
       </Card>
 
       {/* Suggested package examples */}
-      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
-        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a] mb-2.5">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px]">
+        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#8c8b8f] mb-2.5">
           Common packages
         </h4>
         <div className="flex flex-wrap gap-2 text-xs">
@@ -214,7 +214,7 @@ export function PackageAnalyzerPage() {
             <button
               key={pkg}
               onClick={() => setPackageName(pkg)}
-              className="px-2 py-1 rounded-[3px] border border-[#1f1f1f] bg-[#000000] text-[#7a7a7a] hover:text-[#4ade80] hover:border-[#2a2a2a] font-mono text-[11px]"
+              className="px-2 py-1 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] text-[#8c8b8f] hover:text-[#47ab61] hover:border-[#333338] font-mono text-[11px]"
             >
               {pkg}
             </button>

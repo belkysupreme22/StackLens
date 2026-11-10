@@ -96,14 +96,14 @@ export function CustomSignaturesPage() {
   return (
     <div className="space-y-4">
       {/* Top Header Card */}
-      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
-              <Fingerprint className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+              <Fingerprint className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
               Custom framework signatures
             </h3>
-            <p className="text-[11px] font-mono text-[#7a7a7a] mt-0.5">
+            <p className="text-[11px] font-mono text-[#8c8b8f] mt-0.5">
               Author pattern definitions, native library indicators, and class descriptors.
             </p>
           </div>
@@ -112,7 +112,7 @@ export function CustomSignaturesPage() {
             <Button
               size="sm"
               onClick={() => setAddDialogOpen(true)}
-              className="text-xs font-mono h-8 rounded-[3px] gap-1.5"
+              className="text-xs font-mono h-8 rounded-[20px] gap-1.5"
             >
               <Plus className="h-3.5 w-3.5" />
               Add signature
@@ -122,19 +122,19 @@ export function CustomSignaturesPage() {
       </Card>
 
       {notice && (
-        <div className="p-2.5 text-xs font-mono rounded-[3px] border border-[#1f1f1f] bg-[#070707] text-[#4ade80]">
+        <div className="p-2.5 text-xs font-mono rounded-[20px] border border-[#26262a] bg-[#131315] text-[#47ab61]">
           {notice}
         </div>
       )}
 
       {/* User Custom Signatures List */}
       <div>
-        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a] mb-2.5">
+        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#8c8b8f] mb-2.5">
           Configured signatures ({signatures.length})
         </h4>
 
         {signatures.length === 0 ? (
-          <Card className="p-6 border-[#1f1f1f] bg-[#070707] rounded-[3px] text-center text-xs font-mono text-[#7a7a7a]">
+          <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] text-center text-xs font-mono text-[#8c8b8f]">
             No custom signatures configured. Click "Add signature" to define custom detection patterns.
           </Card>
         ) : (
@@ -142,12 +142,12 @@ export function CustomSignaturesPage() {
             {signatures.map((sig) => (
               <Card
                 key={sig.id}
-                className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px] flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono"
+                className="p-3.5 border-[#26262a] bg-[#131315] rounded-[20px] flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-xs text-[#ffffff]">{sig.name}</span>
-                    <Badge variant="outline" className="text-[9px] text-[#4ade80] border-[#1f1f1f]">
+                    <Badge variant="outline" className="text-[9px] text-[#47ab61] border-[#26262a]">
                       {sig.framework}
                     </Badge>
                     <Badge
@@ -158,20 +158,20 @@ export function CustomSignaturesPage() {
                       {sig.enabled ? "Active" : "Disabled"}
                     </Badge>
                   </div>
-                  <p className="text-xs text-[#7a7a7a]">{sig.evidence_description}</p>
-                  <div className="flex flex-wrap gap-1.5 text-[10px] text-[#7a7a7a] pt-0.5">
+                  <p className="text-xs text-[#8c8b8f]">{sig.evidence_description}</p>
+                  <div className="flex flex-wrap gap-1.5 text-[10px] text-[#8c8b8f] pt-0.5">
                     {sig.native_lib_patterns.length > 0 && (
-                      <span className="bg-[#000000] px-1.5 py-0.5 rounded-[2px] border border-[#1f1f1f]">
+                      <span className="bg-[#0a0a0b] px-1.5 py-0.5 rounded-full border border-[#26262a]">
                         Libs: {sig.native_lib_patterns.join(", ")}
                       </span>
                     )}
                     {sig.class_patterns.length > 0 && (
-                      <span className="bg-[#000000] px-1.5 py-0.5 rounded-[2px] border border-[#1f1f1f]">
+                      <span className="bg-[#0a0a0b] px-1.5 py-0.5 rounded-full border border-[#26262a]">
                         Classes: {sig.class_patterns.join(", ")}
                       </span>
                     )}
                     {sig.file_patterns.length > 0 && (
-                      <span className="bg-[#000000] px-1.5 py-0.5 rounded-[2px] border border-[#1f1f1f]">
+                      <span className="bg-[#0a0a0b] px-1.5 py-0.5 rounded-full border border-[#26262a]">
                         Files: {sig.file_patterns.join(", ")}
                       </span>
                     )}
@@ -181,7 +181,7 @@ export function CustomSignaturesPage() {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => handleDelete(sig.id)}
-                    className="p-1 rounded-[2px] text-[#7a7a7a] hover:text-rose-400 hover:bg-[#141414] transition-colors"
+                    className="p-1 rounded-full text-[#8c8b8f] hover:text-rose-400 hover:bg-[#1f1f23] transition-colors"
                     title="Delete signature"
                   >
                     <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -195,12 +195,12 @@ export function CustomSignaturesPage() {
 
       {/* Built-in Engine Signatures (Protected) */}
       <div>
-        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a] mb-2.5 flex items-center gap-1.5">
-          <Shield className="h-3 w-3 text-[#4ade80]" strokeWidth={1.5} />
+        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#8c8b8f] mb-2.5 flex items-center gap-1.5">
+          <Shield className="h-3 w-3 text-[#47ab61]" strokeWidth={1.5} />
           Built-in signatures (read-only)
         </h4>
 
-        <Card className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px] text-xs font-mono text-[#7a7a7a] space-y-2">
+        <Card className="p-3.5 border-[#26262a] bg-[#131315] rounded-[20px] text-xs font-mono text-[#8c8b8f] space-y-2">
           <p>
             Built-in signatures are compiled directly into the Rust detection engine core for maximum performance, safety against regex backtracking, and deterministic offline scoring.
           </p>
@@ -223,7 +223,7 @@ export function CustomSignaturesPage() {
             ].map((f) => (
               <span
                 key={f}
-                className="px-2 py-0.5 rounded-[2px] bg-[#000000] border border-[#1f1f1f] text-[#7a7a7a] font-mono text-[10px]"
+                className="px-2 py-0.5 rounded-full bg-[#0a0a0b] border border-[#26262a] text-[#8c8b8f] font-mono text-[10px]"
               >
                 {f}
               </span>
@@ -248,7 +248,7 @@ export function CustomSignaturesPage() {
               placeholder="e.g. In-house game engine"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
+              className="text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
             />
           </div>
 
@@ -260,7 +260,7 @@ export function CustomSignaturesPage() {
               placeholder="e.g. MyCustomEngine"
               value={framework}
               onChange={(e) => setFramework(e.target.value)}
-              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] font-mono"
+              className="text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px] font-mono"
             />
           </div>
 
@@ -272,7 +272,7 @@ export function CustomSignaturesPage() {
               placeholder="e.g. libengine.so, libgame_core.so"
               value={nativeLibPatterns}
               onChange={(e) => setNativeLibPatterns(e.target.value)}
-              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] font-mono"
+              className="text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px] font-mono"
             />
           </div>
 
@@ -284,7 +284,7 @@ export function CustomSignaturesPage() {
               placeholder="e.g. com.company.engine., org.custom.runtime."
               value={classPatterns}
               onChange={(e) => setClassPatterns(e.target.value)}
-              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] font-mono"
+              className="text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px] font-mono"
             />
           </div>
 
@@ -296,7 +296,7 @@ export function CustomSignaturesPage() {
               placeholder="e.g. assets/engine.bundle, assets/data.bin"
               value={filePatterns}
               onChange={(e) => setFilePatterns(e.target.value)}
-              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] font-mono"
+              className="text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px] font-mono"
             />
           </div>
 
@@ -308,7 +308,7 @@ export function CustomSignaturesPage() {
               placeholder="e.g. Verified proprietary in-house engine runtime"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
+              className="text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
             />
           </div>
 
@@ -317,11 +317,11 @@ export function CustomSignaturesPage() {
               size="sm"
               variant="outline"
               onClick={() => setAddDialogOpen(false)}
-              className="text-xs font-mono h-8 border-[#1f1f1f] bg-[#070707] rounded-[3px]"
+              className="text-xs font-mono h-8 border-[#26262a] bg-[#131315] rounded-[20px]"
             >
               Cancel
             </Button>
-            <Button size="sm" onClick={handleCreate} className="text-xs font-mono h-8 rounded-[3px]">
+            <Button size="sm" onClick={handleCreate} className="text-xs font-mono h-8 rounded-[20px]">
               Save signature
             </Button>
           </div>

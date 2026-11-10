@@ -78,28 +78,28 @@ export function SettingsPage() {
     <div className="max-w-4xl mx-auto space-y-4">
       {/* Save status notification */}
       {notice && (
-        <div className="p-2.5 text-xs font-mono rounded-[3px] border border-[#1f1f1f] bg-[#070707] text-[#4ade80]">
+        <div className="p-2.5 text-xs font-mono rounded-[20px] border border-[#26262a] bg-[#131315] text-[#47ab61]">
           {notice}
         </div>
       )}
 
       {/* External Tools Diagnostics */}
-      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-3">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
-            <Wrench className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+            <Wrench className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
             External inspection tooling
           </CardTitle>
           <Button
             size="sm"
             variant="outline"
             onClick={checkTools}
-            className="text-xs font-mono h-7 border-[#1f1f1f] bg-[#000000] rounded-[3px] hover:border-[#2a2a2a] gap-1"
+            className="text-xs font-mono h-7 border-[#26262a] bg-[#0a0a0b] rounded-[20px] hover:border-[#333338] gap-1"
           >
             <RefreshCw className="h-3 w-3" /> Re-check
           </Button>
         </div>
-        <p className="text-[11px] font-mono text-[#7a7a7a]">
+        <p className="text-[11px] font-mono text-[#8c8b8f]">
           StackLens operates with zero required external dependencies for core detection.
         </p>
 
@@ -107,13 +107,13 @@ export function SettingsPage() {
           {Object.entries(tools).map(([toolName, info]) => (
             <div
               key={toolName}
-              className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex items-center justify-between text-xs font-mono"
+              className="p-2.5 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] flex items-center justify-between text-xs font-mono"
             >
               <div>
                 <span className="font-medium text-[#ffffff] block">
                   {toolName}
                 </span>
-                <span className="text-[10px] text-[#7a7a7a] truncate block max-w-36">
+                <span className="text-[10px] text-[#8c8b8f] truncate block max-w-36">
                   {info.version || (info.available ? "Installed" : "Not found")}
                 </span>
               </div>
@@ -129,9 +129,9 @@ export function SettingsPage() {
       </Card>
 
       {/* Path Configurations */}
-      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-3">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
         <CardTitle className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
-          <Folder className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+          <Folder className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
           Filesystem and execution paths
         </CardTitle>
 
@@ -146,9 +146,9 @@ export function SettingsPage() {
                 setLocalSettings({ ...localSettings, adb_path: e.target.value })
               }
               placeholder="adb (or /path/to/platform-tools/adb)"
-              className="font-mono text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
+              className="font-mono text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
             />
-            <span className="text-[10px] text-[#7a7a7a] mt-0.5 block">
+            <span className="text-[10px] text-[#8c8b8f] mt-0.5 block">
               Leave as 'adb' to use system PATH, or specify exact path to platform-tools/adb.
             </span>
           </div>
@@ -162,7 +162,7 @@ export function SettingsPage() {
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, apk_output_dir: e.target.value })
               }
-              className="font-mono text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
+              className="font-mono text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
             />
           </div>
 
@@ -175,24 +175,24 @@ export function SettingsPage() {
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, report_export_dir: e.target.value })
               }
-              className="font-mono text-xs h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
+              className="font-mono text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
             />
           </div>
         </div>
       </Card>
 
       {/* Analysis Engine Options */}
-      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-3">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
         <CardTitle className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
-          <Settings className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+          <Settings className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
           Engine and analysis preferences
         </CardTitle>
 
         <div className="space-y-3 text-xs font-mono">
-          <div className="flex items-center justify-between p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000]">
+          <div className="flex items-center justify-between p-2.5 rounded-[20px] border border-[#26262a] bg-[#0a0a0b]">
             <div>
               <span className="font-medium text-[#ffffff] block">Retain pulled device APKs</span>
-              <span className="text-[10px] text-[#7a7a7a]">
+              <span className="text-[10px] text-[#8c8b8f]">
                 Keep local copies of extracted application binaries in storage directory.
               </span>
             </div>
@@ -202,7 +202,7 @@ export function SettingsPage() {
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, retain_apks: e.target.checked })
               }
-              className="h-3.5 w-3.5 rounded-[2px] border-[#1f1f1f] bg-[#000000] text-[#4ade80] focus:ring-[#4ade80] cursor-pointer"
+              className="h-3.5 w-3.5 rounded-full border-[#26262a] bg-[#0a0a0b] text-[#47ab61] focus:ring-[#47ab61] cursor-pointer"
             />
           </div>
 
@@ -222,7 +222,7 @@ export function SettingsPage() {
                     analysis_concurrency: parseInt(e.target.value) || 4,
                   })
                 }
-                className="text-xs font-mono h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
+                className="text-xs font-mono h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
               />
             </div>
 
@@ -235,7 +235,7 @@ export function SettingsPage() {
                 onChange={(e) =>
                   setLocalSettings({ ...localSettings, log_level: e.target.value as AppSettings["log_level"] })
                 }
-                className="w-full h-8 rounded-[3px] border border-[#1f1f1f] bg-[#000000] px-2.5 text-xs font-mono text-[#ffffff] focus:outline-none focus:border-[#4ade80]"
+                className="w-full h-8 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] px-2.5 text-xs font-mono text-[#ffffff] focus:outline-none focus:border-[#47ab61]"
               >
                 <option value="error">Error</option>
                 <option value="warn">Warn</option>
@@ -254,7 +254,7 @@ export function SettingsPage() {
           variant="outline"
           size="sm"
           onClick={handleReset}
-          className="text-xs font-mono text-[#7a7a7a] border-[#1f1f1f] bg-[#070707] hover:text-[#ffffff] rounded-[3px] gap-1.5"
+          className="text-xs font-mono text-[#8c8b8f] border-[#26262a] bg-[#131315] hover:text-[#ffffff] rounded-[20px] gap-1.5"
         >
           <RotateCcw className="h-3 w-3" /> Restore defaults
         </Button>
@@ -263,7 +263,7 @@ export function SettingsPage() {
           size="sm"
           onClick={handleSave}
           disabled={isSaving}
-          className="text-xs font-mono px-5 rounded-[3px]"
+          className="text-xs font-mono px-5 rounded-[20px]"
         >
           {isSaving ? "Saving..." : "Save settings"}
         </Button>

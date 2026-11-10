@@ -112,15 +112,15 @@ export function DevicePage() {
           </div>
         </Card>
       ) : devices.length === 0 ? (
-        <Card className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px] text-[#7a7a7a]">
+        <Card className="p-3.5 border-[#26262a] bg-[#131315] rounded-[20px] text-[#8c8b8f]">
           <div className="flex items-start gap-2.5">
-            <Smartphone className="h-4 w-4 shrink-0 text-[#7a7a7a] mt-0.5" strokeWidth={1.5} />
+            <Smartphone className="h-4 w-4 shrink-0 text-[#8c8b8f] mt-0.5" strokeWidth={1.5} />
             <div className="space-y-1">
               <h4 className="text-xs font-mono font-medium text-[#ffffff]">
                 No connected Android devices detected
               </h4>
-              <p className="text-[11px] font-mono text-[#7a7a7a]">
-                Enable <strong>USB Debugging</strong> in developer options and connect via USB, or execute <code className="text-[#4ade80]">adb connect &lt;ip:port&gt;</code>.
+              <p className="text-[11px] font-mono text-[#8c8b8f]">
+                Enable <strong>USB Debugging</strong> in developer options and connect via USB, or execute <code className="text-[#47ab61]">adb connect &lt;ip:port&gt;</code>.
               </p>
             </div>
           </div>
@@ -154,22 +154,22 @@ export function DevicePage() {
               <Card
                 key={device.serial}
                 onClick={() => handleSelectDevice(device.serial)}
-                className={`p-3.5 border rounded-[3px] cursor-pointer transition-colors ${
+                className={`p-3.5 border rounded-[20px] cursor-pointer transition-colors ${
                   isSelected
-                    ? "border-[#4ade80] bg-[#0e0e0e]"
-                    : "border-[#1f1f1f] bg-[#070707] hover:border-[#2a2a2a]"
+                    ? "border-[#47ab61] bg-[#18181b]"
+                    : "border-[#26262a] bg-[#131315] hover:border-[#333338]"
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-[2px] bg-[#000000] border border-[#1f1f1f] text-[#4ade80]">
+                    <div className="p-1.5 rounded-full bg-[#0a0a0b] border border-[#26262a] text-[#47ab61]">
                       <Smartphone className="h-4 w-4" strokeWidth={1.5} />
                     </div>
                     <div>
                       <h4 className="text-xs font-mono font-medium text-[#ffffff]">
                         {device.model || "Android device"}
                       </h4>
-                      <p className="text-[11px] font-mono text-[#7a7a7a]">
+                      <p className="text-[11px] font-mono text-[#8c8b8f]">
                         {device.manufacturer || "Unknown manufacturer"}
                       </p>
                     </div>
@@ -177,7 +177,7 @@ export function DevicePage() {
 
                   <div className="flex items-center gap-1.5">
                     {isOnline && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#4ade80] animate-status-pulse" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#47ab61] animate-status-pulse" />
                     )}
                     <Badge
                       variant={isOnline ? "success" : "secondary"}
@@ -188,7 +188,7 @@ export function DevicePage() {
                   </div>
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-[#1f1f1f] grid grid-cols-2 gap-2 text-[11px] font-mono text-[#7a7a7a]">
+                <div className="mt-3 pt-2.5 border-t border-[#26262a] grid grid-cols-2 gap-2 text-[11px] font-mono text-[#8c8b8f]">
                   <div>
                     <span className="text-neutral-400 block">Serial:</span>
                     <span className="truncate block text-neutral-200">{device.serial}</span>
@@ -243,35 +243,35 @@ export function DevicePage() {
           </div>
 
           {errorMessage && (
-            <div className="p-2.5 rounded-[3px] border border-rose-900/40 bg-[#120507] text-xs font-mono text-rose-300">
+            <div className="p-2.5 rounded-[20px] border border-rose-900/40 bg-[#120507] text-xs font-mono text-rose-300">
               {errorMessage}
             </div>
           )}
 
           {isLoadingPackages ? (
-            <div className="p-8 text-center text-xs font-mono text-[#7a7a7a]">
-              <span className="h-2 w-2 rounded-full bg-[#4ade80] animate-status-pulse inline-block mb-2" />
+            <div className="p-8 text-center text-xs font-mono text-[#8c8b8f]">
+              <span className="h-2 w-2 rounded-full bg-[#47ab61] animate-status-pulse inline-block mb-2" />
               <div>Querying package manager via ADB...</div>
             </div>
           ) : devicePackages.length === 0 ? (
-            <div className="p-6 text-center text-xs font-mono text-[#7a7a7a]">
+            <div className="p-6 text-center text-xs font-mono text-[#8c8b8f]">
               <Button
                 size="sm"
                 onClick={() => fetchPackages(selectedDevice.serial)}
-                className="text-xs font-mono rounded-[3px]"
+                className="text-xs font-mono rounded-[20px]"
               >
                 Load packages
               </Button>
             </div>
           ) : (
             <div className="max-h-96 overflow-y-auto space-y-1 pr-1">
-              <div className="text-[10px] font-mono text-[#7a7a7a] pb-1">
+              <div className="text-[10px] font-mono text-[#8c8b8f] pb-1">
                 Showing {filteredPackages.length} of {devicePackages.length} packages
               </div>
               {filteredPackages.map((pkg) => (
                 <div
                   key={pkg}
-                  className="p-2 rounded-[3px] border border-[#1f1f1f] bg-[#000000] hover:border-[#2a2a2a] flex items-center justify-between text-xs font-mono transition-colors"
+                  className="p-2 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] hover:border-[#333338] flex items-center justify-between text-xs font-mono transition-colors"
                 >
                   <span className="truncate pr-4 text-[#ffffff]">{pkg}</span>
                   <Button
@@ -279,7 +279,7 @@ export function DevicePage() {
                     variant="outline"
                     onClick={() => handlePullAndAnalyze(pkg)}
                     disabled={analyzingPackage === pkg}
-                    className="h-6 text-[11px] font-mono border-[#1f1f1f] bg-[#070707] text-[#4ade80] hover:bg-[#4ade80] hover:text-[#000000] rounded-[2px] shrink-0"
+                    className="h-6 text-[11px] font-mono border-[#26262a] bg-[#131315] text-[#47ab61] hover:bg-[#47ab61] hover:text-[#0a0a0b] rounded-full shrink-0"
                   >
                     {analyzingPackage === pkg ? (
                       <RefreshCw className="h-3 w-3 animate-spin" />
@@ -297,21 +297,21 @@ export function DevicePage() {
       )}
 
       {/* Troubleshooting Guidance */}
-      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-2.5">
-        <h4 className="text-[11px] font-mono text-[#7a7a7a] uppercase tracking-wider flex items-center gap-1.5">
-          <HelpCircle className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px] space-y-2.5">
+        <h4 className="text-[11px] font-mono text-[#8c8b8f] uppercase tracking-wider flex items-center gap-1.5">
+          <HelpCircle className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
           ADB device connection troubleshooting
         </h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs font-mono text-[#7a7a7a]">
-          <div className="p-2.5 rounded-[3px] bg-[#000000] border border-[#1f1f1f]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs font-mono text-[#8c8b8f]">
+          <div className="p-2.5 rounded-[20px] bg-[#0a0a0b] border border-[#26262a]">
             <span className="font-medium text-[#ffffff] block mb-0.5">1. Enable USB debugging</span>
             Settings &gt; About phone &gt; Tap "Build number" 7 times. Return to developer options and enable USB debugging.
           </div>
-          <div className="p-2.5 rounded-[3px] bg-[#000000] border border-[#1f1f1f]">
+          <div className="p-2.5 rounded-[20px] bg-[#0a0a0b] border border-[#26262a]">
             <span className="font-medium text-[#ffffff] block mb-0.5">2. Authorize computer</span>
             On phone screen, accept RSA key fingerprint dialog: "Always allow from this computer".
           </div>
-          <div className="p-2.5 rounded-[3px] bg-[#000000] border border-[#1f1f1f]">
+          <div className="p-2.5 rounded-[20px] bg-[#0a0a0b] border border-[#26262a]">
             <span className="font-medium text-[#ffffff] block mb-0.5">3. Verify cable</span>
             Ensure cable supports data transfer. On Windows, install Google USB Drivers or vendor OEM driver.
           </div>

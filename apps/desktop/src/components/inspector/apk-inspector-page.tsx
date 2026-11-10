@@ -87,16 +87,16 @@ export function ApkInspectorPage() {
         }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
-        className={`p-10 border border-dashed rounded-[3px] text-center transition-colors ${
+        className={`p-10 border border-dashed rounded-[20px] text-center transition-colors ${
           shakeZone ? "animate-refusal" : ""
         } ${
           isDragging
-            ? "border-[#4ade80] bg-[#0e0e0e]"
-            : "border-[#1f1f1f] bg-[#070707] hover:border-[#2a2a2a]"
+            ? "border-[#47ab61] bg-[#18181b]"
+            : "border-[#26262a] bg-[#131315] hover:border-[#333338]"
         }`}
       >
         <div className="flex flex-col items-center justify-center space-y-3">
-          <div className="p-3 rounded-[3px] bg-[#000000] border border-[#1f1f1f] text-[#4ade80]">
+          <div className="p-3 rounded-[20px] bg-[#0a0a0b] border border-[#26262a] text-[#47ab61]">
             <Upload className="h-6 w-6" strokeWidth={1.5} />
           </div>
 
@@ -104,7 +104,7 @@ export function ApkInspectorPage() {
             <h3 className="text-sm font-mono font-medium text-[#ffffff]">
               Drop Android APK archive here
             </h3>
-            <p className="text-xs font-mono text-[#7a7a7a]">
+            <p className="text-xs font-mono text-[#8c8b8f]">
               Inspect application binaries, assets, dex classes, and framework signatures offline
             </p>
           </div>
@@ -118,14 +118,14 @@ export function ApkInspectorPage() {
                 onChange={handleFileInput}
                 disabled={isAnalyzing}
               />
-              <span className="inline-flex items-center justify-center rounded-[3px] bg-[#4ade80] px-4 py-2 text-xs font-mono font-medium text-[#000000] hover:bg-[#3ecb74] cursor-pointer transition-colors gap-2">
+              <span className="inline-flex items-center justify-center rounded-[20px] bg-[#47ab61] px-4 py-2 text-xs font-mono font-medium text-[#0a0a0b] hover:bg-[#3ecb74] cursor-pointer transition-colors gap-2">
                 <FolderOpen className="h-3.5 w-3.5" strokeWidth={1.5} />
                 Browse local file
               </span>
             </label>
           </div>
 
-          <div className="text-[11px] font-mono text-[#7a7a7a] pt-1">
+          <div className="text-[11px] font-mono text-[#8c8b8f] pt-1">
             Accepts APK, XAPK, and split base binaries up to 500 MB
           </div>
         </div>
@@ -133,15 +133,15 @@ export function ApkInspectorPage() {
 
       {/* Progress status */}
       {isAnalyzing && (
-        <Card className="p-3 border-[#1f1f1f] bg-[#070707] rounded-[3px] text-xs font-mono text-[#ffffff] flex items-center gap-3">
-          <span className="h-2 w-2 rounded-full bg-[#4ade80] animate-status-pulse shrink-0" />
+        <Card className="p-3 border-[#26262a] bg-[#131315] rounded-[20px] text-xs font-mono text-[#ffffff] flex items-center gap-3">
+          <span className="h-2 w-2 rounded-full bg-[#47ab61] animate-status-pulse shrink-0" />
           <span className="truncate">{statusText}</span>
         </Card>
       )}
 
       {/* Error status */}
       {errorMessage && (
-        <Card className="p-3 border-rose-900/50 bg-[#120507] rounded-[3px] text-xs font-mono text-rose-300 flex items-start gap-2">
+        <Card className="p-3 border-rose-900/50 bg-[#120507] rounded-[20px] text-xs font-mono text-rose-300 flex items-start gap-2">
           <AlertCircle className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" />
           <div>{errorMessage}</div>
         </Card>
@@ -149,23 +149,23 @@ export function ApkInspectorPage() {
 
       {/* Capabilities Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-        <div className="p-3.5 rounded-[3px] border border-[#1f1f1f] bg-[#070707] space-y-1">
+        <div className="p-3.5 rounded-[20px] border border-[#26262a] bg-[#131315] space-y-1">
           <span className="text-xs font-mono font-medium text-[#ffffff]">14 Framework runtimes</span>
-          <p className="text-[11px] font-mono text-[#7a7a7a]">
+          <p className="text-[11px] font-mono text-[#8c8b8f]">
             Detects Flutter, React Native, Unity, .NET MAUI, Unreal, Godot, Cordova, and Jetpack Compose.
           </p>
         </div>
 
-        <div className="p-3.5 rounded-[3px] border border-[#1f1f1f] bg-[#070707] space-y-1">
+        <div className="p-3.5 rounded-[20px] border border-[#26262a] bg-[#131315] space-y-1">
           <span className="text-xs font-mono font-medium text-[#ffffff]">Transparent evidence</span>
-          <p className="text-[11px] font-mono text-[#7a7a7a]">
+          <p className="text-[11px] font-mono text-[#8c8b8f]">
             Exposes file paths, native symbols, dex descriptors, and confidence weights.
           </p>
         </div>
 
-        <div className="p-3.5 rounded-[3px] border border-[#1f1f1f] bg-[#070707] space-y-1">
+        <div className="p-3.5 rounded-[20px] border border-[#26262a] bg-[#131315] space-y-1">
           <span className="text-xs font-mono font-medium text-[#ffffff]">Offline analysis</span>
-          <p className="text-[11px] font-mono text-[#7a7a7a]">
+          <p className="text-[11px] font-mono text-[#8c8b8f]">
             Packages never leave your machine; all analysis runs locally in Rust.
           </p>
         </div>

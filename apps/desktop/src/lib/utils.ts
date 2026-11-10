@@ -62,7 +62,7 @@ export function frameworkColor(framework: string): string {
 export function confidenceBadgeColor(confidence: string): string {
   switch (confidence) {
     case "High":
-      return "bg-[#4ade80]/10 text-[#4ade80] border-[#4ade80]/30";
+      return "bg-[#47ab61]/10 text-[#47ab61] border-[#47ab61]/30";
     case "Medium":
       return "bg-amber-400/10 text-amber-300 border-amber-400/30";
     case "Low":
@@ -77,7 +77,7 @@ export function confidenceBadgeColor(confidence: string): string {
 export function evidenceTypeColor(type: string): string {
   switch (type) {
     case "Confirmed":
-      return "text-[#4ade80]";
+      return "text-[#47ab61]";
     case "StrongIndicator":
       return "text-emerald-300";
     case "Supporting":

@@ -124,14 +124,14 @@ export function BatchAnalysisPage() {
   return (
     <div className="space-y-4">
       {/* Header Controls */}
-      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
-              <Layers className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+              <Layers className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
               Batch application analysis
             </h3>
-            <p className="text-[11px] font-mono text-[#7a7a7a] mt-0.5">
+            <p className="text-[11px] font-mono text-[#8c8b8f] mt-0.5">
               Select or drop multiple APK files to inspect runtimes concurrently.
             </p>
           </div>
@@ -146,8 +146,8 @@ export function BatchAnalysisPage() {
                 onChange={handleFilesSelected}
                 disabled={isRunning}
               />
-              <span className="inline-flex items-center justify-center rounded-[3px] border border-[#1f1f1f] bg-[#000000] px-3 py-1 text-xs font-mono text-[#ffffff] hover:border-[#2a2a2a] cursor-pointer transition-colors gap-1.5">
-                <Upload className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+              <span className="inline-flex items-center justify-center rounded-[20px] border border-[#26262a] bg-[#0a0a0b] px-3 py-1 text-xs font-mono text-[#ffffff] hover:border-[#333338] cursor-pointer transition-colors gap-1.5">
+                <Upload className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
                 Add APKs
               </span>
             </label>
@@ -156,7 +156,7 @@ export function BatchAnalysisPage() {
               size="sm"
               onClick={startBatch}
               disabled={isRunning || items.length === 0}
-              className="gap-1.5 text-xs font-mono h-8 rounded-[3px]"
+              className="gap-1.5 text-xs font-mono h-8 rounded-[20px]"
             >
               <Play className="h-3 w-3" />
               Run batch
@@ -167,7 +167,7 @@ export function BatchAnalysisPage() {
                 size="sm"
                 variant="destructive"
                 onClick={cancelBatch}
-                className="gap-1.5 text-xs font-mono h-8 rounded-[3px]"
+                className="gap-1.5 text-xs font-mono h-8 rounded-[20px]"
               >
                 <XCircle className="h-3 w-3" />
                 Stop
@@ -179,7 +179,7 @@ export function BatchAnalysisPage() {
               variant="outline"
               onClick={clearBatch}
               disabled={isRunning || items.length === 0}
-              className="text-xs font-mono h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px] hover:border-[#2a2a2a]"
+              className="text-xs font-mono h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px] hover:border-[#333338]"
             >
               Clear
             </Button>
@@ -188,8 +188,8 @@ export function BatchAnalysisPage() {
 
         {/* Progress bar */}
         {items.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-[#1f1f1f] space-y-1.5">
-            <div className="flex justify-between text-xs font-mono text-[#7a7a7a]">
+          <div className="mt-3 pt-3 border-t border-[#26262a] space-y-1.5">
+            <div className="flex justify-between text-xs font-mono text-[#8c8b8f]">
               <span>
                 Progress: {completedCount + errorCount} / {items.length} completed
               </span>
@@ -201,7 +201,7 @@ export function BatchAnalysisPage() {
       </Card>
 
       {exportNotice && (
-        <div className="p-2.5 text-xs font-mono rounded-[3px] border border-[#1f1f1f] bg-[#070707] text-[#4ade80]">
+        <div className="p-2.5 text-xs font-mono rounded-[20px] border border-[#26262a] bg-[#131315] text-[#47ab61]">
           {exportNotice}
         </div>
       )}
@@ -213,7 +213,7 @@ export function BatchAnalysisPage() {
             size="sm"
             variant="outline"
             onClick={() => handleExportBatch("csv")}
-            className="text-xs font-mono h-8 gap-1.5 border-[#1f1f1f] bg-[#070707] rounded-[3px] hover:border-[#2a2a2a]"
+            className="text-xs font-mono h-8 gap-1.5 border-[#26262a] bg-[#131315] rounded-[20px] hover:border-[#333338]"
           >
             <Download className="h-3.5 w-3.5" strokeWidth={1.5} /> Export CSV
           </Button>
@@ -221,7 +221,7 @@ export function BatchAnalysisPage() {
             size="sm"
             variant="outline"
             onClick={() => handleExportBatch("json")}
-            className="text-xs font-mono h-8 gap-1.5 border-[#1f1f1f] bg-[#070707] rounded-[3px] hover:border-[#2a2a2a]"
+            className="text-xs font-mono h-8 gap-1.5 border-[#26262a] bg-[#131315] rounded-[20px] hover:border-[#333338]"
           >
             <Download className="h-3.5 w-3.5" strokeWidth={1.5} /> Export JSON
           </Button>
@@ -229,17 +229,17 @@ export function BatchAnalysisPage() {
       )}
 
       {/* Items Table */}
-      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px]">
         {items.length === 0 ? (
-          <div className="p-8 text-center text-xs font-mono text-[#7a7a7a] space-y-1.5">
-            <Layers className="h-6 w-6 text-[#2a2a2a] mx-auto" strokeWidth={1.5} />
+          <div className="p-8 text-center text-xs font-mono text-[#8c8b8f] space-y-1.5">
+            <Layers className="h-6 w-6 text-[#333338] mx-auto" strokeWidth={1.5} />
             <p className="font-medium text-[#ffffff]">Queue empty</p>
             <p>Click "Add APKs" to select multiple application files.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="border-b border-[#1f1f1f] text-[#7a7a7a]">
+              <thead className="border-b border-[#26262a] text-[#8c8b8f]">
                 <tr>
                   <th className="py-2 pr-4">#</th>
                   <th className="py-2 pr-4">File name</th>
@@ -249,17 +249,17 @@ export function BatchAnalysisPage() {
                   <th className="py-2">Confidence</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1f1f1f] tabular-nums">
+              <tbody className="divide-y divide-[#26262a] tabular-nums">
                 {items.map((it, idx) => {
                   const primary = it.result?.detections.find((d) => d.is_primary);
 
                   return (
-                    <tr key={it.id} className="hover:bg-[#0e0e0e] transition-colors">
-                      <td className="py-2 pr-4 text-[#7a7a7a]">{idx + 1}</td>
+                    <tr key={it.id} className="hover:bg-[#18181b] transition-colors">
+                      <td className="py-2 pr-4 text-[#8c8b8f]">{idx + 1}</td>
                       <td className="py-2 pr-4 font-medium text-[#ffffff] truncate max-w-xs">
                         {it.name}
                       </td>
-                      <td className="py-2 pr-4 text-[#7a7a7a]">{formatBytes(it.size)}</td>
+                      <td className="py-2 pr-4 text-[#8c8b8f]">{formatBytes(it.size)}</td>
                       <td className="py-2 pr-4">
                         {it.status === "completed" ? (
                           <Badge variant="success" className="text-[9px] gap-1">
@@ -279,7 +279,7 @@ export function BatchAnalysisPage() {
                           </Badge>
                         )}
                       </td>
-                      <td className="py-2 pr-4 text-[#4ade80]">
+                      <td className="py-2 pr-4 text-[#47ab61]">
                         {primary ? frameworkDisplayName(primary.framework) : it.status === "completed" ? "Unknown" : "—"}
                       </td>
                       <td className="py-2">
