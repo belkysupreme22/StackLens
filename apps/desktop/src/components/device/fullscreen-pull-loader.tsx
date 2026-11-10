@@ -35,7 +35,20 @@ export function FullscreenPullLoader() {
     const timer = setInterval(() => {
       setElapsedSecs((s) => s + 1);
     }, 1000);
-    return () => clearInterval(timer);
+
+    // Cancel on Escape key press
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setPullProgress(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [pullProgress?.active]);
 
   if (!pullProgress || !pullProgress.active) {
@@ -56,15 +69,17 @@ export function FullscreenPullLoader() {
         {/* Subtle Top Accent Hairline */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#47ab61] to-transparent opacity-80" />
 
-        {/* Close button on error */}
-        {error && (
+        {/* Cancel button with Esc key hint */}
+        <div className="absolute top-5 right-5 flex items-center gap-2">
           <button
             onClick={() => setPullProgress(null)}
-            className="absolute top-5 right-5 p-2 rounded-full text-[#8c8b8f] hover:text-[#ffffff] hover:bg-[#18181b] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-[#8c8b8f] hover:text-[#ffffff] bg-[#18181b] border border-[#26262a] hover:border-[#333338] transition-colors cursor-pointer"
+            title="Press Esc to cancel inspection"
           >
-            <X className="h-5 w-5" strokeWidth={1.5} />
+            <span>Cancel</span>
+            <kbd className="px-1.5 py-0.5 rounded-full text-[10px] bg-[#26262a] text-[#ffffff] font-mono">Esc</kbd>
           </button>
-        )}
+        </div>
 
         {/* Hero Header */}
         <div className="flex items-center gap-4 pb-6 border-b border-[#26262a]">

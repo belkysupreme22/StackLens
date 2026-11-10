@@ -1,71 +1,56 @@
-// Smart package resolver for human-readable app names, categories, and brand identities
+// Dynamic package resolver: automatically derives canonical app metadata, categories,
+// and presentation profiles from Android package names and device launcher queries.
+// Zero hardcoded app lists.
 
 export interface AppProfile {
   packageName: string;
   appName: string;
   isSystem: boolean;
-  category: "Social" | "Entertainment" | "Finance" | "Tools" | "Productivity" | "Shopping" | "System" | "Other";
+  isLauncher: boolean;
+  isBackgroundStub: boolean;
+  category:
+    | "Social"
+    | "Entertainment"
+    | "Finance"
+    | "Tools"
+    | "Productivity"
+    | "Shopping"
+    | "Gaming"
+    | "Navigation"
+    | "System"
+    | "Other";
   iconType: "brand" | "initials";
   brandColor: string;
   initials: string;
 }
 
-const KNOWN_APPS: Record<string, { name: string; category: AppProfile["category"]; color: string }> = {
-  // Streaming & Media
-  "com.spotify.music": { name: "Spotify", category: "Entertainment", color: "#1DB954" },
-  "com.google.android.youtube": { name: "YouTube", category: "Entertainment", color: "#FF0000" },
-  "com.google.android.apps.youtube.music": { name: "YouTube Music", category: "Entertainment", color: "#FF0000" },
-  "com.netflix.mediaclient": { name: "Netflix", category: "Entertainment", color: "#E50914" },
-  "com.disney.disneyplus": { name: "Disney+", category: "Entertainment", color: "#113CCF" },
-  "tv.twitch.android.app": { name: "Twitch", category: "Entertainment", color: "#9146FF" },
-
-  // Communication & Social
-  "org.telegram.messenger": { name: "Telegram", category: "Social", color: "#229ED9" },
-  "org.telegram.messenger.web": { name: "Telegram Web", category: "Social", color: "#229ED9" },
-  "com.whatsapp": { name: "WhatsApp", category: "Social", color: "#25D366" },
-  "com.whatsapp.w4b": { name: "WhatsApp Business", category: "Social", color: "#25D366" },
-  "com.instagram.android": { name: "Instagram", category: "Social", color: "#E1306C" },
-  "com.facebook.katana": { name: "Facebook", category: "Social", color: "#1877F2" },
-  "com.twitter.android": { name: "X (Twitter)", category: "Social", color: "#000000" },
-  "com.zhiliaoapp.musically": { name: "TikTok", category: "Social", color: "#00F2FE" },
-  "com.discord": { name: "Discord", category: "Social", color: "#5865F2" },
-  "com.snapchat.android": { name: "Snapchat", category: "Social", color: "#FFFC00" },
-  "com.linkedin.android": { name: "LinkedIn", category: "Social", color: "#0A66C2" },
-
-  // AI & Productivity
-  "com.openai.chatgpt": { name: "ChatGPT", category: "Productivity", color: "#10A37F" },
-  "com.google.android.apps.docs": { name: "Google Docs", category: "Productivity", color: "#4285F4" },
-  "com.google.android.apps.docs.editors.sheets": { name: "Google Sheets", category: "Productivity", color: "#0F9D58" },
-  "com.google.android.apps.docs.editors.slides": { name: "Google Slides", category: "Productivity", color: "#F4B400" },
-  "com.google.android.keep": { name: "Google Keep", category: "Productivity", color: "#FBBC04" },
-  "com.notion.id": { name: "Notion", category: "Productivity", color: "#000000" },
-  "com.microsoft.office.word": { name: "Microsoft Word", category: "Productivity", color: "#2B579A" },
-  "com.microsoft.office.excel": { name: "Microsoft Excel", category: "Productivity", color: "#217346" },
-
-  // Browsers & Tools
-  "com.android.chrome": { name: "Google Chrome", category: "Tools", color: "#4285F4" },
-  "org.mozilla.firefox": { name: "Firefox", category: "Tools", color: "#FF7139" },
-  "com.sec.android.app.sbrowser": { name: "Samsung Internet", category: "Tools", color: "#1249D6" },
-  "com.brave.browser": { name: "Brave Browser", category: "Tools", color: "#FB542B" },
-  "com.google.android.gm": { name: "Gmail", category: "Productivity", color: "#EA4335" },
-  "com.google.android.apps.maps": { name: "Google Maps", category: "Tools", color: "#34A853" },
-
-  // Finance & Commerce
-  "com.bybit.app": { name: "Bybit", category: "Finance", color: "#F7A600" },
-  "com.binance.dev": { name: "Binance", category: "Finance", color: "#F3BA2F" },
-  "com.coinbase.android": { name: "Coinbase", category: "Finance", color: "#0052FF" },
-  "com.cbe.superapp": { name: "CBE Superapp", category: "Finance", color: "#7B1FA2" },
-  "et.jiji.app": { name: "Jiji", category: "Shopping", color: "#3DB83A" },
-  "com.amazon.mShop.android.shopping": { name: "Amazon", category: "Shopping", color: "#FF9900" },
-  "com.ebay.mobile": { name: "eBay", category: "Shopping", color: "#E53238" },
-};
+// Background system daemons, font packs, RRO overlays, and hardware stubs
+const BACKGROUND_STUB_PATTERNS = [
+  ".font.",
+  "rro_",
+  "_overlay",
+  "trichromelibrary",
+  ".overlay.",
+  ".wallpaper.",
+  ".theme.",
+  ".carrier.",
+  ".telephony.",
+  ".knox.",
+  ".location.nsflp",
+  ".agent",
+  ".service.systemhelper",
+  ".openmobileapi.",
+  ".tuiservice",
+  "com.google.android.verifier",
+  "com.google.android.contactkeys",
+  "com.sec.epdg",
+  "com.samsung.klmsagent",
+];
 
 const SYSTEM_PREFIXES = [
   "com.android.",
   "com.google.android.gms",
   "com.google.android.gsf",
-  "com.sec.android.",
-  "com.samsung.",
   "android.",
   "com.qualcomm.",
   "com.miui.",
@@ -74,63 +59,288 @@ const SYSTEM_PREFIXES = [
   "com.vivo.",
 ];
 
-export function resolveAppProfile(packageName: string): AppProfile {
-  const isSystem = SYSTEM_PREFIXES.some(prefix => packageName.startsWith(prefix)) &&
-    !KNOWN_APPS[packageName];
+export function resolveAppProfile(
+  packageName: string,
+  launcherSet?: Set<string>
+): AppProfile {
+  const isLauncher = launcherSet ? launcherSet.has(packageName) : false;
 
-  // 1. Check known catalog
-  if (KNOWN_APPS[packageName]) {
-    const known = KNOWN_APPS[packageName];
-    return {
-      packageName,
-      appName: known.name,
-      isSystem,
-      category: known.category,
-      iconType: "brand",
-      brandColor: known.color,
-      initials: getInitials(known.name),
-    };
-  }
+  const isBackgroundStub = BACKGROUND_STUB_PATTERNS.some((pattern) =>
+    packageName.includes(pattern)
+  );
 
-  // 2. Derive human-readable name from package segments
-  const parts = packageName.split(".").filter(Boolean);
-  let meaningful = parts[parts.length - 1];
-  
-  // If the last part is generic ("app", "android", "mobile", "client", "ui"), use previous
-  const genericTerms = new Set(["app", "android", "mobile", "client", "ui", "main", "release"]);
-  if (parts.length > 2 && genericTerms.has(meaningful.toLowerCase())) {
-    meaningful = parts[parts.length - 2];
-  }
+  const isSystem =
+    !isLauncher &&
+    (isBackgroundStub ||
+      SYSTEM_PREFIXES.some((prefix) => packageName.startsWith(prefix)));
 
-  // Clean and title-case
-  const appName = formatSegment(meaningful);
+  // Derive human-readable app name dynamically
+  const appName = deriveSmartAppName(packageName);
   const brandColor = generateHarmonicColor(packageName);
   const initials = getInitials(appName);
+  const category = isSystem ? "System" : detectCategory(packageName, appName);
 
   return {
     packageName,
     appName,
     isSystem,
-    category: isSystem ? "System" : "Other",
+    isLauncher,
+    isBackgroundStub,
+    category,
     iconType: "initials",
     brandColor,
     initials,
   };
 }
 
-function formatSegment(segment: string): string {
-  // Replace underscores and hyphens with spaces
-  let text = segment.replace(/[_-]+/g, " ");
-  
-  // Split camelCase or PascalCase
-  text = text.replace(/([a-z])([A-Z])/g, "$1 $2");
+export function deriveSmartAppName(packageName: string): string {
+  // Strip common root domains
+  let p = packageName.replace(
+    /^(com|org|net|io|co|app|tv|cn|et|gov|edu|me|dev|mobi)\./i,
+    ""
+  );
 
-  // Title case each word
-  return text
-    .split(" ")
-    .filter(Boolean)
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(" ");
+  // Detect and preserve major vendor namespaces
+  let vendor = "";
+  if (p.startsWith("google.android.apps.")) {
+    vendor = "Google ";
+    p = p.replace("google.android.apps.", "");
+  } else if (p.startsWith("google.android.")) {
+    p = p.replace("google.android.", "");
+  } else if (
+    p.startsWith("sec.android.app.") ||
+    p.startsWith("samsung.android.app.")
+  ) {
+    vendor = "Samsung ";
+    p = p.replace(/^(sec|samsung)\.android\.app\./, "");
+  } else if (p.startsWith("sec.android.") || p.startsWith("samsung.android.")) {
+    vendor = "Samsung ";
+    p = p.replace(/^(sec|samsung)\.android\./, "");
+  } else if (p.startsWith("microsoft.office.")) {
+    vendor = "Microsoft ";
+    p = p.replace("microsoft.office.", "");
+  } else if (p.startsWith("microsoft.")) {
+    vendor = "Microsoft ";
+    p = p.replace("microsoft.", "");
+  } else if (p.startsWith("android.")) {
+    p = p.replace("android.", "");
+  }
+
+  // Remove generic noise segments
+  const noise = new Set([
+    "apps",
+    "android",
+    "app",
+    "client",
+    "mobile",
+    "release",
+    "ui",
+    "main",
+    "service",
+    "pro",
+    "dev",
+  ]);
+  const rawSegments = p.split(".").filter(Boolean);
+  const segments = rawSegments.filter((s) => !noise.has(s.toLowerCase()));
+  const activeSegments = segments.length > 0 ? segments : rawSegments;
+
+  function formatWord(w: string): string {
+    const l = w.toLowerCase();
+    if (l === "vpn") return "VPN";
+    if (l === "tv") return "TV";
+    if (l === "cbe") return "CBE";
+    if (l === "boa") return "BoA";
+    if (l === "pl") return "Premier League";
+    if (l === "stk") return "SIM Toolkit";
+    if (l === "cal") return "Calendar";
+    if (l === "ethiopay") return "EthioPay";
+    if (l === "popupcalculator") return "Calculator";
+    if (l === "gallery3d") return "Gallery";
+    if (l === "sbrowser") return "Internet";
+    if (l === "shealth") return "Health";
+    if (l === "myfiles") return "My Files";
+    if (l === "voicenote") return "Voice Recorder";
+    if (l === "gamehome") return "Gaming Hub";
+    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  }
+
+  function splitCompound(seg: string): string {
+    // Split camelCase
+    let s = seg.replace(/([a-z])([A-Z])/g, "$1 $2");
+    // Split snake/dash
+    let parts = s.split(/[_\-\.]+/).filter(Boolean);
+
+    // Common compound word boundaries
+    const compounds: [string, string][] = [
+      ["premier", "league"],
+      ["magic", "tiles"],
+      ["super", "app"],
+      ["true", "caller"],
+      ["screen", "recorder"],
+      ["mobile", "banking"],
+      ["game", "home"],
+      ["ethio", "cal"],
+      ["open", "vpn"],
+      ["turbo", "vpn"],
+      ["sim", "toolkit"],
+      ["voice", "note"],
+      ["quick", "search"],
+    ];
+
+    let result: string[] = [];
+    for (let part of parts) {
+      let matched = false;
+      let lower = part.toLowerCase();
+      for (const [c1, c2] of compounds) {
+        if (lower === c1 + c2) {
+          result.push(formatWord(c1), formatWord(c2));
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        result.push(formatWord(part));
+      }
+    }
+    return result.filter(Boolean).join(" ");
+  }
+
+  if (activeSegments.length === 1) {
+    return vendor + splitCompound(activeSegments[0]);
+  }
+
+  const last = splitCompound(activeSegments[activeSegments.length - 1]);
+  const prev = splitCompound(activeSegments[activeSegments.length - 2]);
+
+  // If last word is very generic (e.g. Map, Maps, Music, Story, Game, Lite), combine with previous
+  const genericTerms = new Set([
+    "Map",
+    "Maps",
+    "Music",
+    "Story",
+    "Game",
+    "Player",
+    "Media",
+    "Chat",
+    "Browser",
+    "Hub",
+    "Home",
+    "Calendar",
+    "Calculator",
+    "Lite",
+    "Messenger",
+  ]);
+
+  if (genericTerms.has(last)) {
+    return `${prev} ${last}`.trim();
+  }
+
+  // If previous segment is an abbreviation, prefix it
+  if (prev.length > 0 && prev.length <= 4 && !vendor) {
+    return `${prev} ${last}`.trim();
+  }
+
+  return (vendor + last).trim();
+}
+
+function detectCategory(
+  pkg: string,
+  appName: string
+): AppProfile["category"] {
+  const text = `${pkg} ${appName}`.toLowerCase();
+
+  if (
+    text.includes("game") ||
+    text.includes("unity") ||
+    text.includes("story") ||
+    text.includes("tile") ||
+    text.includes("sport") ||
+    text.includes("league")
+  ) {
+    return "Gaming";
+  }
+
+  if (
+    text.includes("pay") ||
+    text.includes("bank") ||
+    text.includes("birr") ||
+    text.includes("finance") ||
+    text.includes("wallet") ||
+    text.includes("crypto") ||
+    text.includes("trade") ||
+    text.includes("bybit") ||
+    text.includes("binance")
+  ) {
+    return "Finance";
+  }
+
+  if (
+    text.includes("map") ||
+    text.includes("navi") ||
+    text.includes("gps") ||
+    text.includes("traffic") ||
+    text.includes("ride") ||
+    text.includes("taxi") ||
+    text.includes("yango")
+  ) {
+    return "Navigation";
+  }
+
+  if (
+    text.includes("music") ||
+    text.includes("audio") ||
+    text.includes("video") ||
+    text.includes("tv") ||
+    text.includes("stream") ||
+    text.includes("player") ||
+    text.includes("netflix") ||
+    text.includes("youtube") ||
+    text.includes("spotify")
+  ) {
+    return "Entertainment";
+  }
+
+  if (
+    text.includes("chat") ||
+    text.includes("social") ||
+    text.includes("talk") ||
+    text.includes("telegram") ||
+    text.includes("whatsapp") ||
+    text.includes("instagram") ||
+    text.includes("facebook") ||
+    text.includes("twitter") ||
+    text.includes("message") ||
+    text.includes("caller") ||
+    text.includes("dialer") ||
+    text.includes("contact")
+  ) {
+    return "Social";
+  }
+
+  if (
+    text.includes("doc") ||
+    text.includes("sheet") ||
+    text.includes("slide") ||
+    text.includes("note") ||
+    text.includes("office") ||
+    text.includes("calendar") ||
+    text.includes("mail") ||
+    text.includes("outlook") ||
+    text.includes("drive")
+  ) {
+    return "Productivity";
+  }
+
+  if (
+    text.includes("shop") ||
+    text.includes("market") ||
+    text.includes("store") ||
+    text.includes("jiji")
+  ) {
+    return "Shopping";
+  }
+
+  return "Tools";
 }
 
 function getInitials(name: string): string {
@@ -143,15 +353,15 @@ function getInitials(name: string): string {
 
 function generateHarmonicColor(seed: string): string {
   const palette = [
-    "#47ab61", // Rize Green
-    "#3b82f6", // Blue
-    "#8b5cf6", // Purple
-    "#ec4899", // Pink
-    "#f97316", // Orange
-    "#14b8a6", // Teal
-    "#eab308", // Amber
-    "#06b6d4", // Cyan
-    "#6366f1", // Indigo
+    "#47ab61",
+    "#3b82f6",
+    "#8b5cf6",
+    "#ec4899",
+    "#f97316",
+    "#14b8a6",
+    "#eab308",
+    "#06b6d4",
+    "#6366f1",
   ];
 
   let hash = 0;

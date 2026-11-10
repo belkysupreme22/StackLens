@@ -182,6 +182,59 @@ impl AdbManager {
         Ok(packages)
     }
 
+    /// List only user-facing launchable applications (apps that appear in the Android App Drawer)
+    pub fn list_launcher_packages(&self, serial: &str) -> Result<Vec<String>, String> {
+        let output = Command::new(&self.adb_path)
+            .args([
+                "-s",
+                serial,
+                "shell",
+                "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER 2>/dev/null",
+            ])
+            .output();
+
+        let mut packages = std::collections::BTreeSet::new();
+
+        if let Ok(out) = output {
+            if out.status.success() {
+                let text = String::from_utf8_lossy(&out.stdout);
+                for line in text.lines() {
+                    let line = line.trim();
+                    if line.contains('/') && !line.starts_with("Activity") && !line.contains("activities found") {
+                        if let Some(pkg) = line.split('/').next() {
+                            let clean = pkg.trim();
+                            if !clean.is_empty() && !clean.contains(' ') {
+                                packages.insert(clean.to_string());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // If query-activities returned empty or is unsupported on older Android, fallback to third-party packages (-3)
+        if packages.is_empty() {
+            let out3 = Command::new(&self.adb_path)
+                .args(["-s", serial, "shell", "pm", "list", "packages", "-3"])
+                .output();
+
+            if let Ok(out) = out3 {
+                let text = String::from_utf8_lossy(&out.stdout);
+                for line in text.lines() {
+                    let line = line.trim();
+                    if let Some(pkg) = line.strip_prefix("package:") {
+                        let clean = pkg.trim();
+                        if !clean.is_empty() {
+                            packages.insert(clean.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(packages.into_iter().collect())
+    }
+
     /// Pull the APK(s) for a package from the device to a local target folder.
     /// Returns the local path to the primary/base APK.
     pub fn pull_package(
@@ -260,7 +313,16 @@ impl AdbManager {
         let script = format!(
             "APK=$(pm path {pkg} 2>/dev/null | head -n 1 | cut -d: -f2); \
              if [ -n \"$APK\" ]; then \
-               ICON=$(unzip -l \"$APK\" 2>/dev/null | grep -iE 'res/(mipmap|drawable).*(ic_launcher|app_icon|logo).*\\.(png|webp)' | tail -n 1 | awk '{{print $NF}}'); \
+               ICON=$(unzip -l \"$APK\" 2>/dev/null | grep -E 'res/mipmap-[^/]+/ic_launcher(\\.png|\\.webp)' | sort -n | tail -n 1 | awk '{{print $NF}}'); \
+               if [ -z \"$ICON\" ]; then \
+                 ICON=$(unzip -l \"$APK\" 2>/dev/null | grep -E 'res/mipmap-[^/]+/ic_launcher_round(\\.png|\\.webp)' | sort -n | tail -n 1 | awk '{{print $NF}}'); \
+               fi; \
+               if [ -z \"$ICON\" ]; then \
+                 ICON=$(unzip -l \"$APK\" 2>/dev/null | grep -E 'res/drawable-[^/]+/ic_launcher(\\.png|\\.webp)' | sort -n | tail -n 1 | awk '{{print $NF}}'); \
+               fi; \
+               if [ -z \"$ICON\" ]; then \
+                 ICON=$(unzip -l \"$APK\" 2>/dev/null | grep -E 'res/(mipmap|drawable)[^/]*/(app_icon|icon)\\.(png|webp)' | sort -n | tail -n 1 | awk '{{print $NF}}'); \
+               fi; \
                if [ -n \"$ICON\" ]; then \
                  unzip -p \"$APK\" \"$ICON\" 2>/dev/null | base64 | tr -d '\\r\\n'; \
                fi; \

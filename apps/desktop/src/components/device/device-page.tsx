@@ -10,6 +10,8 @@ import {
   Filter,
   Layers,
   Sparkles,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { useAppStore } from "@/stores/app-store";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -36,7 +38,9 @@ export function DevicePage() {
   } = useAppStore();
 
   const [packageSearch, setPackageSearch] = useState("");
-  const [filterMode, setFilterMode] = useState<"third-party" | "all" | "system">("third-party");
+  const [filterMode, setFilterMode] = useState<"launcher" | "third-party" | "all" | "system">("launcher");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [launcherPackages, setLauncherPackages] = useState<Set<string>>(new Set());
   const [isLoadingPackages, setIsLoadingPackages] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -52,6 +56,11 @@ export function DevicePage() {
     if (selectedDeviceSerial) {
       if (!devicePackagesCache[selectedDeviceSerial]) {
         fetchPackages(selectedDeviceSerial);
+      } else {
+        // Also fetch launcher packages if not yet resolved
+        commands.getLauncherPackages(selectedDeviceSerial)
+          .then((lp) => setLauncherPackages(new Set(lp)))
+          .catch(() => {});
       }
     }
   }, [selectedDeviceSerial]);
@@ -60,8 +69,12 @@ export function DevicePage() {
     setIsLoadingPackages(true);
     setErrorMessage(null);
     try {
-      const pkgs = await commands.getDevicePackages(serial);
+      const [pkgs, launcherList] = await Promise.all([
+        commands.getDevicePackages(serial),
+        commands.getLauncherPackages(serial).catch(() => [] as string[]),
+      ]);
       setDevicePackagesCache(serial, pkgs);
+      setLauncherPackages(new Set(launcherList));
     } catch (e) {
       setErrorMessage(String(e));
     } finally {
@@ -181,17 +194,20 @@ export function DevicePage() {
 
   // Parse raw package strings into rich profiles
   const allProfiles = useMemo(() => {
-    return rawPackages.map((pkg) => resolveAppProfile(pkg));
-  }, [rawPackages]);
+    return rawPackages.map((pkg) => resolveAppProfile(pkg, launcherPackages));
+  }, [rawPackages, launcherPackages]);
 
   // Counts
-  const thirdPartyCount = useMemo(() => allProfiles.filter((p) => !p.isSystem).length, [allProfiles]);
+  const launcherCount = useMemo(() => allProfiles.filter((p) => p.isLauncher).length, [allProfiles]);
+  const thirdPartyCount = useMemo(() => allProfiles.filter((p) => !p.isSystem && !p.isLauncher).length, [allProfiles]);
   const systemCount = useMemo(() => allProfiles.filter((p) => p.isSystem).length, [allProfiles]);
 
   // Filtered list
   const filteredProfiles = useMemo(() => {
     let list = allProfiles;
-    if (filterMode === "third-party") {
+    if (filterMode === "launcher") {
+      list = list.filter((p) => p.isLauncher);
+    } else if (filterMode === "third-party") {
       list = list.filter((p) => !p.isSystem);
     } else if (filterMode === "system") {
       list = list.filter((p) => p.isSystem);
@@ -371,10 +387,22 @@ export function DevicePage() {
               </p>
             </div>
 
-            {/* Filter Tabs and Actions */}
+            {/* Filter Tabs, View Switcher and Actions */}
             <div className="flex flex-wrap items-center gap-2">
               {/* Filter Pills */}
               <div className="inline-flex items-center rounded-full bg-[#18181b] border border-[#26262a] p-1 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setFilterMode("launcher")}
+                  className={`px-3 py-1 rounded-full font-medium transition-all cursor-pointer ${
+                    filterMode === "launcher"
+                      ? "bg-[#47ab61] text-[#0a0a0b] font-semibold"
+                      : "text-[#8c8b8f] hover:text-[#ffffff]"
+                  }`}
+                  title="Applications visible in the Android App Drawer"
+                >
+                  Drawer apps ({launcherCount})
+                </button>
                 <button
                   type="button"
                   onClick={() => setFilterMode("third-party")}
@@ -410,11 +438,39 @@ export function DevicePage() {
                 </button>
               </div>
 
+              {/* View Switcher: Grid vs List */}
+              <div className="inline-flex items-center rounded-full bg-[#18181b] border border-[#26262a] p-1">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className={`p-1.5 rounded-full transition-all cursor-pointer ${
+                    viewMode === "list"
+                      ? "bg-[#26262a] text-[#ffffff]"
+                      : "text-[#8c8b8f] hover:text-[#ffffff]"
+                  }`}
+                  title="List View"
+                >
+                  <List className="h-3.5 w-3.5" strokeWidth={1.5} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={`p-1.5 rounded-full transition-all cursor-pointer ${
+                    viewMode === "grid"
+                      ? "bg-[#26262a] text-[#ffffff]"
+                      : "text-[#8c8b8f] hover:text-[#ffffff]"
+                  }`}
+                  title="Grid View"
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" strokeWidth={1.5} />
+                </button>
+              </div>
+
               {/* Search Bar */}
-              <div className="relative w-56">
+              <div className="relative w-52">
                 <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-[#8c8b8f]" />
                 <Input
-                  placeholder="Search by name or package..."
+                  placeholder="Search apps..."
                   value={packageSearch}
                   onChange={(e) => setPackageSearch(e.target.value)}
                   className="pl-8 text-xs h-8 rounded-full border-[#26262a] bg-[#18181b] placeholder:text-[#8c8b8f]"
@@ -485,58 +541,117 @@ export function DevicePage() {
                 </span>
               </div>
 
-              {/* Scrollable App Cards Grid/List */}
-              <div className="max-h-[500px] overflow-y-auto space-y-2 pr-1">
-                {filteredProfiles.map((app) => (
-                  <div
-                    key={app.packageName}
-                    className="p-3.5 rounded-[16px] border border-[#26262a] bg-[#18181b]/70 hover:bg-[#18181b] hover:border-[#333338] flex items-center justify-between gap-4 transition-all"
-                  >
-                    {/* App Icon + Title + Package ID */}
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      {/* Real App Icon (Device-extracted or Official Vector Brand Logo) */}
-                      <AppLogo
-                        packageName={app.packageName}
-                        appName={app.appName}
-                        serial={selectedDeviceSerial}
-                        brandColor={app.brandColor}
-                        initials={app.initials}
-                        size="md"
-                      />
-
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight truncate">
+              {/* Grid or List View Presentation */}
+              {viewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[520px] overflow-y-auto pr-1">
+                  {filteredProfiles.map((app) => (
+                    <div
+                      key={app.packageName}
+                      className="p-4 rounded-[18px] border border-[#26262a] bg-[#18181b]/70 hover:bg-[#18181b] hover:border-[#333338] flex flex-col justify-between gap-3.5 transition-all group"
+                    >
+                      <div className="flex items-start gap-3">
+                        <AppLogo
+                          packageName={app.packageName}
+                          appName={app.appName}
+                          serial={selectedDeviceSerial}
+                          brandColor={app.brandColor}
+                          initials={app.initials}
+                          size="lg"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight truncate group-hover:text-[#47ab61] transition-colors">
                             {app.appName}
                           </h4>
-                          {app.isSystem ? (
-                            <span className="px-2 py-0.5 rounded-full bg-[#26262a] text-[10px] text-[#8c8b8f]">
-                              System
-                            </span>
-                          ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-[#47ab61]/15 text-[10px] text-[#47ab61] font-medium border border-[#47ab61]/30">
-                              {app.category}
-                            </span>
-                          )}
+                          <p className="text-[11px] font-mono text-[#8c8b8f] truncate mt-0.5">
+                            {app.packageName}
+                          </p>
+                          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                            {app.isSystem ? (
+                              <span className="px-2 py-0.5 rounded-full bg-[#26262a] text-[10px] text-[#8c8b8f]">
+                                System
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-full bg-[#47ab61]/15 text-[10px] text-[#47ab61] font-medium border border-[#47ab61]/30">
+                                {app.category}
+                              </span>
+                            )}
+                            {app.isLauncher && (
+                              <span className="px-2 py-0.5 rounded-full bg-[#18181b] text-[10px] text-[#8c8b8f] border border-[#26262a]">
+                                Drawer
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-xs font-mono text-[#8c8b8f] truncate mt-0.5">
-                          {app.packageName}
-                        </p>
                       </div>
-                    </div>
 
-                    {/* Pull & Inspect Button */}
-                    <Button
-                      size="sm"
-                      onClick={() => handlePullAndAnalyze(app)}
-                      className="rounded-full px-4 h-8 text-xs font-semibold bg-[#47ab61] text-[#0a0a0b] hover:bg-[#3b9352] shrink-0 gap-1.5 shadow-sm"
+                      <Button
+                        size="sm"
+                        onClick={() => handlePullAndAnalyze(app)}
+                        className="w-full rounded-full h-8 text-xs font-semibold bg-[#26262a] text-[#ffffff] hover:bg-[#47ab61] hover:text-[#0a0a0b] transition-all gap-1.5 shadow-sm"
+                      >
+                        <span>Pull & Inspect</span>
+                        <ArrowRight className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="max-h-[500px] overflow-y-auto space-y-2 pr-1">
+                  {filteredProfiles.map((app) => (
+                    <div
+                      key={app.packageName}
+                      className="p-3.5 rounded-[16px] border border-[#26262a] bg-[#18181b]/70 hover:bg-[#18181b] hover:border-[#333338] flex items-center justify-between gap-4 transition-all"
                     >
-                      <span>Pull & Inspect</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                      {/* App Icon + Title + Package ID */}
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <AppLogo
+                          packageName={app.packageName}
+                          appName={app.appName}
+                          serial={selectedDeviceSerial}
+                          brandColor={app.brandColor}
+                          initials={app.initials}
+                          size="md"
+                        />
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight truncate">
+                              {app.appName}
+                            </h4>
+                            {app.isSystem ? (
+                              <span className="px-2 py-0.5 rounded-full bg-[#26262a] text-[10px] text-[#8c8b8f]">
+                                System
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-full bg-[#47ab61]/15 text-[10px] text-[#47ab61] font-medium border border-[#47ab61]/30">
+                                {app.category}
+                              </span>
+                            )}
+                            {app.isLauncher && (
+                              <span className="px-2 py-0.5 rounded-full bg-[#18181b] text-[10px] text-[#8c8b8f] border border-[#26262a]">
+                                Drawer
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs font-mono text-[#8c8b8f] truncate mt-0.5">
+                            {app.packageName}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Pull & Inspect Button */}
+                      <Button
+                        size="sm"
+                        onClick={() => handlePullAndAnalyze(app)}
+                        className="rounded-full px-4 h-8 text-xs font-semibold bg-[#47ab61] text-[#0a0a0b] hover:bg-[#3b9352] shrink-0 gap-1.5 shadow-sm"
+                      >
+                        <span>Pull & Inspect</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </Card>

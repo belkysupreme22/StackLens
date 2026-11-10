@@ -46,6 +46,19 @@ pub async fn get_device_packages(
 }
 
 #[tauri::command]
+pub async fn get_launcher_packages(
+    state: State<'_, AppState>,
+    serial: String,
+) -> Result<Vec<String>, String> {
+    let adb_path = {
+        let settings = state.settings.lock().map_err(|e| e.to_string())?;
+        settings.adb_path.clone()
+    };
+    let adb = AdbManager::new(&adb_path);
+    adb.list_launcher_packages(&serial)
+}
+
+#[tauri::command]
 pub async fn get_package_icon(
     state: State<'_, AppState>,
     serial: String,

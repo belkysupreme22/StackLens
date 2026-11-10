@@ -13,6 +13,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { frameworkColor } from "@/lib/utils";
+import { FrameworkLogo } from "@/components/ui/framework-logo";
 
 interface FrameworkDoc {
   id: string;
@@ -286,35 +287,35 @@ export function FrameworkExplorerPage() {
 
   return (
     <div className="space-y-4">
-      {/* Header with Search */}
-      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px]">
+      {/* Top Banner with Rust Engine Callout */}
+      <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
-              <BookOpen className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
+            <h3 className="text-sm font-semibold text-[#ffffff] flex items-center gap-2 tracking-tight">
+              <BookOpen className="h-4 w-4 text-[#47ab61]" strokeWidth={1.5} />
               Framework architecture library
             </h3>
-            <p className="text-[11px] font-mono text-[#8c8b8f] mt-0.5">
-              Inspection signatures, binary markers, and heuristics for supported Android frameworks.
+            <p className="text-xs text-[#8c8b8f] mt-1 max-w-2xl leading-relaxed">
+              Built-in signatures are compiled directly into the Rust detection engine core for maximum performance, safety against regex backtracking, and deterministic offline scoring.
             </p>
           </div>
 
-          <div className="relative w-64">
-            <Search className="h-3.5 w-3.5 absolute left-2.5 top-2.5 text-[#8c8b8f]" strokeWidth={1.5} />
+          <div className="relative w-64 shrink-0">
+            <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-[#8c8b8f]" strokeWidth={1.5} />
             <Input
-              placeholder="Search frameworks..."
+              placeholder="Search supported frameworks..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 text-xs font-mono h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
+              className="pl-8 text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-full"
             />
           </div>
         </div>
       </Card>
 
       {/* Main Content Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
         {/* Framework Selector Sidebar */}
-        <div className="md:col-span-4 space-y-1.5">
+        <div className="md:col-span-4 space-y-2">
           {filtered.map((doc) => {
             const isSelected = doc.id === selectedDoc.id;
 
@@ -322,29 +323,26 @@ export function FrameworkExplorerPage() {
               <div
                 key={doc.id}
                 onClick={() => setSelectedDoc(doc)}
-                className={`p-2.5 rounded-[20px] border cursor-pointer font-mono transition-colors ${
+                className={`p-3 rounded-[16px] border cursor-pointer transition-all flex items-center gap-3 ${
                   isSelected
-                    ? "border-[#47ab61] bg-[#18181b]"
+                    ? "border-[#47ab61] bg-[#18181b] shadow-sm"
                     : "border-[#26262a] bg-[#131315] hover:border-[#333338]"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-2 w-2 rounded-full"
-                      style={{ backgroundColor: doc.accentColor }}
-                    />
-                    <h4 className="text-xs font-medium text-[#ffffff]">
+                <FrameworkLogo framework={doc.id} size="sm" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-semibold text-[#ffffff] truncate">
                       {doc.name}
                     </h4>
+                    <span className="text-[10px] text-[#8c8b8f] px-2 py-0.5 rounded-full bg-[#18181b] border border-[#26262a]">
+                      {doc.category}
+                    </span>
                   </div>
-                  <Badge variant="outline" className="text-[9px]">
-                    {doc.category}
-                  </Badge>
+                  <p className="text-[11px] text-[#8c8b8f] truncate mt-0.5">
+                    {doc.tagline}
+                  </p>
                 </div>
-                <p className="text-[11px] text-[#8c8b8f] truncate mt-1">
-                  {doc.tagline}
-                </p>
               </div>
             );
           })}
@@ -352,24 +350,28 @@ export function FrameworkExplorerPage() {
 
         {/* Selected Framework Documentation */}
         <div className="md:col-span-8">
-          <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] space-y-5">
-            <div className="border-b border-[#26262a] pb-3">
-              <div className="flex items-center gap-2 mb-1">
-                <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: selectedDoc.accentColor }}
-                />
-                <h3 className="text-base font-mono font-medium text-[#ffffff]">
-                  {selectedDoc.name}
-                </h3>
-                <Badge variant="outline" className="text-[9px] ml-2">
-                  {selectedDoc.category}
-                </Badge>
+          <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-6 shadow-sm">
+            <div className="border-b border-[#26262a] pb-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <FrameworkLogo framework={selectedDoc.id} size="md" />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-[#ffffff] tracking-tight">
+                      {selectedDoc.name}
+                    </h3>
+                    <Badge variant="outline" className="text-[10px] rounded-full px-2.5 border-[#26262a]">
+                      {selectedDoc.category}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-[#47ab61] font-medium mt-0.5">
+                    {selectedDoc.tagline}
+                  </p>
+                </div>
               </div>
-              <p className="text-xs text-[#47ab61] font-mono">
-                {selectedDoc.tagline}
-              </p>
-              <p className="text-xs font-mono text-[#8c8b8f] mt-2 leading-relaxed">
+            </div>
+
+            <div>
+              <p className="text-xs text-[#8c8b8f] leading-relaxed">
                 {selectedDoc.description}
               </p>
             </div>

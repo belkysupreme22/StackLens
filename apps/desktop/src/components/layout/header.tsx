@@ -71,30 +71,30 @@ export function Header() {
   const onlineCount = devices.filter((d) => d.state === "Online").length;
 
   return (
-    <header className="flex h-12 items-center justify-between border-b border-[#26262a] bg-[#0a0a0b]/90 backdrop-blur-md px-5 select-none">
+    <header className="flex h-14 items-center justify-between border-b border-[#26262a] bg-[#0a0a0b]/90 backdrop-blur-md px-6 select-none shrink-0">
       {/* Page Title & Subtitle */}
-      <div className="flex items-center gap-2.5">
-        <h1 className="text-xs font-semibold text-[#ffffff] tracking-tight">
+      <div className="flex items-center gap-3">
+        <h1 className="text-sm font-semibold text-[#ffffff] tracking-tight">
           {currentMeta.title}
         </h1>
-        <span className="text-[#26262a] text-xs">/</span>
-        <span className="text-[11px] text-[#8c8b8f] font-normal truncate max-w-md hidden sm:inline">
+        <span className="text-[#333338] text-xs">/</span>
+        <span className="text-xs text-[#8c8b8f] font-normal truncate max-w-lg hidden sm:inline">
           {currentMeta.subtitle}
         </span>
       </div>
 
       {/* Quick Status Bar */}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-3">
         {/* ADB Connectivity Pill */}
         <div
           onClick={() => setCurrentPage("devices")}
-          className="flex items-center gap-2 px-2.5 py-1 rounded-full border border-[#26262a] bg-[#131315] text-[11px] font-medium cursor-pointer hover:border-[#333338] hover:bg-[#18181b] transition-all"
+          className="flex h-8 items-center gap-2 px-3.5 rounded-full border border-[#26262a] bg-[#131315] text-xs font-medium cursor-pointer hover:border-[#333338] hover:bg-[#18181b] transition-all"
           title="Click to manage Android devices"
         >
-          <Smartphone className="h-3 w-3 text-[#8c8b8f]" strokeWidth={1.5} />
+          <Smartphone className="h-3.5 w-3.5 text-[#8c8b8f]" strokeWidth={1.5} />
           {onlineCount > 0 ? (
             <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#47ab61] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-[#47ab61] animate-pulse" />
               <span className="text-[#ffffff]">
                 {selectedDevice ? selectedDevice.model || selectedDevice.serial : `${onlineCount} online`}
               </span>
@@ -112,18 +112,18 @@ export function Header() {
           size="sm"
           onClick={() => refreshDevices()}
           disabled={isRefreshingDevices}
-          className="h-7 px-2.5 gap-1 text-[11px] rounded-full border-[#26262a] hover:bg-[#18181b]"
+          className="h-8 px-3.5 gap-1.5 text-xs font-medium rounded-full border-[#26262a] bg-[#131315] hover:bg-[#18181b] hover:border-[#333338]"
           title="Refresh connected devices"
         >
-          <RefreshCw className={`h-3 w-3 ${isRefreshingDevices ? "animate-spin" : ""}`} strokeWidth={1.5} />
+          <RefreshCw className={`h-3.5 w-3.5 ${isRefreshingDevices ? "animate-spin" : ""}`} strokeWidth={1.5} />
           <span>Refresh</span>
         </Button>
 
         {/* Offline Badge */}
-        <Badge variant="outline" className="text-[10px] gap-1 text-[#47ab61] border-[#47ab61]/30 bg-[#47ab61]/10 rounded-full px-2.5 py-0.5">
-          <Shield className="h-2.5 w-2.5" strokeWidth={1.5} />
-          Offline
-        </Badge>
+        <div className="flex h-8 items-center gap-1.5 text-xs text-[#47ab61] border border-[#47ab61]/30 bg-[#47ab61]/10 rounded-full px-3 font-medium">
+          <Shield className="h-3 w-3" strokeWidth={1.5} />
+          <span>Offline</span>
+        </div>
       </div>
     </header>
   );

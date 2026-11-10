@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ShieldAlert,
   Download,
@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   HelpCircle,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
 import type { AnalysisResult, FrameworkDetection, Evidence } from "@/types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -30,6 +32,7 @@ import {
 } from "@/lib/utils";
 import * as commands from "@/lib/commands";
 import { useAppStore } from "@/stores/app-store";
+import { FrameworkLogo } from "@/components/ui/framework-logo";
 
 interface AnalysisResultsProps {
   result: AnalysisResult;
@@ -46,6 +49,17 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
   });
 
   const { addToComparison } = useAppStore();
+
+  // Listen for Escape key to quickly return back to previous view
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && onBack) {
+        onBack();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onBack]);
 
   const copyToClipboard = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -86,12 +100,21 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           {onBack && (
-            <Button variant="outline" size="sm" onClick={onBack} className="text-xs font-mono h-8 rounded-[20px] border-[#26262a] bg-[#131315]">
-              Back
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onBack}
+              className="text-xs h-8 px-3 rounded-full border-[#26262a] bg-[#131315] hover:bg-[#18181b] hover:border-[#333338] text-[#ffffff] gap-1.5"
+              title="Return to previous screen (Esc)"
+            >
+              <span>Back</span>
+              <kbd className="px-1 py-0.5 rounded bg-[#26262a] text-[10px] text-[#8c8b8f] font-mono leading-none">
+                Esc
+              </kbd>
             </Button>
           )}
           <div>
-            <h2 className="text-lg font-mono font-medium tracking-tight text-[#ffffff] flex items-center gap-2">
+            <h2 className="text-base font-semibold tracking-tight text-[#ffffff] flex items-center gap-2">
               {result.apk.app_label || result.apk.package_name || result.apk.filename}
             </h2>
             <p className="text-xs font-mono text-[#8c8b8f]">
@@ -105,7 +128,7 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
             variant="outline"
             size="sm"
             onClick={() => addToComparison(result)}
-            className="gap-1.5 text-xs font-mono rounded-[20px] border-[#26262a] bg-[#131315] hover:border-[#333338]"
+            className="gap-1.5 text-xs rounded-full border-[#26262a] bg-[#131315] hover:border-[#333338]"
           >
             <GitCompare className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
             Compare
@@ -116,7 +139,7 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
             size="sm"
             onClick={() => handleExport("json")}
             disabled={isExporting}
-            className="gap-1.5 text-xs font-mono rounded-[20px] border-[#26262a] bg-[#131315] hover:border-[#333338]"
+            className="gap-1.5 text-xs rounded-full border-[#26262a] bg-[#131315] hover:border-[#333338]"
           >
             <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
             JSON
@@ -127,7 +150,7 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
             size="sm"
             onClick={() => handleExport("csv")}
             disabled={isExporting}
-            className="gap-1.5 text-xs font-mono rounded-[20px] border-[#26262a] bg-[#131315] hover:border-[#333338]"
+            className="gap-1.5 text-xs rounded-full border-[#26262a] bg-[#131315] hover:border-[#333338]"
           >
             <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
             CSV
@@ -138,7 +161,7 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
             size="sm"
             onClick={() => handleExport("txt")}
             disabled={isExporting}
-            className="gap-1.5 text-xs font-mono rounded-[20px] border-[#26262a] bg-[#131315] hover:border-[#333338]"
+            className="gap-1.5 text-xs rounded-full border-[#26262a] bg-[#131315] hover:border-[#333338]"
           >
             <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
             Text
@@ -147,40 +170,60 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
       </div>
 
       {exportNotice && (
-        <div className="p-2.5 text-xs font-mono rounded-[20px] border border-[#26262a] bg-[#131315] text-[#47ab61]">
+        <div className="p-2.5 text-xs rounded-[16px] border border-[#26262a] bg-[#131315] text-[#47ab61]">
           {exportNotice}
         </div>
       )}
 
       {/* Primary Framework Highlight Banner */}
-      <Card className="border border-[#26262a] bg-[#131315] rounded-[20px] p-5">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#47ab61] font-medium">
-                Primary architecture
-              </span>
-              {primaryDetection && (
-                <Badge className={confidenceBadgeColor(primaryDetection.confidence)}>
-                  {primaryDetection.confidence} ({Math.round(primaryDetection.confidence_score * 100)}%)
-                </Badge>
-              )}
+      <Card className="border border-[#26262a] bg-[#131315] rounded-[20px] p-6 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-center gap-4 min-w-0">
+            {primaryDetection && (
+              <div className="flex shrink-0 items-center justify-center p-3 rounded-[16px] bg-[#18181b] border border-[#26262a] shadow-inner">
+                <FrameworkLogo framework={primaryDetection.framework} size="lg" />
+              </div>
+            )}
+            <div className="space-y-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] uppercase tracking-wider text-[#47ab61] font-semibold">
+                  Primary architecture
+                </span>
+                {primaryDetection && (
+                  <Badge className={`rounded-full text-[10px] px-2.5 py-0.5 ${confidenceBadgeColor(primaryDetection.confidence)}`}>
+                    {primaryDetection.confidence} ({Math.round(primaryDetection.confidence_score * 100)}%)
+                  </Badge>
+                )}
+              </div>
+              <h3 className="text-xl font-bold text-[#ffffff] tracking-tight truncate">
+                {primaryDetection ? frameworkDisplayName(primaryDetection.framework) : "Unknown runtime"}
+              </h3>
+              <p className="text-xs text-[#8c8b8f] max-w-2xl">
+                {primaryDetection?.evidence.length
+                  ? `Identified with ${primaryDetection.evidence.length} verified structural indicators.`
+                  : "No verified framework signatures found in package."}
+              </p>
             </div>
-            <h3 className="text-xl font-mono font-semibold text-[#ffffff] flex items-center gap-2">
-              {primaryDetection ? frameworkDisplayName(primaryDetection.framework) : "Unknown runtime"}
-            </h3>
-            <p className="text-xs font-mono text-[#8c8b8f] max-w-2xl">
-              {primaryDetection?.evidence.length
-                ? `Identified with ${primaryDetection.evidence.length} verified structural indicators.`
-                : "No verified framework signatures found in package."}
-            </p>
           </div>
 
-          <div className="flex flex-col md:items-end gap-1 text-xs font-mono text-[#8c8b8f] border-t md:border-t-0 md:border-l border-[#26262a] pt-3 md:pt-0 md:pl-5 tabular-nums">
-            <div>Size: <span className="text-[#ffffff]">{formatBytes(result.apk.file_size)}</span></div>
-            <div>Min SDK: <span className="text-[#ffffff]">{result.apk.min_sdk ?? "N/A"}</span> • Target: <span className="text-[#ffffff]">{result.apk.target_sdk ?? "N/A"}</span></div>
-            <div>Duration: <span className="text-[#ffffff]">{result.analysis_duration_ms}ms</span></div>
+          <div className="flex flex-col md:items-end gap-1.5 text-xs text-[#8c8b8f] border-t md:border-t-0 md:border-l border-[#26262a] pt-3 md:pt-0 md:pl-6 tabular-nums shrink-0">
+            <div>Package size: <span className="text-[#ffffff] font-medium">{formatBytes(result.apk.file_size)}</span></div>
+            <div>Min SDK: <span className="text-[#ffffff] font-medium">{result.apk.min_sdk ?? "N/A"}</span> • Target: <span className="text-[#ffffff] font-medium">{result.apk.target_sdk ?? "N/A"}</span></div>
+            <div>Inspection time: <span className="text-[#ffffff] font-medium">{result.analysis_duration_ms}ms</span></div>
           </div>
+        </div>
+
+        {/* Engine Security & Offline Guarantee Note */}
+        <div className="pt-3 border-t border-[#26262a] flex items-center justify-between gap-3 text-xs text-[#8c8b8f]">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-[#47ab61] shrink-0" strokeWidth={1.5} />
+            <span className="text-[11px]">
+              Built-in signatures are compiled directly into the Rust detection engine core for maximum performance, safety against regex backtracking, and deterministic offline scoring.
+            </span>
+          </div>
+          <span className="text-[11px] text-[#47ab61] font-medium shrink-0 hidden sm:inline">
+            Zero telemetry
+          </span>
         </div>
       </Card>
 
@@ -222,21 +265,24 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
                   className="flex items-center justify-between p-4 cursor-pointer select-none hover:bg-neutral-800/30 transition-colors"
                 >
                   <div className="flex items-center gap-3">
+                    <div className="flex shrink-0 items-center justify-center p-2 rounded-[12px] bg-[#18181b] border border-[#26262a]">
+                      <FrameworkLogo framework={detection.framework} size="sm" />
+                    </div>
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-neutral-100">
+                        <span className="font-semibold text-sm text-[#ffffff]">
                           {frameworkDisplayName(detection.framework)}
                         </span>
                         {detection.is_primary && (
-                          <Badge variant="default" className="text-[10px]">
+                          <Badge variant="default" className="text-[10px] rounded-full bg-[#47ab61] text-[#0a0a0b] font-semibold">
                             Primary
                           </Badge>
                         )}
-                        <Badge className={confidenceBadgeColor(detection.confidence)}>
+                        <Badge className={`rounded-full text-[10px] ${confidenceBadgeColor(detection.confidence)}`}>
                           {detection.confidence} ({Math.round(detection.confidence_score * 100)}%)
                         </Badge>
                       </div>
-                      <span className="text-[11px] text-neutral-400 mt-0.5">
+                      <span className="text-[11px] text-[#8c8b8f] mt-0.5">
                         {detection.evidence.length} evidence indicator(s) verified
                       </span>
                     </div>
