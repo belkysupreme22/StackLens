@@ -149,18 +149,24 @@ export function deriveSmartAppName(packageName: string): string {
     if (l === "vpn") return "VPN";
     if (l === "tv") return "TV";
     if (l === "cbe") return "CBE";
-    if (l === "boa") return "BoA";
+    if (l === "boa") return "Bank of Abyssinia";
+    if (l === "boamobilebanking") return "Bank of Abyssinia";
     if (l === "pl") return "Premier League";
     if (l === "stk") return "SIM Toolkit";
     if (l === "cal") return "Calendar";
-    if (l === "ethiopay") return "EthioPay";
+    if (l === "ethiopay") return "Telebirr";
     if (l === "popupcalculator") return "Calculator";
     if (l === "gallery3d") return "Gallery";
-    if (l === "sbrowser") return "Internet";
-    if (l === "shealth") return "Health";
+    if (l === "sbrowser") return "Samsung Internet";
+    if (l === "shealth") return "Samsung Health";
     if (l === "myfiles") return "My Files";
     if (l === "voicenote") return "Voice Recorder";
     if (l === "gamehome") return "Gaming Hub";
+    if (l === "dafit") return "Da Fit";
+    if (l === "chatgpt") return "ChatGPT";
+    if (l === "oneconnect") return "SmartThings";
+    if (l === "watchmanager") return "Galaxy Wearable";
+    if (l === "officehubrow") return "Microsoft 365";
     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
   }
 
@@ -240,7 +246,18 @@ export function deriveSmartAppName(packageName: string): string {
     return `${prev} ${last}`.trim();
   }
 
-  return (vendor + last).trim();
+  let resolved = (vendor + last).trim();
+  if (resolved.startsWith("Samsung Samsung ")) {
+    resolved = resolved.replace("Samsung Samsung ", "Samsung ");
+  }
+  if (resolved.startsWith("Microsoft Microsoft ")) {
+    resolved = resolved.replace("Microsoft Microsoft ", "Microsoft ");
+  }
+  if (resolved.startsWith("Google Google ")) {
+    resolved = resolved.replace("Google Google ", "Google ");
+  }
+
+  return resolved;
 }
 
 function detectCategory(

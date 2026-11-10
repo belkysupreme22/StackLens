@@ -38,8 +38,7 @@ export function DevicePage() {
   } = useAppStore();
 
   const [packageSearch, setPackageSearch] = useState("");
-  const [filterMode, setFilterMode] = useState<"launcher" | "third-party" | "all" | "system">("launcher");
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [launcherPackages, setLauncherPackages] = useState<Set<string>>(new Set());
   const [isLoadingPackages, setIsLoadingPackages] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -192,39 +191,24 @@ export function DevicePage() {
   const selectedDevice = devices.find((d) => d.serial === selectedDeviceSerial);
   const rawPackages = (selectedDeviceSerial && devicePackagesCache[selectedDeviceSerial]) || [];
 
-  // Parse raw package strings into rich profiles
-  const allProfiles = useMemo(() => {
-    return rawPackages.map((pkg) => resolveAppProfile(pkg, launcherPackages));
+  // Strictly user-facing applications (system daemons & internal bloatware avoided totally)
+  const userProfiles = useMemo(() => {
+    return rawPackages
+      .map((pkg) => resolveAppProfile(pkg, launcherPackages))
+      .filter((p) => !p.isSystem && !p.isBackgroundStub);
   }, [rawPackages, launcherPackages]);
 
-  // Counts
-  const launcherCount = useMemo(() => allProfiles.filter((p) => p.isLauncher).length, [allProfiles]);
-  const thirdPartyCount = useMemo(() => allProfiles.filter((p) => !p.isSystem && !p.isLauncher).length, [allProfiles]);
-  const systemCount = useMemo(() => allProfiles.filter((p) => p.isSystem).length, [allProfiles]);
-
-  // Filtered list
+  // Filtered list by search query
   const filteredProfiles = useMemo(() => {
-    let list = allProfiles;
-    if (filterMode === "launcher") {
-      list = list.filter((p) => p.isLauncher);
-    } else if (filterMode === "third-party") {
-      list = list.filter((p) => !p.isSystem);
-    } else if (filterMode === "system") {
-      list = list.filter((p) => p.isSystem);
-    }
-
-    if (packageSearch.trim()) {
-      const q = packageSearch.toLowerCase().trim();
-      list = list.filter(
-        (p) =>
-          p.appName.toLowerCase().includes(q) ||
-          p.packageName.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q)
-      );
-    }
-
-    return list;
-  }, [allProfiles, filterMode, packageSearch]);
+    if (!packageSearch.trim()) return userProfiles;
+    const q = packageSearch.toLowerCase().trim();
+    return userProfiles.filter(
+      (p) =>
+        p.appName.toLowerCase().includes(q) ||
+        p.packageName.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+    );
+  }, [userProfiles, packageSearch]);
 
   return (
     <div className="space-y-6">
@@ -378,99 +362,50 @@ export function DevicePage() {
                 <CardTitle className="text-base font-bold text-[#ffffff] tracking-tight">
                   Installed applications
                 </CardTitle>
-                <Badge variant="outline" className="text-xs rounded-full border-[#26262a] text-[#8c8b8f]">
-                  {selectedDevice.model || selectedDevice.serial}
+                <Badge variant="outline" className="text-xs rounded-full border-[#26262a] text-[#47ab61] font-mono">
+                  {userProfiles.length} user apps
                 </Badge>
               </div>
               <p className="text-xs text-[#8c8b8f] mt-0.5">
-                Inspect and pull applications directly from your connected device.
+                Inspect and pull applications directly from {selectedDevice.model || selectedDevice.serial}.
               </p>
             </div>
 
-            {/* Filter Tabs, View Switcher and Actions */}
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Filter Pills */}
-              <div className="inline-flex items-center rounded-full bg-[#18181b] border border-[#26262a] p-1 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setFilterMode("launcher")}
-                  className={`px-3 py-1 rounded-full font-medium transition-all cursor-pointer ${
-                    filterMode === "launcher"
-                      ? "bg-[#47ab61] text-[#0a0a0b] font-semibold"
-                      : "text-[#8c8b8f] hover:text-[#ffffff]"
-                  }`}
-                  title="Applications visible in the Android App Drawer"
-                >
-                  Drawer apps ({launcherCount})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFilterMode("third-party")}
-                  className={`px-3 py-1 rounded-full font-medium transition-all cursor-pointer ${
-                    filterMode === "third-party"
-                      ? "bg-[#47ab61] text-[#0a0a0b] font-semibold"
-                      : "text-[#8c8b8f] hover:text-[#ffffff]"
-                  }`}
-                >
-                  User apps ({thirdPartyCount})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFilterMode("all")}
-                  className={`px-3 py-1 rounded-full font-medium transition-all cursor-pointer ${
-                    filterMode === "all"
-                      ? "bg-[#47ab61] text-[#0a0a0b] font-semibold"
-                      : "text-[#8c8b8f] hover:text-[#ffffff]"
-                  }`}
-                >
-                  All ({allProfiles.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFilterMode("system")}
-                  className={`px-3 py-1 rounded-full font-medium transition-all cursor-pointer ${
-                    filterMode === "system"
-                      ? "bg-[#47ab61] text-[#0a0a0b] font-semibold"
-                      : "text-[#8c8b8f] hover:text-[#ffffff]"
-                  }`}
-                >
-                  System ({systemCount})
-                </button>
-              </div>
-
-              {/* View Switcher: Grid vs List */}
+            {/* Actions: View Switcher (Grid default), Search, Sync */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* View Switcher: Grid vs List (Grid is default) */}
               <div className="inline-flex items-center rounded-full bg-[#18181b] border border-[#26262a] p-1">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("list")}
-                  className={`p-1.5 rounded-full transition-all cursor-pointer ${
-                    viewMode === "list"
-                      ? "bg-[#26262a] text-[#ffffff]"
-                      : "text-[#8c8b8f] hover:text-[#ffffff]"
-                  }`}
-                  title="List View"
-                >
-                  <List className="h-3.5 w-3.5" strokeWidth={1.5} />
-                </button>
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
                   className={`p-1.5 rounded-full transition-all cursor-pointer ${
                     viewMode === "grid"
-                      ? "bg-[#26262a] text-[#ffffff]"
+                      ? "bg-[#47ab61] text-[#0a0a0b]"
                       : "text-[#8c8b8f] hover:text-[#ffffff]"
                   }`}
                   title="Grid View"
                 >
                   <LayoutGrid className="h-3.5 w-3.5" strokeWidth={1.5} />
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className={`p-1.5 rounded-full transition-all cursor-pointer ${
+                    viewMode === "list"
+                      ? "bg-[#47ab61] text-[#0a0a0b]"
+                      : "text-[#8c8b8f] hover:text-[#ffffff]"
+                  }`}
+                  title="List View"
+                >
+                  <List className="h-3.5 w-3.5" strokeWidth={1.5} />
+                </button>
               </div>
 
               {/* Search Bar */}
-              <div className="relative w-52">
+              <div className="relative w-56">
                 <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-[#8c8b8f]" />
                 <Input
-                  placeholder="Search apps..."
+                  placeholder="Search applications..."
                   value={packageSearch}
                   onChange={(e) => setPackageSearch(e.target.value)}
                   className="pl-8 text-xs h-8 rounded-full border-[#26262a] bg-[#18181b] placeholder:text-[#8c8b8f]"
@@ -483,11 +418,11 @@ export function DevicePage() {
                 variant="outline"
                 onClick={() => fetchPackages(selectedDevice.serial)}
                 disabled={isLoadingPackages}
-                className="h-8 rounded-full border-[#26262a] text-xs hover:bg-[#18181b]"
+                className="h-8 rounded-full border-[#26262a] text-xs hover:bg-[#18181b] px-3.5 gap-1.5"
                 title="Sync and refresh app list from device"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${isLoadingPackages ? "animate-spin" : ""}`} />
-                <span className="hidden sm:inline">Sync</span>
+                <span>Sync</span>
               </Button>
             </div>
           </div>
@@ -534,7 +469,7 @@ export function DevicePage() {
             <div className="space-y-2">
               <div className="text-xs text-[#8c8b8f] flex items-center justify-between px-1 pb-1">
                 <span>
-                  Showing {filteredProfiles.length} of {allProfiles.length} installed apps
+                  Showing {filteredProfiles.length} user applications
                 </span>
                 <span className="text-[11px] text-[#47ab61]">
                   Instant offline cache active

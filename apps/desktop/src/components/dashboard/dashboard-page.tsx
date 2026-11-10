@@ -9,11 +9,14 @@ import {
   TrendingUp,
   ShieldCheck,
   CheckCircle2,
-  PieChart as PieIcon,
-  BarChart3,
   Cpu,
   Boxes,
   Compass,
+  Zap,
+  Activity,
+  Terminal,
+  ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { useAppStore } from "@/stores/app-store";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -21,6 +24,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { frameworkColor, frameworkDisplayName, formatDate } from "@/lib/utils";
 import * as commands from "@/lib/commands";
+import { FrameworkLogo } from "@/components/ui/framework-logo";
+
+const SUPPORTED_FRAMEWORKS = [
+  { id: "Flutter", name: "Flutter", vendor: "Google", desc: "Dart AOT, libflutter.so, flutter_assets" },
+  { id: "ReactNative", name: "React Native", vendor: "Meta", desc: "Hermes bytecode, index.android.bundle" },
+  { id: "Unity", name: "Unity Engine", vendor: "Unity", desc: "libunity.so, libil2cpp.so, global-metadata" },
+  { id: "JetpackCompose", name: "Jetpack Compose", vendor: "Google", desc: "androidx.compose, compiler runtime" },
+  { id: "NativeAndroidKotlin", name: "Kotlin Native", vendor: "JetBrains", desc: "kotlinx.coroutines, standard runtime" },
+  { id: "UnrealEngine", name: "Unreal Engine", vendor: "Epic Games", desc: "libUnreal.so, pak chunks, Oodle" },
+  { id: "Godot", name: "Godot Engine", vendor: "Godot", desc: "libgodot_android.so, main.pck" },
+  { id: "DotNetMaui", name: ".NET MAUI", vendor: "Microsoft", desc: "libmonosgen, Microsoft.Maui.dll" },
+];
 
 export function DashboardPage() {
   const {
@@ -28,9 +43,12 @@ export function DashboardPage() {
     loadDashboardStats,
     setCurrentPage,
     setActiveAnalysis,
+    devices,
+    selectedDeviceSerial,
   } = useAppStore();
 
   const [hoveredFw, setHoveredFw] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   useEffect(() => {
     loadDashboardStats();
@@ -54,6 +72,8 @@ export function DashboardPage() {
       ? Math.round(((dashboardStats?.success_count || 0) / total) * 100)
       : 100;
 
+  const connectedDevice = devices.find((d) => d.serial === selectedDeviceSerial) || devices[0];
+
   // Framework distribution entries
   const fwEntries = dashboardStats?.framework_distribution
     ? Object.entries(dashboardStats.framework_distribution)
@@ -74,9 +94,15 @@ export function DashboardPage() {
     })
     .sort((a, b) => b.count - a.count);
 
+  // Filtered by selected category
+  const displayedFrameworks =
+    selectedCategory === "All"
+      ? rankedFrameworks
+      : rankedFrameworks.filter((f) => f.category === selectedCategory);
+
   // Confidence entries
   const confLevels = [
-    { key: "High", label: "High Confidence", color: "#47ab61", desc: "Multiple confirmed file and bytecode indicators" },
+    { key: "High", label: "High Confidence", color: "#47ab61", desc: "Multiple verified bytecode and library indicators" },
     { key: "Medium", label: "Medium Confidence", color: "#38bdf8", desc: "Strong primary runtime symbols verified" },
     { key: "Low", label: "Low Confidence", color: "#fbbf24", desc: "Supporting indicators with partial evidence" },
     { key: "Inconclusive", label: "Inconclusive", color: "#8c8b8f", desc: "Obfuscated or non-standard framework bundle" },
@@ -89,41 +115,75 @@ export function DashboardPage() {
     return { ...lvl, count, percentage };
   });
 
-  // Architectural category groups
-  const categoryGroups = [
-    {
-      name: "Cross-Platform & Hybrid",
-      desc: "Flutter, React Native, Capacitor, Cordova, Ionic",
-      count: rankedFrameworks
-        .filter((f) => f.category === "Cross-Platform")
-        .reduce((sum, f) => sum + f.count, 0),
-      color: "#027DFD",
-    },
-    {
-      name: "Native Android",
-      desc: "Jetpack Compose, Kotlin, Java Toolkits",
-      count: rankedFrameworks
-        .filter((f) => f.category === "Native")
-        .reduce((sum, f) => sum + f.count, 0),
-      color: "#4285F4",
-    },
-    {
-      name: "Game Engines",
-      desc: "Unity, Unreal Engine, Godot Runtimes",
-      count: rankedFrameworks
-        .filter((f) => f.category === "Gaming")
-        .reduce((sum, f) => sum + f.count, 0),
-      color: "#47ab61",
-    },
-  ];
-
   return (
     <div className="space-y-6">
+      {/* Live Engine Command Banner (Interactive Hero) */}
+      <div className="relative overflow-hidden rounded-[24px] border border-[#26262a] bg-gradient-to-r from-[#18181b] via-[#131315] to-[#0a0a0b] p-6 shadow-md group">
+        {/* Ambient subtle emerald glow */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 h-64 w-64 rounded-full bg-[#47ab61]/10 blur-[80px] pointer-events-none" />
+
+        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#47ab61] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#47ab61]" />
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#47ab61]">
+                Rust Detection Engine Online
+              </span>
+              <span className="text-[#333338] text-xs">•</span>
+              <span className="text-xs text-[#8c8b8f] font-mono">v0.1.0 Offline Core</span>
+            </div>
+
+            <h2 className="text-xl md:text-2xl font-bold text-[#ffffff] tracking-tight">
+              Android Application Intelligence
+            </h2>
+
+            <p className="text-xs text-[#8c8b8f] max-w-xl leading-relaxed">
+              Deterministic offline bytecode classification, 16 KB page-alignment auditing, native library cataloging, and framework runtime detection.
+            </p>
+          </div>
+
+          {/* Quick Target Device Status & Launch Action */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+            {connectedDevice ? (
+              <div
+                onClick={() => setCurrentPage("devices")}
+                className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-[#0a0a0b]/80 border border-[#26262a] hover:border-[#47ab61]/50 cursor-pointer transition-all shadow-sm group/dev"
+              >
+                <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61] group-hover/dev:scale-105 transition-transform">
+                  <Smartphone className="h-4 w-4" strokeWidth={1.5} />
+                </div>
+                <div className="text-left">
+                  <div className="text-xs font-semibold text-[#ffffff] truncate max-w-[140px]">
+                    {connectedDevice.model || connectedDevice.serial}
+                  </div>
+                  <div className="text-[10px] text-[#47ab61] font-mono flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#47ab61] animate-pulse" />
+                    Target Connected
+                  </div>
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 text-[#8c8b8f] group-hover/dev:text-[#47ab61] transition-colors" />
+              </div>
+            ) : null}
+
+            <Button
+              onClick={() => setCurrentPage("inspector")}
+              className="h-11 px-5 rounded-full bg-[#47ab61] text-[#0a0a0b] hover:bg-[#3b9352] font-semibold text-xs gap-2 shadow-[0_4px_16px_rgba(71,171,97,0.25)] transition-all"
+            >
+              <Upload className="h-4 w-4" strokeWidth={2} />
+              <span>Inspect APK</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] shadow-sm">
+        <Card className="p-5 border-[#26262a] bg-[#131315] hover:border-[#333338] transition-colors rounded-[20px] shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Inspections</span>
+            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Total Inspections</span>
             <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
               <Layers className="h-4 w-4" strokeWidth={1.5} />
             </div>
@@ -134,43 +194,49 @@ export function DashboardPage() {
           <p className="mt-1 text-xs text-[#8c8b8f]">Analyzed application packages</p>
         </Card>
 
-        <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] shadow-sm">
+        <Card className="p-5 border-[#26262a] bg-[#131315] hover:border-[#333338] transition-colors rounded-[20px] shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Detection rate</span>
+            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Detection Rate</span>
             <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
               <CheckCircle2 className="h-4 w-4" strokeWidth={1.5} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-bold text-[#47ab61] tracking-tight tabular-nums">
-            {successRate}%
+          <div className="mt-3 text-2xl font-bold text-[#47ab61] tracking-tight tabular-nums flex items-baseline gap-2">
+            <span>{successRate}%</span>
+            <span className="text-xs text-[#8c8b8f] font-normal">verified</span>
           </div>
-          <p className="mt-1 text-xs text-[#8c8b8f]">Verified framework attribution</p>
+          <p className="mt-1 text-xs text-[#8c8b8f]">Attributed framework runtime</p>
         </Card>
 
-        <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] shadow-sm">
+        <Card className="p-5 border-[#26262a] bg-[#131315] hover:border-[#333338] transition-colors rounded-[20px] shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Coverage</span>
+            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Runtimes Covered</span>
             <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
               <Cpu className="h-4 w-4" strokeWidth={1.5} />
             </div>
           </div>
           <div className="mt-3 text-2xl font-bold text-[#ffffff] tracking-tight tabular-nums">
-            Full Catalog
+            Supported Catalog
           </div>
-          <p className="mt-1 text-xs text-[#8c8b8f]">Cross-platform, native, & games</p>
+          <p className="mt-1 text-xs text-[#8c8b8f]">Cross-platform, native & games</p>
         </Card>
 
-        <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] shadow-sm">
+        <Card className="p-5 border-[#26262a] bg-[#131315] hover:border-[#333338] transition-colors rounded-[20px] shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Devices</span>
+            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Connected Targets</span>
             <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
               <Smartphone className="h-4 w-4" strokeWidth={1.5} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-bold text-[#ffffff] tracking-tight tabular-nums">
-            {dashboardStats?.connected_devices || 0}
+          <div className="mt-3 text-2xl font-bold text-[#ffffff] tracking-tight tabular-nums flex items-center gap-2">
+            <span>{dashboardStats?.connected_devices || 0}</span>
+            {dashboardStats?.connected_devices ? (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-[#47ab61]/15 text-[#47ab61] border border-[#47ab61]/30 font-medium">
+                Online
+              </span>
+            ) : null}
           </div>
-          <p className="mt-1 text-xs text-[#8c8b8f]">Connected Android targets</p>
+          <p className="mt-1 text-xs text-[#8c8b8f]">USB transport & emulators</p>
         </Card>
       </div>
 
@@ -178,17 +244,36 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left: Framework Architecture Distribution (Span 7) */}
         <Card className="lg:col-span-7 p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-5 shadow-sm">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <CardTitle className="text-sm font-bold text-[#ffffff] tracking-tight">
-                Framework distribution
+              <CardTitle className="text-base font-bold text-[#ffffff] tracking-tight flex items-center gap-2">
+                <span>Framework Distribution</span>
+                {rankedFrameworks.length > 0 && (
+                  <Badge variant="outline" className="text-xs rounded-full border-[#26262a] text-[#8c8b8f]">
+                    {rankedFrameworks.length} detected
+                  </Badge>
+                )}
               </CardTitle>
               <p className="text-xs text-[#8c8b8f] mt-0.5">
-                Breakdown of detected runtime technologies across inspected packages
+                Runtime technologies identified across your inspected applications
               </p>
             </div>
-            <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
-              <Boxes className="h-4 w-4" strokeWidth={1.5} />
+
+            {/* Category Filter Pills */}
+            <div className="inline-flex items-center rounded-full bg-[#18181b] border border-[#26262a] p-1 text-[11px]">
+              {["All", "Cross-Platform", "Native", "Gaming"].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-0.5 rounded-full font-medium transition-all cursor-pointer ${
+                    selectedCategory === cat
+                      ? "bg-[#47ab61] text-[#0a0a0b] font-semibold"
+                      : "text-[#8c8b8f] hover:text-[#ffffff]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -196,7 +281,7 @@ export function DashboardPage() {
             <div className="space-y-5">
               {/* Proportional Stacked Spectrum Bar */}
               <div className="space-y-2">
-                <div className="h-3 w-full rounded-full bg-[#18181b] border border-[#26262a] p-0.5 flex overflow-hidden">
+                <div className="h-3.5 w-full rounded-full bg-[#18181b] border border-[#26262a] p-0.5 flex overflow-hidden">
                   {rankedFrameworks.map((fw) => (
                     <div
                       key={fw.id}
@@ -205,6 +290,7 @@ export function DashboardPage() {
                         width: `${Math.max(fw.percentage, 4)}%`,
                         backgroundColor: fw.color,
                         opacity: hoveredFw && hoveredFw !== fw.id ? 0.35 : 1,
+                        boxShadow: hoveredFw === fw.id ? `0 0 12px ${fw.color}` : undefined,
                       }}
                       onMouseEnter={() => setHoveredFw(fw.id)}
                       onMouseLeave={() => setHoveredFw(null)}
@@ -214,52 +300,54 @@ export function DashboardPage() {
                 </div>
 
                 <div className="flex items-center justify-between text-[11px] text-[#8c8b8f]">
-                  <span>Proportional runtime share</span>
-                  <span className="font-mono text-[#ffffff]">{total} total packages</span>
+                  <span>Interactive runtime spectrum</span>
+                  <span className="font-mono text-[#ffffff]">{total} analyzed packages</span>
                 </div>
               </div>
 
-              {/* Framework Rows with Proportional Tracks */}
-              <div className="space-y-3 pt-2">
-                {rankedFrameworks.slice(0, 6).map((fw) => (
+              {/* Framework Cards Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {displayedFrameworks.map((fw) => (
                   <div
                     key={fw.id}
                     onMouseEnter={() => setHoveredFw(fw.id)}
                     onMouseLeave={() => setHoveredFw(null)}
-                    className={`p-3 rounded-[14px] border transition-all ${
+                    onClick={() => setCurrentPage("explorer")}
+                    className={`p-3.5 rounded-[16px] border transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                       hoveredFw === fw.id
-                        ? "bg-[#18181b] border-[#333338]"
-                        : "bg-[#18181b]/50 border-transparent hover:border-[#26262a]"
+                        ? "bg-[#18181b] border-[#47ab61]/50 shadow-[0_4px_20px_rgba(71,171,97,0.12)] scale-[1.01]"
+                        : "bg-[#18181b]/60 border-[#26262a] hover:border-[#333338]"
                     }`}
                   >
-                    <div className="flex items-center justify-between text-xs mb-1.5">
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className="h-2.5 w-2.5 rounded-full shrink-0 shadow-sm"
-                          style={{ backgroundColor: fw.color }}
-                        />
-                        <span className="font-semibold text-[#ffffff]">{fw.name}</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#26262a] text-[#8c8b8f]">
-                          {fw.category}
-                        </span>
-                      </div>
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-xs font-mono text-[#ffffff] tabular-nums font-semibold">
+                        <div className="p-1.5 rounded-[10px] bg-[#131315] border border-[#26262a] shadow-sm">
+                          <FrameworkLogo framework={fw.id} size="sm" />
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-semibold text-[#ffffff] tracking-tight">{fw.name}</h4>
+                          <span className="text-[10px] text-[#8c8b8f]">{fw.category}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="text-xs font-mono font-bold text-[#ffffff] tabular-nums">
                           {fw.percentage}%
-                        </span>
-                        <span className="text-xs font-mono text-[#8c8b8f] tabular-nums">
+                        </div>
+                        <div className="text-[10px] text-[#8c8b8f] font-mono">
                           {fw.count} {fw.count === 1 ? "app" : "apps"}
-                        </span>
+                        </div>
                       </div>
                     </div>
 
                     {/* Progress Track */}
-                    <div className="h-1.5 w-full rounded-full bg-[#26262a]/60 overflow-hidden">
+                    <div className="h-1.5 w-full rounded-full bg-[#26262a] overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500 ease-out"
                         style={{
-                          width: `${Math.max(fw.percentage, 2)}%`,
+                          width: `${Math.max(fw.percentage, 4)}%`,
                           backgroundColor: fw.color,
+                          boxShadow: hoveredFw === fw.id ? `0 0 10px ${fw.color}` : undefined,
                         }}
                       />
                     </div>
@@ -268,14 +356,14 @@ export function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="py-16 text-center space-y-3">
+            <div className="py-14 text-center space-y-3 bg-[#18181b]/30 rounded-[16px] border border-dashed border-[#26262a]">
               <div className="flex justify-center">
                 <div className="p-3 rounded-full bg-[#18181b] border border-[#26262a] text-[#8c8b8f]">
                   <Boxes className="h-6 w-6" strokeWidth={1.5} />
                 </div>
               </div>
               <p className="text-xs text-[#8c8b8f] max-w-sm mx-auto">
-                No framework distribution recorded yet. Drop an APK or inspect a connected device app to generate charts.
+                No framework distribution recorded yet. Inspect a package from your connected device or drop an APK file.
               </p>
             </div>
           )}
@@ -287,11 +375,11 @@ export function DashboardPage() {
           <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-bold text-[#ffffff] tracking-tight">
-                  Heuristic certainty
+                <CardTitle className="text-base font-bold text-[#ffffff] tracking-tight">
+                  Heuristic Certainty
                 </CardTitle>
                 <p className="text-xs text-[#8c8b8f] mt-0.5">
-                  Detection confidence across analyzed binaries
+                  Confidence distribution across analyzed binaries
                 </p>
               </div>
               <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
@@ -305,7 +393,7 @@ export function DashboardPage() {
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <span
-                        className="h-2 w-2 rounded-full shrink-0"
+                        className="h-2 w-2 rounded-full shrink-0 shadow-sm"
                         style={{ backgroundColor: lvl.color }}
                       />
                       <span className="font-semibold text-[#ffffff]">{lvl.label}</span>
@@ -320,7 +408,7 @@ export function DashboardPage() {
                     <div
                       className="h-full rounded-full transition-all duration-500 ease-out"
                       style={{
-                        width: `${Math.max(lvl.percentage, lvl.count > 0 ? 3 : 0)}%`,
+                        width: `${Math.max(lvl.percentage, lvl.count > 0 ? 4 : 0)}%`,
                         backgroundColor: lvl.color,
                       }}
                     />
@@ -331,43 +419,70 @@ export function DashboardPage() {
             </div>
           </Card>
 
-          {/* Technology Tiers */}
-          <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-bold text-[#ffffff] tracking-tight">
-                Ecosystem tiers
-              </CardTitle>
-              <span className="text-xs text-[#8c8b8f]">Category breakdown</span>
+          {/* Quick Engine Architecture Guarantee */}
+          <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
+            <div className="flex items-center gap-2.5 text-xs text-[#ffffff] font-semibold">
+              <ShieldCheck className="h-4 w-4 text-[#47ab61]" strokeWidth={1.5} />
+              <span>Deterministic Offline Engine</span>
             </div>
-
-            <div className="space-y-2.5">
-              {categoryGroups.map((cat) => {
-                const pct = total > 0 ? Math.round((cat.count / total) * 100) : 0;
-                return (
-                  <div
-                    key={cat.name}
-                    className="p-3 rounded-[14px] bg-[#18181b] border border-[#26262a] space-y-1.5"
-                  >
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[#ffffff]">{cat.name}</span>
-                      <span className="font-mono text-[#8c8b8f] font-semibold">{cat.count} apps</span>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-[#26262a] overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${Math.max(pct, cat.count > 0 ? 4 : 0)}%`, backgroundColor: cat.color }}
-                      />
-                    </div>
-                    <p className="text-[10px] text-[#8c8b8f]">{cat.desc}</p>
-                  </div>
-                );
-              })}
+            <p className="text-xs text-[#8c8b8f] leading-relaxed">
+              Signatures are compiled directly into the Rust detection core for maximum performance, protection against regex backtracking, and zero data leakage.
+            </p>
+            <div className="pt-2 border-t border-[#26262a] flex items-center justify-between text-[11px]">
+              <span className="text-[#47ab61] font-mono">100% On-Device</span>
+              <span className="text-[#8c8b8f] font-mono">0ms Cloud Latency</span>
             </div>
           </Card>
         </div>
       </div>
 
-      {/* Quick Launch Actions */}
+      {/* Supported Technology Showcase Grid */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-bold text-[#ffffff] tracking-tight">
+              Supported Framework Architectures
+            </h3>
+            <p className="text-xs text-[#8c8b8f]">
+              Direct binary detection across mobile frameworks and game engines
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage("explorer")}
+            className="text-xs rounded-full border-[#26262a] hover:bg-[#18181b] gap-1"
+          >
+            <span>Explore All</span>
+            <ChevronRight className="h-3 w-3" />
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          {SUPPORTED_FRAMEWORKS.map((fw) => (
+            <div
+              key={fw.id}
+              onClick={() => setCurrentPage("explorer")}
+              className="p-4 rounded-[18px] border border-[#26262a] bg-[#131315] hover:bg-[#18181b] hover:border-[#333338] cursor-pointer transition-all flex flex-col justify-between gap-3 group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-[12px] bg-[#18181b] border border-[#26262a] shadow-sm group-hover:scale-105 transition-transform">
+                  <FrameworkLogo framework={fw.id} size="md" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold text-[#ffffff] group-hover:text-[#47ab61] transition-colors">
+                    {fw.name}
+                  </h4>
+                  <span className="text-[10px] text-[#8c8b8f]">{fw.vendor}</span>
+                </div>
+              </div>
+              <p className="text-[11px] font-mono text-[#8c8b8f] truncate">{fw.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Launch Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div
           onClick={() => setCurrentPage("inspector")}
@@ -378,7 +493,7 @@ export function DashboardPage() {
               <Upload className="h-5 w-5" strokeWidth={1.5} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight">Inspect APK binary</h4>
+              <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight">Inspect APK Binary</h4>
               <p className="text-xs text-[#8c8b8f]">Drop local package file</p>
             </div>
           </div>
@@ -394,8 +509,8 @@ export function DashboardPage() {
               <PackageSearch className="h-5 w-5" strokeWidth={1.5} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight">Device packages</h4>
-              <p className="text-xs text-[#8c8b8f]">Pull from phone via ADB</p>
+              <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight">Device Applications</h4>
+              <p className="text-xs text-[#8c8b8f]">Pull from phone via ADB (Grid View)</p>
             </div>
           </div>
           <ArrowRight className="h-4 w-4 text-[#8c8b8f] group-hover:text-[#47ab61] group-hover:translate-x-1 transition-all" strokeWidth={1.5} />
@@ -410,8 +525,8 @@ export function DashboardPage() {
               <BookOpen className="h-5 w-5" strokeWidth={1.5} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight">Runtime knowledge</h4>
-              <p className="text-xs text-[#8c8b8f]">Explore framework signatures</p>
+              <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight">Runtime Signatures</h4>
+              <p className="text-xs text-[#8c8b8f]">Inspect binary indicators</p>
             </div>
           </div>
           <ArrowRight className="h-4 w-4 text-[#8c8b8f] group-hover:text-[#47ab61] group-hover:translate-x-1 transition-all" strokeWidth={1.5} />
@@ -423,7 +538,7 @@ export function DashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-base font-bold text-[#ffffff] tracking-tight">
-              Recent inspections
+              Recent Inspections
             </CardTitle>
             <p className="text-xs text-[#8c8b8f] mt-0.5">
               History of analyzed APK binaries and connected packages
@@ -468,9 +583,16 @@ export function DashboardPage() {
                       {item.package_name || "N/A"}
                     </td>
                     <td className="py-3 pr-4">
-                      <span className="text-[#47ab61] font-medium">
-                        {item.primary_framework ? frameworkDisplayName(item.primary_framework) : "Unknown"}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {item.primary_framework && (
+                          <div className="p-1 rounded-[6px] bg-[#131315] border border-[#26262a]">
+                            <FrameworkLogo framework={item.primary_framework} size="sm" />
+                          </div>
+                        )}
+                        <span className="text-[#ffffff] font-medium">
+                          {item.primary_framework ? frameworkDisplayName(item.primary_framework) : "Unknown"}
+                        </span>
+                      </div>
                     </td>
                     <td className="py-3 pr-4">
                       <Badge variant="outline" className="text-[10px] rounded-full px-2.5 border-[#26262a]">
