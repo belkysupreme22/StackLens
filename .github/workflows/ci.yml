@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-rust:
+    name: Rust Engine Tests & Checks
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run Engine Tests
+        run: cargo test --workspace --verbose
+      - name: Check CLI & Desktop Crates
+        run: cargo check --workspace
+
+  build-frontend:
+    name: Desktop Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Frontend Dependencies
+        working-directory: apps/desktop
+        run: npm ci
+      - name: Build React App
+        working-directory: apps/desktop
+        run: npm run build
