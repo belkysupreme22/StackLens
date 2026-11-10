@@ -112,15 +112,15 @@ export function DevicePage() {
           </div>
         </Card>
       ) : devices.length === 0 ? (
-        <Card className="p-4 border-neutral-800 bg-neutral-900/40 text-neutral-300">
-          <div className="flex items-start gap-3">
-            <Smartphone className="h-5 w-5 shrink-0 text-neutral-400 mt-0.5" />
+        <Card className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px] text-[#7a7a7a]">
+          <div className="flex items-start gap-2.5">
+            <Smartphone className="h-4 w-4 shrink-0 text-[#7a7a7a] mt-0.5" strokeWidth={1.5} />
             <div className="space-y-1">
-              <h4 className="text-sm font-semibold text-neutral-200">
-                No Connected Android Devices Detected
+              <h4 className="text-xs font-mono font-medium text-[#ffffff]">
+                No connected Android devices detected
               </h4>
-              <p className="text-xs text-neutral-400">
-                Enable <strong>USB Debugging</strong> in your device's Developer Options and connect via USB. For wireless debugging, execute <code className="text-indigo-400">adb connect &lt;ip:port&gt;</code> in your terminal.
+              <p className="text-[11px] font-mono text-[#7a7a7a]">
+                Enable <strong>USB Debugging</strong> in developer options and connect via USB, or execute <code className="text-[#4ade80]">adb connect &lt;ip:port&gt;</code>.
               </p>
             </div>
           </div>
@@ -129,9 +129,9 @@ export function DevicePage() {
 
       {/* Connected Devices Grid */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-neutral-200 flex items-center gap-2">
-            Discovered Devices ({devices.length})
+        <div className="flex items-center justify-between mb-2.5">
+          <h3 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+            Discovered devices ({devices.length})
           </h3>
           <Button
             size="sm"
@@ -243,49 +243,49 @@ export function DevicePage() {
           </div>
 
           {errorMessage && (
-            <div className="p-3 rounded-lg border border-rose-900/40 bg-rose-950/20 text-xs text-rose-300">
+            <div className="p-2.5 rounded-[3px] border border-rose-900/40 bg-[#120507] text-xs font-mono text-rose-300">
               {errorMessage}
             </div>
           )}
 
           {isLoadingPackages ? (
-            <div className="p-12 text-center text-xs text-neutral-400">
-              <RefreshCw className="h-6 w-6 animate-spin mx-auto text-indigo-400 mb-2" />
-              Querying device package manager via ADB...
+            <div className="p-8 text-center text-xs font-mono text-[#7a7a7a]">
+              <span className="h-2 w-2 rounded-full bg-[#4ade80] animate-status-pulse inline-block mb-2" />
+              <div>Querying package manager via ADB...</div>
             </div>
           ) : devicePackages.length === 0 ? (
-            <div className="p-8 text-center text-xs text-neutral-400">
+            <div className="p-6 text-center text-xs font-mono text-[#7a7a7a]">
               <Button
                 size="sm"
                 onClick={() => fetchPackages(selectedDevice.serial)}
-                className="text-xs"
+                className="text-xs font-mono rounded-[3px]"
               >
-                Load Packages from Device
+                Load packages
               </Button>
             </div>
           ) : (
-            <div className="max-h-96 overflow-y-auto space-y-1.5 pr-2">
-              <div className="text-[11px] text-neutral-400 pb-1">
+            <div className="max-h-96 overflow-y-auto space-y-1 pr-1">
+              <div className="text-[10px] font-mono text-[#7a7a7a] pb-1">
                 Showing {filteredPackages.length} of {devicePackages.length} packages
               </div>
               {filteredPackages.map((pkg) => (
                 <div
                   key={pkg}
-                  className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-950/60 hover:bg-neutral-850 flex items-center justify-between text-xs font-mono transition-colors"
+                  className="p-2 rounded-[3px] border border-[#1f1f1f] bg-[#000000] hover:border-[#2a2a2a] flex items-center justify-between text-xs font-mono transition-colors"
                 >
-                  <span className="truncate pr-4 text-neutral-200">{pkg}</span>
+                  <span className="truncate pr-4 text-[#ffffff]">{pkg}</span>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => handlePullAndAnalyze(pkg)}
                     disabled={analyzingPackage === pkg}
-                    className="h-7 text-xs border-indigo-500/30 text-indigo-300 hover:bg-indigo-600 hover:text-white shrink-0"
+                    className="h-6 text-[11px] font-mono border-[#1f1f1f] bg-[#070707] text-[#4ade80] hover:bg-[#4ade80] hover:text-[#000000] rounded-[2px] shrink-0"
                   >
                     {analyzingPackage === pkg ? (
                       <RefreshCw className="h-3 w-3 animate-spin" />
                     ) : (
-                      <span className="flex items-center gap-1 font-sans">
-                        Pull & Analyze <ArrowRight className="h-3 w-3" />
+                      <span className="flex items-center gap-1">
+                        Pull <ArrowRight className="h-3 w-3" />
                       </span>
                     )}
                   </Button>
@@ -297,23 +297,23 @@ export function DevicePage() {
       )}
 
       {/* Troubleshooting Guidance */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/40 space-y-3">
-        <h4 className="text-xs font-semibold text-neutral-300 uppercase tracking-wider flex items-center gap-2">
-          <HelpCircle className="h-4 w-4 text-indigo-400" />
-          ADB Device Connection Troubleshooting
+      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-2.5">
+        <h4 className="text-[11px] font-mono text-[#7a7a7a] uppercase tracking-wider flex items-center gap-1.5">
+          <HelpCircle className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+          ADB device connection troubleshooting
         </h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-neutral-400">
-          <div className="p-3 rounded-lg bg-neutral-950 border border-neutral-800">
-            <span className="font-semibold text-neutral-200 block mb-1">1. Enable USB Debugging</span>
-            Go to Settings &gt; About Phone &gt; Tap "Build Number" 7 times. Return to Developer Options and toggle USB Debugging ON.
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs font-mono text-[#7a7a7a]">
+          <div className="p-2.5 rounded-[3px] bg-[#000000] border border-[#1f1f1f]">
+            <span className="font-medium text-[#ffffff] block mb-0.5">1. Enable USB debugging</span>
+            Settings &gt; About phone &gt; Tap "Build number" 7 times. Return to developer options and enable USB debugging.
           </div>
-          <div className="p-3 rounded-lg bg-neutral-950 border border-neutral-800">
-            <span className="font-semibold text-neutral-200 block mb-1">2. Authorize Computer</span>
-            When connecting, look at your phone screen and accept the RSA fingerprint dialog: "Always allow from this computer".
+          <div className="p-2.5 rounded-[3px] bg-[#000000] border border-[#1f1f1f]">
+            <span className="font-medium text-[#ffffff] block mb-0.5">2. Authorize computer</span>
+            On phone screen, accept RSA key fingerprint dialog: "Always allow from this computer".
           </div>
-          <div className="p-3 rounded-lg bg-neutral-950 border border-neutral-800">
-            <span className="font-semibold text-neutral-200 block mb-1">3. Check Cable & Drivers</span>
-            Ensure cable supports data transfer (not charge-only). On Windows, install Google USB Drivers or OEM drivers.
+          <div className="p-2.5 rounded-[3px] bg-[#000000] border border-[#1f1f1f]">
+            <span className="font-medium text-[#ffffff] block mb-0.5">3. Verify cable</span>
+            Ensure cable supports data transfer. On Windows, install Google USB Drivers or vendor OEM driver.
           </div>
         </div>
       </Card>

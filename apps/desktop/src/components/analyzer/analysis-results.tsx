@@ -105,10 +105,10 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
             variant="outline"
             size="sm"
             onClick={() => addToComparison(result)}
-            className="gap-1.5 text-xs border-neutral-700"
+            className="gap-1.5 text-xs font-mono rounded-[3px] border-[#1f1f1f] bg-[#070707] hover:border-[#2a2a2a]"
           >
-            <GitCompare className="h-3.5 w-3.5 text-indigo-400" />
-            Add to Compare
+            <GitCompare className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+            Compare
           </Button>
 
           <Button
@@ -116,9 +116,9 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
             size="sm"
             onClick={() => handleExport("json")}
             disabled={isExporting}
-            className="gap-1.5 text-xs border-neutral-700"
+            className="gap-1.5 text-xs font-mono rounded-[3px] border-[#1f1f1f] bg-[#070707] hover:border-[#2a2a2a]"
           >
-            <Download className="h-3.5 w-3.5" />
+            <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
             JSON
           </Button>
 
@@ -127,9 +127,9 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
             size="sm"
             onClick={() => handleExport("csv")}
             disabled={isExporting}
-            className="gap-1.5 text-xs border-neutral-700"
+            className="gap-1.5 text-xs font-mono rounded-[3px] border-[#1f1f1f] bg-[#070707] hover:border-[#2a2a2a]"
           >
-            <Download className="h-3.5 w-3.5" />
+            <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
             CSV
           </Button>
 
@@ -138,55 +138,55 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
             size="sm"
             onClick={() => handleExport("txt")}
             disabled={isExporting}
-            className="gap-1.5 text-xs border-neutral-700"
+            className="gap-1.5 text-xs font-mono rounded-[3px] border-[#1f1f1f] bg-[#070707] hover:border-[#2a2a2a]"
           >
-            <Download className="h-3.5 w-3.5" />
+            <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
             Text
           </Button>
         </div>
       </div>
 
       {exportNotice && (
-        <div className="p-3 text-xs rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+        <div className="p-2.5 text-xs font-mono rounded-[3px] border border-[#1f1f1f] bg-[#070707] text-[#4ade80]">
           {exportNotice}
         </div>
       )}
 
       {/* Primary Framework Highlight Banner */}
-      <Card className="border-indigo-500/30 bg-gradient-to-r from-indigo-950/30 via-neutral-900 to-neutral-900 p-6">
+      <Card className="border border-[#1f1f1f] bg-[#070707] rounded-[3px] p-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wider text-indigo-400 font-semibold">
-                Primary Architecture & Framework
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#4ade80] font-medium">
+                Primary architecture
               </span>
               {primaryDetection && (
                 <Badge className={confidenceBadgeColor(primaryDetection.confidence)}>
-                  {primaryDetection.confidence} Confidence ({Math.round(primaryDetection.confidence_score * 100)}%)
+                  {primaryDetection.confidence} ({Math.round(primaryDetection.confidence_score * 100)}%)
                 </Badge>
               )}
             </div>
-            <h3 className="text-2xl font-black text-neutral-100 flex items-center gap-2">
-              {primaryDetection ? frameworkDisplayName(primaryDetection.framework) : "Unknown Runtime"}
+            <h3 className="text-xl font-mono font-semibold text-[#ffffff] flex items-center gap-2">
+              {primaryDetection ? frameworkDisplayName(primaryDetection.framework) : "Unknown runtime"}
             </h3>
-            <p className="text-xs text-neutral-400 max-w-2xl">
+            <p className="text-xs font-mono text-[#7a7a7a] max-w-2xl">
               {primaryDetection?.evidence.length
-                ? `Identified based on ${primaryDetection.evidence.length} verified structural and binary indicator(s).`
-                : "No verified framework signatures found; application may use custom C++ or obfuscated runtime."}
+                ? `Identified with ${primaryDetection.evidence.length} verified structural indicators.`
+                : "No verified framework signatures found in package."}
             </p>
           </div>
 
-          <div className="flex flex-col md:items-end gap-1.5 text-xs font-mono text-neutral-400 border-t md:border-t-0 md:border-l border-neutral-800 pt-3 md:pt-0 md:pl-6">
-            <div>Size: <span className="text-neutral-200">{formatBytes(result.apk.file_size)}</span></div>
-            <div>Min SDK: <span className="text-neutral-200">{result.apk.min_sdk ?? "N/A"}</span> • Target: <span className="text-neutral-200">{result.apk.target_sdk ?? "N/A"}</span></div>
-            <div>Inspection: <span className="text-neutral-200">{result.analysis_duration_ms}ms</span></div>
+          <div className="flex flex-col md:items-end gap-1 text-xs font-mono text-[#7a7a7a] border-t md:border-t-0 md:border-l border-[#1f1f1f] pt-3 md:pt-0 md:pl-5 tabular-nums">
+            <div>Size: <span className="text-[#ffffff]">{formatBytes(result.apk.file_size)}</span></div>
+            <div>Min SDK: <span className="text-[#ffffff]">{result.apk.min_sdk ?? "N/A"}</span> • Target: <span className="text-[#ffffff]">{result.apk.target_sdk ?? "N/A"}</span></div>
+            <div>Duration: <span className="text-[#ffffff]">{result.analysis_duration_ms}ms</span></div>
           </div>
         </div>
       </Card>
 
       {/* Detailed Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full justify-start overflow-x-auto bg-neutral-900 border border-neutral-800">
+        <TabsList className="w-full justify-start overflow-x-auto bg-[#070707] border border-[#1f1f1f] rounded-[3px]">
           <TabsTrigger value="frameworks">
             Frameworks ({result.detections.length})
           </TabsTrigger>
@@ -204,17 +204,17 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
         </TabsList>
 
         {/* TAB 1: FRAMEWORKS & EVIDENCE */}
-        <TabsContent value="frameworks" className="space-y-4">
+        <TabsContent value="frameworks" className="space-y-3">
           {result.detections.map((detection) => {
             const isExpanded = !!expandedFrameworks[detection.framework];
 
             return (
               <Card
                 key={detection.framework}
-                className={`border transition-all ${
+                className={`border rounded-[3px] transition-colors ${
                   detection.is_primary
-                    ? "border-indigo-500/40 bg-neutral-900/90"
-                    : "border-neutral-800 bg-neutral-900/50"
+                    ? "border-[#4ade80]/40 bg-[#070707]"
+                    : "border-[#1f1f1f] bg-[#070707]"
                 }`}
               >
                 <div
@@ -256,33 +256,33 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
 
                 {/* Expanded Evidence List */}
                 {isExpanded && (
-                  <div className="border-t border-neutral-800/80 p-4 space-y-3 bg-neutral-950/40">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                      Detection Evidence & Indicators
+                  <div className="border-t border-[#1f1f1f] p-4 space-y-3 bg-[#000000]">
+                    <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a]">
+                      Evidence indicators
                     </h4>
 
                     {detection.evidence.length === 0 ? (
-                      <p className="text-xs text-neutral-400 italic">No direct evidence indicators registered.</p>
+                      <p className="text-xs font-mono text-[#7a7a7a] italic">No direct evidence indicators registered.</p>
                     ) : (
                       <div className="space-y-2">
                         {detection.evidence.map((ev, idx) => (
                           <div
                             key={idx}
-                            className="p-3 rounded-lg border border-neutral-800/80 bg-neutral-900/70 text-xs flex flex-col gap-1"
+                            className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#070707] text-xs font-mono flex flex-col gap-1"
                           >
                             <div className="flex items-center justify-between gap-2">
                               <span className={`font-semibold ${evidenceTypeColor(ev.evidence_type)}`}>
                                 [{ev.evidence_type}] {ev.category}
                               </span>
-                              <span className="font-mono text-[10px] text-neutral-400">
+                              <span className="text-[10px] text-[#7a7a7a]">
                                 {ev.source}
                               </span>
                             </div>
-                            <p className="text-neutral-300">{ev.description}</p>
+                            <p className="text-[#ffffff]">{ev.description}</p>
                             {(ev.file_path || ev.class_name) && (
-                              <div className="mt-1 flex items-center gap-2 text-[11px] font-mono text-neutral-400 bg-neutral-950 px-2 py-1 rounded border border-neutral-800">
-                                <span className="text-neutral-400">Ref:</span>
-                                <span className="truncate">{ev.file_path || ev.class_name}</span>
+                              <div className="mt-1 flex items-center gap-2 text-[11px] font-mono text-[#7a7a7a] bg-[#000000] px-2 py-1 rounded-[2px] border border-[#1f1f1f]">
+                                <span className="text-[#7a7a7a]">Ref:</span>
+                                <span className="truncate text-[#ffffff]">{ev.file_path || ev.class_name}</span>
                               </div>
                             )}
                           </div>
@@ -292,11 +292,11 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
 
                     {/* Limitations */}
                     {detection.limitations.length > 0 && (
-                      <div className="mt-3 p-3 rounded-lg border border-amber-900/30 bg-amber-950/20 text-xs text-amber-300/90 flex gap-2">
+                      <div className="mt-2.5 p-2.5 rounded-[3px] border border-amber-900/30 bg-[#160e04] text-xs font-mono text-amber-300 flex gap-2">
                         <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
                         <div>
-                          <span className="font-semibold block mb-0.5">Analysis Limitations:</span>
-                          <ul className="list-disc list-inside space-y-0.5 text-neutral-300">
+                          <span className="font-semibold block mb-0.5">Limitations</span>
+                          <ul className="list-disc list-inside space-y-0.5 text-[#7a7a7a]">
                             {detection.limitations.map((lim, lIdx) => (
                               <li key={lIdx}>{lim}</li>
                             ))}
@@ -313,48 +313,48 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
 
         {/* TAB 2: METADATA & MANIFEST */}
         <TabsContent value="metadata">
-          <Card className="p-6 space-y-4">
-            <h4 className="text-sm font-semibold text-neutral-200">Package & Application Specification</h4>
+          <Card className="p-5 border border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-4">
+            <h4 className="text-xs font-mono font-medium text-[#ffffff]">Package specification</h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex justify-between items-center">
-                <span className="text-neutral-400">Package Name:</span>
-                <span className="text-neutral-100 font-semibold">{result.apk.package_name || "N/A"}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono tabular-nums">
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex justify-between items-center">
+                <span className="text-[#7a7a7a]">Package Name:</span>
+                <span className="text-[#ffffff] font-semibold">{result.apk.package_name || "N/A"}</span>
               </div>
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex justify-between items-center">
-                <span className="text-neutral-400">Application Label:</span>
-                <span className="text-neutral-100">{result.apk.app_label || "N/A"}</span>
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex justify-between items-center">
+                <span className="text-[#7a7a7a]">Application Label:</span>
+                <span className="text-[#ffffff]">{result.apk.app_label || "N/A"}</span>
               </div>
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex justify-between items-center">
-                <span className="text-neutral-400">Version Name:</span>
-                <span className="text-neutral-100">{result.apk.version_name || "N/A"}</span>
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex justify-between items-center">
+                <span className="text-[#7a7a7a]">Version Name:</span>
+                <span className="text-[#ffffff]">{result.apk.version_name || "N/A"}</span>
               </div>
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex justify-between items-center">
-                <span className="text-neutral-400">Version Code:</span>
-                <span className="text-neutral-100">{result.apk.version_code ?? "N/A"}</span>
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex justify-between items-center">
+                <span className="text-[#7a7a7a]">Version Code:</span>
+                <span className="text-[#ffffff]">{result.apk.version_code ?? "N/A"}</span>
               </div>
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex justify-between items-center">
-                <span className="text-neutral-400">Minimum SDK:</span>
-                <span className="text-neutral-100">API {result.apk.min_sdk ?? "N/A"}</span>
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex justify-between items-center">
+                <span className="text-[#7a7a7a]">Minimum SDK:</span>
+                <span className="text-[#ffffff]">API {result.apk.min_sdk ?? "N/A"}</span>
               </div>
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex justify-between items-center">
-                <span className="text-neutral-400">Target SDK:</span>
-                <span className="text-neutral-100">API {result.apk.target_sdk ?? "N/A"}</span>
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex justify-between items-center">
+                <span className="text-[#7a7a7a]">Target SDK:</span>
+                <span className="text-[#ffffff]">API {result.apk.target_sdk ?? "N/A"}</span>
               </div>
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex justify-between items-center">
-                <span className="text-neutral-400">Split APK:</span>
-                <span className="text-neutral-100">{result.apk.is_split_apk ? `Yes (${result.apk.split_name || "config"})` : "No (Base)"}</span>
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex justify-between items-center">
+                <span className="text-[#7a7a7a]">Split APK:</span>
+                <span className="text-[#ffffff]">{result.apk.is_split_apk ? `Yes (${result.apk.split_name || "config"})` : "No (Base)"}</span>
               </div>
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex justify-between items-center">
-                <span className="text-neutral-400">Total Entries:</span>
-                <span className="text-neutral-100">{result.apk_structure.total_entries.toLocaleString()} files</span>
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex justify-between items-center">
+                <span className="text-[#7a7a7a]">Total Entries:</span>
+                <span className="text-[#ffffff]">{result.apk_structure.total_entries.toLocaleString()} files</span>
               </div>
             </div>
 
             {result.apk.main_activity && (
-              <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 text-xs">
-                <span className="text-neutral-400 block mb-1">Launcher Activity:</span>
-                <span className="font-mono text-indigo-400">{result.apk.main_activity}</span>
+              <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] text-xs font-mono">
+                <span className="text-[#7a7a7a] block mb-1">Launcher activity:</span>
+                <span className="text-[#4ade80]">{result.apk.main_activity}</span>
               </div>
             )}
           </Card>
@@ -362,35 +362,35 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
 
         {/* TAB 3: NATIVE LIBRARIES */}
         <TabsContent value="binaries">
-          <Card className="p-6">
-            <h4 className="text-sm font-semibold text-neutral-200 mb-4">
-              Native Binaries (.so) Catalog
+          <Card className="p-5 border border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+            <h4 className="text-xs font-mono font-medium text-[#ffffff] mb-3">
+              Native libraries (.so)
             </h4>
 
             {result.apk_structure.native_libraries.length === 0 ? (
-              <p className="text-xs text-neutral-400 italic">No native libraries found in lib/ directory (pure bytecode application).</p>
+              <p className="text-xs font-mono text-[#7a7a7a] italic">No native libraries found in lib/ directory.</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="border-b border-neutral-800 text-neutral-400 font-mono">
+                <table className="w-full text-left text-xs font-mono">
+                  <thead className="border-b border-[#1f1f1f] text-[#7a7a7a]">
                     <tr>
-                      <th className="py-2 pr-4">Library Name</th>
+                      <th className="py-2 pr-4">Library name</th>
                       <th className="py-2 pr-4">Architecture</th>
-                      <th className="py-2 pr-4">File Size</th>
-                      <th className="py-2">Identified Purpose</th>
+                      <th className="py-2 pr-4">File size</th>
+                      <th className="py-2">Identified purpose</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-neutral-800/60 font-mono">
+                  <tbody className="divide-y divide-[#1f1f1f] tabular-nums">
                     {result.apk_structure.native_libraries.map((lib, idx) => (
-                      <tr key={idx} className="hover:bg-neutral-800/30">
-                        <td className="py-2 pr-4 font-semibold text-neutral-200">{lib.name}</td>
+                      <tr key={idx} className="hover:bg-[#0e0e0e] transition-colors">
+                        <td className="py-2 pr-4 font-medium text-[#ffffff]">{lib.name}</td>
                         <td className="py-2 pr-4">
-                          <span className="px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 text-[11px]">
+                          <span className="px-1.5 py-0.5 rounded-[2px] bg-[#000000] border border-[#1f1f1f] text-[#7a7a7a] text-[10px]">
                             {lib.arch}
                           </span>
                         </td>
-                        <td className="py-2 pr-4 text-neutral-400">{formatBytes(lib.size)}</td>
-                        <td className="py-2 text-indigo-300 font-sans">{lib.purpose || "Custom native logic"}</td>
+                        <td className="py-2 pr-4 text-[#7a7a7a]">{formatBytes(lib.size)}</td>
+                        <td className="py-2 text-[#4ade80]">{lib.purpose || "Custom native logic"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -402,22 +402,22 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
 
         {/* TAB 4: DEX FILES */}
         <TabsContent value="dex">
-          <Card className="p-6">
-            <h4 className="text-sm font-semibold text-neutral-200 mb-4">
-              Dalvik Executable (DEX) Binaries
+          <Card className="p-5 border border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+            <h4 className="text-xs font-mono font-medium text-[#ffffff] mb-3">
+              Dalvik executable (DEX) binaries
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-mono text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 font-mono text-xs tabular-nums">
               {result.apk_structure.dex_files.map((dex, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60 flex items-center justify-between"
+                  className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2">
-                    <FileCode className="h-4 w-4 text-indigo-400" />
-                    <span className="text-neutral-200 font-semibold">{dex.name}</span>
+                    <FileCode className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+                    <span className="text-[#ffffff]">{dex.name}</span>
                   </div>
-                  <span className="text-neutral-400">{formatBytes(dex.size)}</span>
+                  <span className="text-[#7a7a7a]">{formatBytes(dex.size)}</span>
                 </div>
               ))}
             </div>
@@ -426,27 +426,27 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
 
         {/* TAB 5: PERMISSIONS */}
         <TabsContent value="permissions">
-          <Card className="p-6">
-            <h4 className="text-sm font-semibold text-neutral-200 mb-4">
-              Declared Android Permissions ({result.apk.permissions.length})
+          <Card className="p-5 border border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+            <h4 className="text-xs font-mono font-medium text-[#ffffff] mb-3">
+              Declared permissions ({result.apk.permissions.length})
             </h4>
 
             {result.apk.permissions.length === 0 ? (
-              <p className="text-xs text-neutral-400 italic">No permissions declared in manifest.</p>
+              <p className="text-xs font-mono text-[#7a7a7a] italic">No permissions declared in manifest.</p>
             ) : (
-              <div className="space-y-1.5 max-h-96 overflow-y-auto pr-2">
+              <div className="space-y-1 max-h-96 overflow-y-auto pr-2">
                 {result.apk.permissions.map((perm, idx) => (
                   <div
                     key={idx}
-                    className="p-2 rounded border border-neutral-800/80 bg-neutral-900/50 text-xs font-mono flex items-center justify-between text-neutral-300"
+                    className="p-2 rounded-[2px] border border-[#1f1f1f] bg-[#000000] text-xs font-mono flex items-center justify-between text-[#ffffff]"
                   >
-                    <span>{perm}</span>
+                    <span className="truncate">{perm}</span>
                     <button
                       onClick={() => copyToClipboard(perm, `perm-${idx}`)}
-                      className="text-neutral-400 hover:text-neutral-200 p-1"
+                      className="text-[#7a7a7a] hover:text-[#ffffff] p-1"
                     >
                       {copiedKey === `perm-${idx}` ? (
-                        <Check className="h-3 w-3 text-emerald-400" />
+                        <Check className="h-3 w-3 text-[#4ade80]" />
                       ) : (
                         <Copy className="h-3 w-3" />
                       )}
@@ -460,24 +460,24 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
 
         {/* TAB 6: SIGNING & SECURITY */}
         <TabsContent value="signing">
-          <Card className="p-6 space-y-4">
-            <h4 className="text-sm font-semibold text-neutral-200">
-              APK Signature Scheme & Certificate Fingerprints
+          <Card className="p-5 border border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-3">
+            <h4 className="text-xs font-mono font-medium text-[#ffffff]">
+              Signature scheme and certificates
             </h4>
 
             {result.signing_info ? (
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60">
-                  <span className="text-neutral-400 block mb-1">Signature Scheme:</span>
-                  <span className="font-semibold text-emerald-400">{result.signing_info.scheme || "Unknown Scheme"}</span>
+              <div className="space-y-2.5 text-xs font-mono">
+                <div className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000]">
+                  <span className="text-[#7a7a7a] block mb-0.5">Signature Scheme:</span>
+                  <span className="font-semibold text-[#4ade80]">{result.signing_info.scheme || "Unknown Scheme"}</span>
                 </div>
 
                 {result.signing_info.certificates.map((cert, idx) => (
-                  <div key={idx} className="p-4 rounded-lg border border-neutral-800 bg-neutral-900/50 space-y-2">
-                    <div className="font-semibold text-neutral-200">{cert.subject || "Signature Block"}</div>
+                  <div key={idx} className="p-3 rounded-[3px] border border-[#1f1f1f] bg-[#000000] space-y-1.5">
+                    <div className="font-medium text-[#ffffff]">{cert.subject || "Signature Block"}</div>
                     {cert.fingerprint_sha256 && (
-                      <div className="font-mono text-[11px] text-neutral-400 break-all bg-neutral-950 p-2 rounded border border-neutral-800">
-                        <span className="text-neutral-400">SHA-256: </span>
+                      <div className="font-mono text-[10px] text-[#7a7a7a] break-all bg-[#070707] p-2 rounded-[2px] border border-[#1f1f1f]">
+                        <span className="text-[#7a7a7a]">SHA-256: </span>
                         {cert.fingerprint_sha256}
                       </div>
                     )}
@@ -485,7 +485,7 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-neutral-400 italic">No legacy META-INF signature files observed in archive.</p>
+              <p className="text-xs font-mono text-[#7a7a7a] italic">No legacy META-INF signature files observed in archive.</p>
             )}
           </Card>
         </TabsContent>

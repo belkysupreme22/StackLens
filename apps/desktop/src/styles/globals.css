@@ -79,6 +79,28 @@ body {
   user-select: text;
 }
 
+::selection {
+  background-color: #4ade80;
+  color: #000000;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  text-underline-offset: 4px;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
 /* Scrollbar styling - neutral, unobtrusive */
 ::-webkit-scrollbar {
   width: 5px;

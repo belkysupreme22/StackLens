@@ -41,17 +41,17 @@ export function ComparisonPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Top Header */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-neutral-100 flex items-center gap-2">
-              <GitCompare className="h-5 w-5 text-indigo-400" />
-              Comparison Studio
+            <h3 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+              <GitCompare className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+              Comparison studio
             </h3>
-            <p className="text-xs text-neutral-400 mt-1">
-              Compare 2 to 4 application packages side-by-side to inspect architectural, dependency, and SDK variations.
+            <p className="text-[11px] font-mono text-[#7a7a7a] mt-0.5">
+              Compare 2 to 4 application packages side-by-side to inspect architectural variations.
             </p>
           </div>
 
@@ -60,10 +60,10 @@ export function ComparisonPage() {
               size="sm"
               variant="outline"
               onClick={() => setHistoryOpen(!historyOpen)}
-              className="text-xs h-8 gap-1.5 border-neutral-700"
+              className="text-xs font-mono h-8 gap-1.5 border-[#1f1f1f] bg-[#000000] rounded-[3px] hover:border-[#2a2a2a]"
             >
-              <Plus className="h-3.5 w-3.5" />
-              Add from History
+              <Plus className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+              Add from history
             </Button>
 
             {comparisonItems.length > 0 && (
@@ -71,9 +71,9 @@ export function ComparisonPage() {
                 size="sm"
                 variant="outline"
                 onClick={clearComparison}
-                className="text-xs h-8 text-rose-400 hover:text-rose-300 border-neutral-800"
+                className="text-xs font-mono h-8 text-rose-400 hover:text-rose-300 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
               >
-                Clear All
+                Clear all
               </Button>
             )}
           </div>
@@ -81,12 +81,12 @@ export function ComparisonPage() {
 
         {/* History Quick Picker Dropdown */}
         {historyOpen && (
-          <div className="mt-4 pt-4 border-t border-neutral-800 space-y-2">
-            <h4 className="text-xs font-semibold text-neutral-300">
-              Select Recent Analysis to Compare:
+          <div className="mt-3 pt-3 border-t border-[#1f1f1f] space-y-2">
+            <h4 className="text-xs font-mono font-medium text-[#ffffff]">
+              Select previous analysis:
             </h4>
             {history.length === 0 ? (
-              <p className="text-xs text-neutral-400 italic">No previous analyses found in history.</p>
+              <p className="text-xs font-mono text-[#7a7a7a] italic">No previous analyses found in history.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {history.map((h) => (
@@ -96,13 +96,13 @@ export function ComparisonPage() {
                       addFromHistory(h.id);
                       setHistoryOpen(false);
                     }}
-                    className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-950 hover:border-indigo-500/50 cursor-pointer text-xs transition-colors flex items-center justify-between"
+                    className="p-2.5 rounded-[3px] border border-[#1f1f1f] bg-[#000000] hover:border-[#4ade80] cursor-pointer text-xs font-mono transition-colors flex items-center justify-between"
                   >
                     <div className="truncate pr-2">
-                      <div className="font-semibold text-neutral-200 truncate font-sans">
+                      <div className="font-medium text-[#ffffff] truncate">
                         {h.filename}
                       </div>
-                      <div className="font-mono text-[10px] text-neutral-400 truncate">
+                      <div className="text-[10px] text-[#7a7a7a] truncate">
                         {h.package_name || "N/A"}
                       </div>
                     </div>
@@ -119,43 +119,43 @@ export function ComparisonPage() {
 
       {/* Comparison Grid */}
       {comparisonItems.length === 0 ? (
-        <Card className="p-16 border-neutral-800 bg-neutral-900/40 text-center space-y-3">
-          <GitCompare className="h-10 w-10 text-neutral-600 mx-auto" />
-          <h4 className="text-sm font-semibold text-neutral-200">
-            No Packages Selected for Comparison
+        <Card className="p-12 border-[#1f1f1f] bg-[#070707] rounded-[3px] text-center space-y-2">
+          <GitCompare className="h-8 w-8 text-[#2a2a2a] mx-auto" strokeWidth={1.5} />
+          <h4 className="text-xs font-mono font-medium text-[#ffffff]">
+            No packages selected
           </h4>
-          <p className="text-xs text-neutral-400 max-w-md mx-auto">
-            Open the Inspector to analyze an APK and click "Add to Compare", or click "Add from History" above to choose previously scanned applications.
+          <p className="text-xs font-mono text-[#7a7a7a] max-w-md mx-auto">
+            Inspect an APK and select "Compare", or choose "Add from history" above.
           </p>
         </Card>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left border-collapse">
+          <table className="w-full text-xs text-left font-mono border-collapse border border-[#1f1f1f]">
             <thead>
-              <tr className="border-b border-neutral-800">
-                <th className="p-4 bg-neutral-950 font-mono text-neutral-400 w-44">
+              <tr className="border-b border-[#1f1f1f]">
+                <th className="p-3 bg-[#000000] text-[#7a7a7a] w-40">
                   Attribute
                 </th>
                 {comparisonItems.map((item) => (
                   <th
                     key={item.analysis_id}
-                    className="p-4 bg-neutral-900/80 border-l border-neutral-800 min-w-64 max-w-xs"
+                    className="p-3 bg-[#070707] border-l border-[#1f1f1f] min-w-56 max-w-xs"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h4 className="font-bold text-sm text-neutral-100 font-sans truncate">
+                        <h4 className="font-medium text-xs text-[#ffffff] truncate">
                           {item.apk.app_label || item.apk.package_name || item.apk.filename}
                         </h4>
-                        <p className="text-[11px] font-mono text-neutral-400 truncate mt-0.5">
+                        <p className="text-[10px] text-[#7a7a7a] truncate mt-0.5">
                           {item.apk.package_name || item.apk.filename}
                         </p>
                       </div>
                       <button
                         onClick={() => removeFromComparison(item.analysis_id)}
-                        className="text-neutral-400 hover:text-rose-400 p-1"
+                        className="text-[#7a7a7a] hover:text-rose-400 p-1"
                         title="Remove from comparison"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-3 w-3" strokeWidth={1.5} />
                       </button>
                     </div>
                   </th>
@@ -163,17 +163,17 @@ export function ComparisonPage() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-neutral-800 font-mono">
+            <tbody className="divide-y divide-[#1f1f1f] tabular-nums">
               {/* Primary Framework */}
-              <tr className="hover:bg-neutral-900/30">
-                <td className="p-3 bg-neutral-950 font-semibold text-neutral-300">
+              <tr className="hover:bg-[#0e0e0e] transition-colors">
+                <td className="p-2.5 bg-[#000000] text-[#7a7a7a]">
                   Primary Framework
                 </td>
                 {comparisonItems.map((item) => {
                   const p = item.detections.find((d) => d.is_primary);
                   return (
-                    <td key={item.analysis_id} className="p-3 border-l border-neutral-800 font-sans">
-                      <span className="font-bold text-indigo-400 text-sm block">
+                    <td key={item.analysis_id} className="p-2.5 border-l border-[#1f1f1f]">
+                      <span className="font-medium text-[#4ade80] text-xs block">
                         {p ? frameworkDisplayName(p.framework) : "Unknown"}
                       </span>
                       {p && (
@@ -187,50 +187,50 @@ export function ComparisonPage() {
               </tr>
 
               {/* Version */}
-              <tr className="hover:bg-neutral-900/30">
-                <td className="p-3 bg-neutral-950 font-semibold text-neutral-300">
+              <tr className="hover:bg-[#0e0e0e] transition-colors">
+                <td className="p-2.5 bg-[#000000] text-[#7a7a7a]">
                   Version
                 </td>
                 {comparisonItems.map((item) => (
-                  <td key={item.analysis_id} className="p-3 border-l border-neutral-800 text-neutral-200">
+                  <td key={item.analysis_id} className="p-2.5 border-l border-[#1f1f1f] text-[#ffffff]">
                     {item.apk.version_name || "?"} (code {item.apk.version_code ?? "?"})
                   </td>
                 ))}
               </tr>
 
               {/* Min & Target SDK */}
-              <tr className="hover:bg-neutral-900/30">
-                <td className="p-3 bg-neutral-950 font-semibold text-neutral-300">
+              <tr className="hover:bg-[#0e0e0e] transition-colors">
+                <td className="p-2.5 bg-[#000000] text-[#7a7a7a]">
                   SDK Levels
                 </td>
                 {comparisonItems.map((item) => (
-                  <td key={item.analysis_id} className="p-3 border-l border-neutral-800 text-neutral-200">
+                  <td key={item.analysis_id} className="p-2.5 border-l border-[#1f1f1f] text-[#ffffff]">
                     Min API {item.apk.min_sdk ?? "N/A"} • Target API {item.apk.target_sdk ?? "N/A"}
                   </td>
                 ))}
               </tr>
 
               {/* File Size */}
-              <tr className="hover:bg-neutral-900/30">
-                <td className="p-3 bg-neutral-950 font-semibold text-neutral-300">
+              <tr className="hover:bg-[#0e0e0e] transition-colors">
+                <td className="p-2.5 bg-[#000000] text-[#7a7a7a]">
                   File Size
                 </td>
                 {comparisonItems.map((item) => (
-                  <td key={item.analysis_id} className="p-3 border-l border-neutral-800 text-neutral-200">
+                  <td key={item.analysis_id} className="p-2.5 border-l border-[#1f1f1f] text-[#ffffff]">
                     {formatBytes(item.apk.file_size)}
                   </td>
                 ))}
               </tr>
 
               {/* Native Libraries */}
-              <tr className="hover:bg-neutral-900/30">
-                <td className="p-3 bg-neutral-950 font-semibold text-neutral-300">
+              <tr className="hover:bg-[#0e0e0e] transition-colors">
+                <td className="p-2.5 bg-[#000000] text-[#7a7a7a]">
                   Native Libraries
                 </td>
                 {comparisonItems.map((item) => (
-                  <td key={item.analysis_id} className="p-3 border-l border-neutral-800 text-neutral-200">
+                  <td key={item.analysis_id} className="p-2.5 border-l border-[#1f1f1f] text-[#ffffff]">
                     {item.apk_structure.native_libraries.length} libraries
-                    <div className="text-[10px] text-neutral-400 truncate mt-0.5">
+                    <div className="text-[10px] text-[#7a7a7a] truncate mt-0.5">
                       {Array.from(new Set(item.apk_structure.native_libraries.map((l) => l.arch))).join(", ") || "No native code"}
                     </div>
                   </td>
@@ -238,36 +238,36 @@ export function ComparisonPage() {
               </tr>
 
               {/* DEX Files */}
-              <tr className="hover:bg-neutral-900/30">
-                <td className="p-3 bg-neutral-950 font-semibold text-neutral-300">
+              <tr className="hover:bg-[#0e0e0e] transition-colors">
+                <td className="p-2.5 bg-[#000000] text-[#7a7a7a]">
                   DEX Binaries
                 </td>
                 {comparisonItems.map((item) => (
-                  <td key={item.analysis_id} className="p-3 border-l border-neutral-800 text-neutral-200">
+                  <td key={item.analysis_id} className="p-2.5 border-l border-[#1f1f1f] text-[#ffffff]">
                     {item.apk_structure.dex_files.length} file(s)
                   </td>
                 ))}
               </tr>
 
               {/* Permissions Count */}
-              <tr className="hover:bg-neutral-900/30">
-                <td className="p-3 bg-neutral-950 font-semibold text-neutral-300">
+              <tr className="hover:bg-[#0e0e0e] transition-colors">
+                <td className="p-2.5 bg-[#000000] text-[#7a7a7a]">
                   Permissions
                 </td>
                 {comparisonItems.map((item) => (
-                  <td key={item.analysis_id} className="p-3 border-l border-neutral-800 text-neutral-200">
+                  <td key={item.analysis_id} className="p-2.5 border-l border-[#1f1f1f] text-[#ffffff]">
                     {item.apk.permissions.length} declared
                   </td>
                 ))}
               </tr>
 
               {/* Signature Scheme */}
-              <tr className="hover:bg-neutral-900/30">
-                <td className="p-3 bg-neutral-950 font-semibold text-neutral-300">
+              <tr className="hover:bg-[#0e0e0e] transition-colors">
+                <td className="p-2.5 bg-[#000000] text-[#7a7a7a]">
                   Signature Scheme
                 </td>
                 {comparisonItems.map((item) => (
-                  <td key={item.analysis_id} className="p-3 border-l border-neutral-800 text-neutral-200">
+                  <td key={item.analysis_id} className="p-2.5 border-l border-[#1f1f1f] text-[#ffffff]">
                     {item.signing_info?.scheme || "None / Modern v2+"}
                   </td>
                 ))}

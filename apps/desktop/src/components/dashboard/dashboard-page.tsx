@@ -74,63 +74,63 @@ export function DashboardPage() {
     : 100;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 border-neutral-800 bg-neutral-900/60">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <Card className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-400 font-medium">Total Analyses</span>
-            <Layers className="h-4 w-4 text-indigo-400" />
+            <span className="text-xs font-mono text-[#7a7a7a]">Analyses</span>
+            <Layers className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
           </div>
-          <div className="mt-2 text-2xl font-bold text-neutral-100">
+          <div className="mt-1 text-xl font-mono font-medium text-[#ffffff] tabular-nums">
             {dashboardStats?.total_analyses || 0}
           </div>
-          <p className="mt-1 text-[11px] text-neutral-400">APKs reverse-engineered</p>
+          <p className="mt-0.5 text-[11px] font-mono text-[#7a7a7a]">APKs inspected</p>
         </Card>
 
-        <Card className="p-4 border-neutral-800 bg-neutral-900/60">
+        <Card className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-400 font-medium">Frameworks Found</span>
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <span className="text-xs font-mono text-[#7a7a7a]">Frameworks</span>
+            <TrendingUp className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
           </div>
-          <div className="mt-2 text-2xl font-bold text-neutral-100">
+          <div className="mt-1 text-xl font-mono font-medium text-[#ffffff] tabular-nums">
             {fwData.length}
           </div>
-          <p className="mt-1 text-[11px] text-neutral-400">Unique runtimes identified</p>
+          <p className="mt-0.5 text-[11px] font-mono text-[#7a7a7a]">Unique runtimes</p>
         </Card>
 
-        <Card className="p-4 border-neutral-800 bg-neutral-900/60">
+        <Card className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-400 font-medium">Detection Health</span>
-            <CheckCircle2 className="h-4 w-4 text-blue-400" />
+            <span className="text-xs font-mono text-[#7a7a7a]">Success</span>
+            <CheckCircle2 className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
           </div>
-          <div className="mt-2 text-2xl font-bold text-neutral-100">
+          <div className="mt-1 text-xl font-mono font-medium text-[#ffffff] tabular-nums">
             {successRate}%
           </div>
-          <p className="mt-1 text-[11px] text-neutral-400">Successful inspections</p>
+          <p className="mt-0.5 text-[11px] font-mono text-[#7a7a7a]">Clean runs</p>
         </Card>
 
-        <Card className="p-4 border-neutral-800 bg-neutral-900/60">
+        <Card className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-400 font-medium">Connected Devices</span>
-            <Smartphone className="h-4 w-4 text-amber-400" />
+            <span className="text-xs font-mono text-[#7a7a7a]">Devices</span>
+            <Smartphone className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
           </div>
-          <div className="mt-2 text-2xl font-bold text-neutral-100">
+          <div className="mt-1 text-xl font-mono font-medium text-[#ffffff] tabular-nums">
             {dashboardStats?.connected_devices || 0}
           </div>
-          <p className="mt-1 text-[11px] text-neutral-400">Online ADB targets</p>
+          <p className="mt-0.5 text-[11px] font-mono text-[#7a7a7a]">Online ADB targets</p>
         </Card>
       </div>
 
       {/* Visual Analytics Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Framework Distribution */}
-        <Card className="p-6 border-neutral-800 bg-neutral-900/60">
-          <CardTitle className="text-sm font-semibold mb-4 text-neutral-200">
-            Framework Distribution
+        <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+          <CardTitle className="text-xs font-mono font-medium mb-3 text-[#ffffff]">
+            Framework distribution
           </CardTitle>
           {fwData.length > 0 ? (
-            <div className="h-64 flex items-center justify-center">
+            <div className="h-56 flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -138,8 +138,8 @@ export function DashboardPage() {
                     cx="50%"
                     cy="50%"
                     innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={4}
+                    outerRadius={75}
+                    paddingAngle={3}
                     dataKey="value"
                   >
                     {fwData.map((entry, index) => (
@@ -148,165 +148,165 @@ export function DashboardPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#171717",
-                      borderColor: "#262626",
-                      borderRadius: "8px",
+                      backgroundColor: "#070707",
+                      borderColor: "#1f1f1f",
+                      borderRadius: "3px",
                       color: "#fff",
-                      fontSize: "12px",
+                      fontSize: "11px",
+                      fontFamily: "monospace",
                     }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-64 flex flex-col items-center justify-center text-xs text-neutral-400 text-center p-4">
-              <Layers className="h-8 w-8 text-neutral-600 mb-2" />
+            <div className="h-56 flex flex-col items-center justify-center text-xs font-mono text-[#7a7a7a] text-center p-4">
+              <Layers className="h-6 w-6 text-[#2a2a2a] mb-2" strokeWidth={1.5} />
               <span>No analysis data recorded yet</span>
-              <span className="text-[11px] text-neutral-400">Inspect APKs to visualize runtime distribution</span>
             </div>
           )}
         </Card>
 
         {/* Confidence Scores */}
-        <Card className="p-6 border-neutral-800 bg-neutral-900/60">
-          <CardTitle className="text-sm font-semibold mb-4 text-neutral-200">
-            Confidence Levels
+        <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+          <CardTitle className="text-xs font-mono font-medium mb-3 text-[#ffffff]">
+            Confidence levels
           </CardTitle>
           {confData.length > 0 ? (
-            <div className="h-64 flex items-center justify-center">
+            <div className="h-56 flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={confData}>
-                  <XAxis dataKey="name" stroke="#525252" fontSize={11} />
-                  <YAxis stroke="#525252" fontSize={11} allowDecimals={false} />
+                  <XAxis dataKey="name" stroke="#7a7a7a" fontSize={10} fontFamily="monospace" />
+                  <YAxis stroke="#7a7a7a" fontSize={10} fontFamily="monospace" allowDecimals={false} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#171717",
-                      borderColor: "#262626",
-                      borderRadius: "8px",
+                      backgroundColor: "#070707",
+                      borderColor: "#1f1f1f",
+                      borderRadius: "3px",
                       color: "#fff",
-                      fontSize: "12px",
+                      fontSize: "11px",
+                      fontFamily: "monospace",
                     }}
                   />
-                  <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="count" fill="#4ade80" radius={[2, 2, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-64 flex flex-col items-center justify-center text-xs text-neutral-400 text-center p-4">
-              <TrendingUp className="h-8 w-8 text-neutral-600 mb-2" />
-              <span>No confidence distribution yet</span>
-              <span className="text-[11px] text-neutral-400">Detections will display confidence tiers here</span>
+            <div className="h-56 flex flex-col items-center justify-center text-xs font-mono text-[#7a7a7a] text-center p-4">
+              <TrendingUp className="h-6 w-6 text-[#2a2a2a] mb-2" strokeWidth={1.5} />
+              <span>No confidence records yet</span>
             </div>
           )}
         </Card>
       </div>
 
       {/* Quick Launch Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div
           onClick={() => setCurrentPage("inspector")}
-          className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/40 hover:bg-neutral-900 hover:border-indigo-500/40 cursor-pointer transition-all duration-150 flex items-center justify-between group"
+          className="p-3.5 rounded-[3px] border border-[#1f1f1f] bg-[#070707] hover:bg-[#0e0e0e] hover:border-[#2a2a2a] cursor-pointer transition-colors flex items-center justify-between group"
         >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400">
-              <Upload className="h-5 w-5" />
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-[2px] bg-[#000000] border border-[#1f1f1f] text-[#4ade80]">
+              <Upload className="h-4 w-4" strokeWidth={1.5} />
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-neutral-200">Inspect APK File</h4>
-              <p className="text-[11px] text-neutral-400">Import single APK or bundle</p>
+              <h4 className="text-xs font-mono font-medium text-[#ffffff]">Inspect APK file</h4>
+              <p className="text-[11px] font-mono text-[#7a7a7a]">Import package binary</p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-neutral-400 group-hover:text-indigo-400 transition-colors" />
+          <ArrowRight className="h-3.5 w-3.5 text-[#7a7a7a] group-hover:text-[#4ade80] transition-colors" strokeWidth={1.5} />
         </div>
 
         <div
           onClick={() => setCurrentPage("analyzer")}
-          className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/40 hover:bg-neutral-900 hover:border-indigo-500/40 cursor-pointer transition-all duration-150 flex items-center justify-between group"
+          className="p-3.5 rounded-[3px] border border-[#1f1f1f] bg-[#070707] hover:bg-[#0e0e0e] hover:border-[#2a2a2a] cursor-pointer transition-colors flex items-center justify-between group"
         >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-              <PackageSearch className="h-5 w-5" />
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-[2px] bg-[#000000] border border-[#1f1f1f] text-[#4ade80]">
+              <PackageSearch className="h-4 w-4" strokeWidth={1.5} />
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-neutral-200">Analyze Installed App</h4>
-              <p className="text-[11px] text-neutral-400">Pull package from device</p>
+              <h4 className="text-xs font-mono font-medium text-[#ffffff]">Analyze device app</h4>
+              <p className="text-[11px] font-mono text-[#7a7a7a]">Pull via ADB</p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-neutral-400 group-hover:text-emerald-400 transition-colors" />
+          <ArrowRight className="h-3.5 w-3.5 text-[#7a7a7a] group-hover:text-[#4ade80] transition-colors" strokeWidth={1.5} />
         </div>
 
         <div
           onClick={() => setCurrentPage("explorer")}
-          className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/40 hover:bg-neutral-900 hover:border-indigo-500/40 cursor-pointer transition-all duration-150 flex items-center justify-between group"
+          className="p-3.5 rounded-[3px] border border-[#1f1f1f] bg-[#070707] hover:bg-[#0e0e0e] hover:border-[#2a2a2a] cursor-pointer transition-colors flex items-center justify-between group"
         >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-sky-500/10 text-sky-400">
-              <BookOpen className="h-5 w-5" />
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-[2px] bg-[#000000] border border-[#1f1f1f] text-[#4ade80]">
+              <BookOpen className="h-4 w-4" strokeWidth={1.5} />
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-neutral-200">Framework Knowledge</h4>
-              <p className="text-[11px] text-neutral-400">Browse 14 supported runtimes</p>
+              <h4 className="text-xs font-mono font-medium text-[#ffffff]">Runtime knowledge</h4>
+              <p className="text-[11px] font-mono text-[#7a7a7a]">14 runtime signatures</p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-neutral-400 group-hover:text-sky-400 transition-colors" />
+          <ArrowRight className="h-3.5 w-3.5 text-[#7a7a7a] group-hover:text-[#4ade80] transition-colors" strokeWidth={1.5} />
         </div>
       </div>
 
       {/* Recent Analyses Table */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60">
-        <div className="flex items-center justify-between mb-4">
-          <CardTitle className="text-sm font-semibold text-neutral-200">
-            Recent Analyses
+      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+        <div className="flex items-center justify-between mb-3">
+          <CardTitle className="text-xs font-mono font-medium text-[#ffffff]">
+            Recent analyses
           </CardTitle>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setCurrentPage("history")}
-            className="text-xs text-indigo-400 hover:text-indigo-300"
+            className="text-xs font-mono text-[#4ade80] hover:text-[#3ecb74] hover:bg-transparent p-0 h-auto"
           >
-            View All History →
+            History view →
           </Button>
         </div>
 
         {dashboardStats?.recent_analyses && dashboardStats.recent_analyses.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-neutral-800 text-neutral-400 font-mono">
+            <table className="w-full text-left text-xs font-mono">
+              <thead className="border-b border-[#1f1f1f] text-[#7a7a7a]">
                 <tr>
                   <th className="py-2 pr-4">Timestamp</th>
-                  <th className="py-2 pr-4">Application / File</th>
+                  <th className="py-2 pr-4">File</th>
                   <th className="py-2 pr-4">Package</th>
                   <th className="py-2 pr-4">Framework</th>
                   <th className="py-2 pr-4">Confidence</th>
                   <th className="py-2 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60 font-mono">
+              <tbody className="divide-y divide-[#1f1f1f] tabular-nums">
                 {dashboardStats.recent_analyses.map((item) => (
                   <tr
                     key={item.id}
                     onClick={() => viewAnalysis(item.id)}
-                    className="hover:bg-neutral-800/40 cursor-pointer transition-colors"
+                    className="hover:bg-[#0e0e0e] cursor-pointer transition-colors"
                   >
-                    <td className="py-2.5 pr-4 text-neutral-400">{formatDate(item.timestamp)}</td>
-                    <td className="py-2.5 pr-4 font-semibold text-neutral-200 truncate max-w-xs font-sans">
+                    <td className="py-2 pr-4 text-[#7a7a7a]">{formatDate(item.timestamp)}</td>
+                    <td className="py-2 pr-4 font-medium text-[#ffffff] truncate max-w-xs">
                       {item.filename}
                     </td>
-                    <td className="py-2.5 pr-4 text-neutral-400 truncate max-w-xs">
+                    <td className="py-2 pr-4 text-[#7a7a7a] truncate max-w-xs">
                       {item.package_name || "N/A"}
                     </td>
-                    <td className="py-2.5 pr-4">
-                      <span className="font-sans font-semibold text-indigo-300">
+                    <td className="py-2 pr-4">
+                      <span className="text-[#4ade80]">
                         {item.primary_framework ? frameworkDisplayName(item.primary_framework) : "Unknown"}
                       </span>
                     </td>
-                    <td className="py-2.5 pr-4">
-                      <Badge variant="outline" className="text-[10px]">
+                    <td className="py-2 pr-4">
+                      <Badge variant="outline" className="text-[9px]">
                         {item.confidence || "N/A"}
                       </Badge>
                     </td>
-                    <td className="py-2.5 text-right font-sans">
-                      <span className="text-indigo-400 hover:underline">Inspect</span>
+                    <td className="py-2 text-right">
+                      <span className="text-[#4ade80] hover:underline">Inspect</span>
                     </td>
                   </tr>
                 ))}
@@ -314,8 +314,8 @@ export function DashboardPage() {
             </table>
           </div>
         ) : (
-          <div className="p-8 text-center text-xs text-neutral-400">
-            No analyses have been conducted yet. Import an APK or connect an Android device to start.
+          <div className="p-6 text-center text-xs font-mono text-[#7a7a7a]">
+            No analyses recorded yet. Drop an APK or connect an Android device to inspect.
           </div>
         )}
       </Card>

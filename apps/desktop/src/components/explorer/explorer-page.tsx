@@ -285,36 +285,36 @@ export function FrameworkExplorerPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header with Search */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-neutral-100 flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-indigo-400" />
-              Framework Architecture Library
+            <h3 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+              <BookOpen className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+              Framework architecture library
             </h3>
-            <p className="text-xs text-neutral-400 mt-1">
+            <p className="text-[11px] font-mono text-[#7a7a7a] mt-0.5">
               Inspection signatures, binary markers, and heuristics for 14 supported Android frameworks.
             </p>
           </div>
 
-          <div className="relative w-72">
-            <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-neutral-400" />
+          <div className="relative w-64">
+            <Search className="h-3.5 w-3.5 absolute left-2.5 top-2.5 text-[#7a7a7a]" strokeWidth={1.5} />
             <Input
               placeholder="Search frameworks..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 text-xs h-8 border-neutral-700 bg-neutral-950"
+              className="pl-8 text-xs font-mono h-8 border-[#1f1f1f] bg-[#000000] rounded-[3px]"
             />
           </div>
         </div>
       </Card>
 
       {/* Main Content Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Framework Selector Sidebar */}
-        <div className="md:col-span-4 space-y-2">
+        <div className="md:col-span-4 space-y-1.5">
           {filtered.map((doc) => {
             const isSelected = doc.id === selectedDoc.id;
 
@@ -322,19 +322,19 @@ export function FrameworkExplorerPage() {
               <div
                 key={doc.id}
                 onClick={() => setSelectedDoc(doc)}
-                className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                className={`p-2.5 rounded-[3px] border cursor-pointer font-mono transition-colors ${
                   isSelected
-                    ? "border-indigo-500 bg-neutral-900 shadow-sm"
-                    : "border-neutral-800/80 bg-neutral-950/60 hover:bg-neutral-900/60"
+                    ? "border-[#4ade80] bg-[#0e0e0e]"
+                    : "border-[#1f1f1f] bg-[#070707] hover:border-[#2a2a2a]"
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
                     <span
-                      className="h-2.5 w-2.5 rounded-full"
+                      className="h-2 w-2 rounded-full"
                       style={{ backgroundColor: doc.accentColor }}
                     />
-                    <h4 className="text-xs font-bold text-neutral-100">
+                    <h4 className="text-xs font-medium text-[#ffffff]">
                       {doc.name}
                     </h4>
                   </div>
@@ -342,7 +342,7 @@ export function FrameworkExplorerPage() {
                     {doc.category}
                   </Badge>
                 </div>
-                <p className="text-[11px] text-neutral-400 truncate mt-1">
+                <p className="text-[11px] text-[#7a7a7a] truncate mt-1">
                   {doc.tagline}
                 </p>
               </div>
@@ -352,39 +352,39 @@ export function FrameworkExplorerPage() {
 
         {/* Selected Framework Documentation */}
         <div className="md:col-span-8">
-          <Card className="p-6 border-neutral-800 bg-neutral-900/80 space-y-6">
-            <div className="border-b border-neutral-800/80 pb-4">
+          <Card className="p-5 border-[#1f1f1f] bg-[#070707] rounded-[3px] space-y-5">
+            <div className="border-b border-[#1f1f1f] pb-3">
               <div className="flex items-center gap-2 mb-1">
                 <span
-                  className="h-3 w-3 rounded-full"
+                  className="h-2.5 w-2.5 rounded-full"
                   style={{ backgroundColor: selectedDoc.accentColor }}
                 />
-                <h3 className="text-xl font-bold text-neutral-100">
+                <h3 className="text-base font-mono font-medium text-[#ffffff]">
                   {selectedDoc.name}
                 </h3>
-                <Badge variant="outline" className="text-[10px] ml-2">
+                <Badge variant="outline" className="text-[9px] ml-2">
                   {selectedDoc.category}
                 </Badge>
               </div>
-              <p className="text-xs text-indigo-300 font-mono">
+              <p className="text-xs text-[#4ade80] font-mono">
                 {selectedDoc.tagline}
               </p>
-              <p className="text-xs text-neutral-300 mt-3 leading-relaxed">
+              <p className="text-xs font-mono text-[#7a7a7a] mt-2 leading-relaxed">
                 {selectedDoc.description}
               </p>
             </div>
 
             {/* Typical File Paths */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <FolderTree className="h-3.5 w-3.5 text-indigo-400" />
-                Typical APK File & Directory Markers
+            <div className="space-y-1.5">
+              <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a] flex items-center gap-1.5">
+                <FolderTree className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+                Directory and file markers
               </h4>
               <div className="space-y-1">
                 {selectedDoc.typicalFiles.map((file, idx) => (
                   <div
                     key={idx}
-                    className="p-2 rounded bg-neutral-950 border border-neutral-800 font-mono text-xs text-neutral-300"
+                    className="p-1.5 rounded-[2px] bg-[#000000] border border-[#1f1f1f] font-mono text-xs text-[#ffffff]"
                   >
                     {file}
                   </div>
@@ -393,19 +393,19 @@ export function FrameworkExplorerPage() {
             </div>
 
             {/* Native Libraries */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <Cpu className="h-3.5 w-3.5 text-emerald-400" />
-                Native Libraries (.so)
+            <div className="space-y-1.5">
+              <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a] flex items-center gap-1.5">
+                <Cpu className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+                Native libraries (.so)
               </h4>
               {selectedDoc.nativeLibs.length === 0 ? (
-                <p className="text-xs text-neutral-400 italic">No exclusive native libraries bundled.</p>
+                <p className="text-xs font-mono text-[#7a7a7a] italic">No exclusive native libraries bundled.</p>
               ) : (
                 <div className="space-y-1">
                   {selectedDoc.nativeLibs.map((lib, idx) => (
                     <div
                       key={idx}
-                      className="p-2 rounded bg-neutral-950 border border-neutral-800 font-mono text-xs text-emerald-300"
+                      className="p-1.5 rounded-[2px] bg-[#000000] border border-[#1f1f1f] font-mono text-xs text-[#4ade80]"
                     >
                       {lib}
                     </div>
@@ -415,16 +415,16 @@ export function FrameworkExplorerPage() {
             </div>
 
             {/* DEX Classes */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <Code2 className="h-3.5 w-3.5 text-sky-400" />
-                DEX Bytecode Class Descriptors
+            <div className="space-y-1.5">
+              <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a] flex items-center gap-1.5">
+                <Code2 className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+                DEX bytecode class descriptors
               </h4>
               <div className="space-y-1">
                 {selectedDoc.dexPatterns.map((pat, idx) => (
                   <div
                     key={idx}
-                    className="p-2 rounded bg-neutral-950 border border-neutral-800 font-mono text-xs text-sky-300"
+                    className="p-1.5 rounded-[2px] bg-[#000000] border border-[#1f1f1f] font-mono text-xs text-[#ffffff]"
                   >
                     {pat}
                   </div>
@@ -433,11 +433,11 @@ export function FrameworkExplorerPage() {
             </div>
 
             {/* Limitations Notice */}
-            <div className="p-3.5 rounded-lg border border-amber-900/30 bg-amber-950/20 text-xs text-amber-300/90 flex gap-2">
+            <div className="p-3 rounded-[3px] border border-amber-900/30 bg-[#160e04] text-xs font-mono text-amber-300 flex gap-2">
               <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
               <div>
-                <span className="font-semibold block mb-0.5">Detection Considerations:</span>
-                <p className="text-neutral-300">{selectedDoc.limitations}</p>
+                <span className="font-semibold block mb-0.5">Detection considerations:</span>
+                <p className="text-[#7a7a7a]">{selectedDoc.limitations}</p>
               </div>
             </div>
           </Card>

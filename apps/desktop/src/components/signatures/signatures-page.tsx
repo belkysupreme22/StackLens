@@ -94,17 +94,17 @@ export function CustomSignaturesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Top Header Card */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Card className="p-4 border-[#1f1f1f] bg-[#070707] rounded-[3px]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-neutral-100 flex items-center gap-2">
-              <Fingerprint className="h-5 w-5 text-indigo-400" />
-              Custom Framework Signatures
+            <h3 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+              <Fingerprint className="h-3.5 w-3.5 text-[#4ade80]" strokeWidth={1.5} />
+              Custom framework signatures
             </h3>
-            <p className="text-xs text-neutral-400 mt-1">
-              Author user-defined pattern definitions, native library indicators, and class descriptors to extend the detection engine.
+            <p className="text-[11px] font-mono text-[#7a7a7a] mt-0.5">
+              Author pattern definitions, native library indicators, and class descriptors.
             </p>
           </div>
 
@@ -112,66 +112,66 @@ export function CustomSignaturesPage() {
             <Button
               size="sm"
               onClick={() => setAddDialogOpen(true)}
-              className="text-xs h-8 gap-1.5"
+              className="text-xs font-mono h-8 rounded-[3px] gap-1.5"
             >
               <Plus className="h-3.5 w-3.5" />
-              Add Signature
+              Add signature
             </Button>
           </div>
         </div>
       </Card>
 
       {notice && (
-        <div className="p-3 text-xs rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+        <div className="p-2.5 text-xs font-mono rounded-[3px] border border-[#1f1f1f] bg-[#070707] text-[#4ade80]">
           {notice}
         </div>
       )}
 
       {/* User Custom Signatures List */}
       <div>
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">
-          Configured Signatures ({signatures.length})
+        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a] mb-2.5">
+          Configured signatures ({signatures.length})
         </h4>
 
         {signatures.length === 0 ? (
-          <Card className="p-8 border-neutral-800 bg-neutral-900/40 text-center text-xs text-neutral-400">
-            No custom signatures configured. Click "Add Signature" to define custom detection patterns.
+          <Card className="p-6 border-[#1f1f1f] bg-[#070707] rounded-[3px] text-center text-xs font-mono text-[#7a7a7a]">
+            No custom signatures configured. Click "Add signature" to define custom detection patterns.
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {signatures.map((sig) => (
               <Card
                 key={sig.id}
-                className="p-4 border-neutral-800 bg-neutral-900/60 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px] flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-neutral-100">{sig.name}</span>
-                    <Badge variant="outline" className="text-[10px] text-indigo-400 border-indigo-500/30">
+                    <span className="font-medium text-xs text-[#ffffff]">{sig.name}</span>
+                    <Badge variant="outline" className="text-[9px] text-[#4ade80] border-[#1f1f1f]">
                       {sig.framework}
                     </Badge>
                     <Badge
                       variant={sig.enabled ? "success" : "secondary"}
-                      className="text-[10px] cursor-pointer"
+                      className="text-[9px] cursor-pointer"
                       onClick={() => handleToggle(sig)}
                     >
                       {sig.enabled ? "Active" : "Disabled"}
                     </Badge>
                   </div>
-                  <p className="text-xs text-neutral-400">{sig.evidence_description}</p>
-                  <div className="flex flex-wrap gap-2 text-[11px] font-mono text-neutral-400 pt-1">
+                  <p className="text-xs text-[#7a7a7a]">{sig.evidence_description}</p>
+                  <div className="flex flex-wrap gap-1.5 text-[10px] text-[#7a7a7a] pt-0.5">
                     {sig.native_lib_patterns.length > 0 && (
-                      <span className="bg-neutral-950 px-2 py-0.5 rounded border border-neutral-800">
+                      <span className="bg-[#000000] px-1.5 py-0.5 rounded-[2px] border border-[#1f1f1f]">
                         Libs: {sig.native_lib_patterns.join(", ")}
                       </span>
                     )}
                     {sig.class_patterns.length > 0 && (
-                      <span className="bg-neutral-950 px-2 py-0.5 rounded border border-neutral-800">
+                      <span className="bg-[#000000] px-1.5 py-0.5 rounded-[2px] border border-[#1f1f1f]">
                         Classes: {sig.class_patterns.join(", ")}
                       </span>
                     )}
                     {sig.file_patterns.length > 0 && (
-                      <span className="bg-neutral-950 px-2 py-0.5 rounded border border-neutral-800">
+                      <span className="bg-[#000000] px-1.5 py-0.5 rounded-[2px] border border-[#1f1f1f]">
                         Files: {sig.file_patterns.join(", ")}
                       </span>
                     )}
@@ -181,10 +181,10 @@ export function CustomSignaturesPage() {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => handleDelete(sig.id)}
-                    className="p-1.5 rounded text-neutral-400 hover:text-rose-400 hover:bg-neutral-800 transition-colors"
+                    className="p-1 rounded-[2px] text-[#7a7a7a] hover:text-rose-400 hover:bg-[#141414] transition-colors"
                     title="Delete signature"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
                   </button>
                 </div>
               </Card>
@@ -195,16 +195,16 @@ export function CustomSignaturesPage() {
 
       {/* Built-in Engine Signatures (Protected) */}
       <div>
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3 flex items-center gap-1.5">
-          <Shield className="h-3.5 w-3.5 text-indigo-400" />
-          Built-in Engine Signatures (Read-Only)
+        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#7a7a7a] mb-2.5 flex items-center gap-1.5">
+          <Shield className="h-3 w-3 text-[#4ade80]" strokeWidth={1.5} />
+          Built-in signatures (read-only)
         </h4>
 
-        <Card className="p-4 border-neutral-800 bg-neutral-900/40 text-xs text-neutral-400 space-y-2">
+        <Card className="p-3.5 border-[#1f1f1f] bg-[#070707] rounded-[3px] text-xs font-mono text-[#7a7a7a] space-y-2">
           <p>
-            Built-in signatures are compiled directly into the Rust detection engine core for maximum performance, safety against regex catastrophic backtracking, and deterministic offline scoring.
+            Built-in signatures are compiled directly into the Rust detection engine core for maximum performance, safety against regex backtracking, and deterministic offline scoring.
           </p>
-          <div className="flex flex-wrap gap-1.5 pt-1">
+          <div className="flex flex-wrap gap-1 pt-1">
             {[
               "Flutter",
               "React Native",
