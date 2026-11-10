@@ -130,59 +130,48 @@ a {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Signature farmjs keyframe animations */
+/* Signature rize.roggy.site v2 keyframe animations */
 
-/* 1. Terminal Typing Effect */
-@keyframes farm-terminal-command-type {
-  0% { opacity: 1; width: 0; }
-  2% { opacity: 1; width: 0; animation-timing-function: steps(8); }
-  7%, 88% { opacity: 1; width: 100%; }
-  94%, 99.99% { opacity: 0; width: 100%; }
-  100% { opacity: 1; width: 0; }
+/* 1. Shimmer */
+@keyframes ios-shimmer {
+  0% { background-position: 150% 0px; }
+  100% { background-position: -50% 0px; }
 }
 
-.animate-typewriter {
-  animation: farm-terminal-command-type 9600ms ease infinite;
+.ios-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: ios-shimmer 1600ms ease-in-out infinite;
 }
 
-/* 2. Cursor Hard Blink */
-@keyframes farm-terminal-cursor-blink {
-  0%, 48% { opacity: 1; }
-  49%, 100% { opacity: 0; }
+/* 2. Entrance Screen In */
+@keyframes md-screen-in-left {
+  0% { opacity: 0; transform: translateX(-12px); }
+  100% { opacity: 1; transform: translateX(0px); }
 }
 
-.animate-blink {
-  animation: farm-terminal-cursor-blink 800ms linear infinite;
+.animate-screen-in {
+  animation: md-screen-in-left 400ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
 }
 
-/* 3. Refusal Shake (for invalid inputs) */
-@keyframes iso-refuse {
-  20%, 60% { transform: translate(-2px); }
-  40%, 80% { transform: translate(2px); }
+/* 3. Pop In */
+@keyframes ios-pop-in {
+  0% { opacity: 0; transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
-.animate-refusal {
-  animation: iso-refuse 450ms ease-in-out both;
+.animate-pop-in {
+  animation: ios-pop-in 150ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-/* 4. Pulse Pip */
-@keyframes farm-status-pulse {
-  0%, 100% { opacity: 0.6; transform: scale(0.95); }
-  50% { opacity: 1; transform: scale(1.05); }
+/* 4. Scrim fade */
+@keyframes android-scrim-out {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-.animate-status-pulse {
-  animation: farm-status-pulse 2000ms ease-in-out infinite;
-}
-
-/* 5. Line Drawing Reveal */
-@keyframes farm-route-draw {
-  from { stroke-dashoffset: 100; }
-  to { stroke-dashoffset: 0; }
-}
-
-.animate-draw {
-  animation: farm-route-draw 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.animate-scrim-out {
+  animation: android-scrim-out 180ms linear both;
 }
 
 /* Disable motion when prefers-reduced-motion is active */
