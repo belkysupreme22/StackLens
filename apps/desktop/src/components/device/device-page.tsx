@@ -139,7 +139,7 @@ export function DevicePage() {
           appName: profile.appName,
           stage: 4,
           stageLabel: "Evaluating framework runtimes",
-          details: `Running 14 engine detectors against binary signatures...`,
+          details: `Matching runtime signatures against binary evidence...`,
           error: null,
         });
       }, 2400);

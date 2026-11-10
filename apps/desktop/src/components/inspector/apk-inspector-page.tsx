@@ -150,9 +150,9 @@ export function ApkInspectorPage() {
       {/* Capabilities Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
         <div className="p-5 rounded-[20px] border border-[#26262a] bg-[#131315] space-y-1.5">
-          <span className="text-sm font-semibold text-[#ffffff] tracking-tight">14 framework runtimes</span>
+          <span className="text-sm font-semibold text-[#ffffff] tracking-tight">Framework intelligence</span>
           <p className="text-xs text-[#8c8b8f] leading-relaxed">
-            Identifies modern engines, hybrid wrappers, and native Android toolkits.
+            Identifies modern hybrid engines, game runtimes, and native Android toolkits.
           </p>
         </div>
 

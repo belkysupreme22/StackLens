@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Layers,
   Smartphone,
@@ -11,49 +11,16 @@ import {
   CheckCircle2,
   PieChart as PieIcon,
   BarChart3,
+  Cpu,
+  Boxes,
+  Compass,
 } from "lucide-react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
 import { useAppStore } from "@/stores/app-store";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { frameworkColor, frameworkDisplayName, formatDate } from "@/lib/utils";
 import * as commands from "@/lib/commands";
-
-// Custom high-craft tooltip for Recharts
-function CustomTooltip({ active, payload, label }: any) {
-  if (active && payload && payload.length) {
-    const data = payload[0];
-    return (
-      <div className="rounded-[14px] border border-[#26262a] bg-[#18181b]/95 p-3 shadow-xl backdrop-blur-md text-xs select-none">
-        <div className="font-semibold text-[#ffffff] flex items-center gap-2">
-          {data.payload.color && (
-            <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: data.payload.color }}
-            />
-          )}
-          <span>{data.name || label}</span>
-        </div>
-        <div className="mt-1 text-[#8c8b8f] flex items-center justify-between gap-4">
-          <span>Total packages:</span>
-          <span className="font-mono text-[#ffffff] font-medium">{data.value}</span>
-        </div>
-      </div>
-    );
-  }
-  return null;
-}
 
 export function DashboardPage() {
   const {
@@ -62,6 +29,8 @@ export function DashboardPage() {
     setCurrentPage,
     setActiveAnalysis,
   } = useAppStore();
+
+  const [hoveredFw, setHoveredFw] = useState<string | null>(null);
 
   useEffect(() => {
     loadDashboardStats();
@@ -79,45 +48,74 @@ export function DashboardPage() {
     }
   };
 
+  const total = dashboardStats?.total_analyses || 0;
+  const successRate =
+    total > 0
+      ? Math.round(((dashboardStats?.success_count || 0) / total) * 100)
+      : 100;
+
+  // Framework distribution entries
   const fwEntries = dashboardStats?.framework_distribution
     ? Object.entries(dashboardStats.framework_distribution)
     : [];
 
-  const fwData = fwEntries.length > 0
-    ? fwEntries.map(([fw, count]) => ({
+  // Ranked framework list
+  const rankedFrameworks = fwEntries
+    .map(([fw, count]) => {
+      const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+      return {
+        id: fw,
         name: frameworkDisplayName(fw),
-        value: count,
-        color: frameworkColor(fw),
-      }))
-    : [
-        // Default preview distributions when starting fresh
-        { name: "Flutter", value: 38, color: "#027DFD" },
-        { name: "React Native", value: 29, color: "#61DAFB" },
-        { name: "Jetpack Compose", value: 24, color: "#4285F4" },
-        { name: "Unity", value: 16, color: "#47ab61" },
-        { name: "Native Kotlin", value: 18, color: "#7F52FF" },
-      ];
-
-  const confEntries = dashboardStats?.confidence_distribution
-    ? Object.entries(dashboardStats.confidence_distribution)
-    : [];
-
-  const confData = confEntries.length > 0
-    ? confEntries.map(([conf, count]) => ({
-        name: conf,
         count,
-      }))
-    : [
-        { name: "High", count: 68 },
-        { name: "Medium", count: 24 },
-        { name: "Low", count: 9 },
-        { name: "Inconclusive", count: 4 },
-      ];
+        percentage,
+        color: frameworkColor(fw),
+        category: getFrameworkCategory(fw),
+      };
+    })
+    .sort((a, b) => b.count - a.count);
 
-  const total = dashboardStats?.total_analyses || 0;
-  const successRate = total > 0
-    ? Math.round(((dashboardStats?.success_count || 0) / total) * 100)
-    : 100;
+  // Confidence entries
+  const confLevels = [
+    { key: "High", label: "High Confidence", color: "#47ab61", desc: "Multiple confirmed file and bytecode indicators" },
+    { key: "Medium", label: "Medium Confidence", color: "#38bdf8", desc: "Strong primary runtime symbols verified" },
+    { key: "Low", label: "Low Confidence", color: "#fbbf24", desc: "Supporting indicators with partial evidence" },
+    { key: "Inconclusive", label: "Inconclusive", color: "#8c8b8f", desc: "Obfuscated or non-standard framework bundle" },
+  ];
+
+  const confStats = confLevels.map((lvl) => {
+    const dist = dashboardStats?.confidence_distribution as Record<string, number> | undefined;
+    const count = (dist && dist[lvl.key]) || 0;
+    const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+    return { ...lvl, count, percentage };
+  });
+
+  // Architectural category groups
+  const categoryGroups = [
+    {
+      name: "Cross-Platform & Hybrid",
+      desc: "Flutter, React Native, Capacitor, Cordova, Ionic",
+      count: rankedFrameworks
+        .filter((f) => f.category === "Cross-Platform")
+        .reduce((sum, f) => sum + f.count, 0),
+      color: "#027DFD",
+    },
+    {
+      name: "Native Android",
+      desc: "Jetpack Compose, Kotlin, Java Toolkits",
+      count: rankedFrameworks
+        .filter((f) => f.category === "Native")
+        .reduce((sum, f) => sum + f.count, 0),
+      color: "#4285F4",
+    },
+    {
+      name: "Game Engines",
+      desc: "Unity, Unreal Engine, Godot Runtimes",
+      count: rankedFrameworks
+        .filter((f) => f.category === "Gaming")
+        .reduce((sum, f) => sum + f.count, 0),
+      color: "#47ab61",
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -131,7 +129,7 @@ export function DashboardPage() {
             </div>
           </div>
           <div className="mt-3 text-2xl font-bold text-[#ffffff] tracking-tight tabular-nums">
-            {dashboardStats?.total_analyses || 0}
+            {total}
           </div>
           <p className="mt-1 text-xs text-[#8c8b8f]">Analyzed application packages</p>
         </Card>
@@ -146,20 +144,20 @@ export function DashboardPage() {
           <div className="mt-3 text-2xl font-bold text-[#47ab61] tracking-tight tabular-nums">
             {successRate}%
           </div>
-          <p className="mt-1 text-xs text-[#8c8b8f]">Confident framework classification</p>
+          <p className="mt-1 text-xs text-[#8c8b8f]">Verified framework attribution</p>
         </Card>
 
         <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Signatures</span>
+            <span className="text-xs font-semibold text-[#8c8b8f] tracking-tight">Coverage</span>
             <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
-              <ShieldCheck className="h-4 w-4" strokeWidth={1.5} />
+              <Cpu className="h-4 w-4" strokeWidth={1.5} />
             </div>
           </div>
           <div className="mt-3 text-2xl font-bold text-[#ffffff] tracking-tight tabular-nums">
-            14
+            Full Catalog
           </div>
-          <p className="mt-1 text-xs text-[#8c8b8f]">Active runtime engine detectors</p>
+          <p className="mt-1 text-xs text-[#8c8b8f]">Cross-platform, native, & games</p>
         </Card>
 
         <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] shadow-sm">
@@ -172,126 +170,201 @@ export function DashboardPage() {
           <div className="mt-3 text-2xl font-bold text-[#ffffff] tracking-tight tabular-nums">
             {dashboardStats?.connected_devices || 0}
           </div>
-          <p className="mt-1 text-xs text-[#8c8b8f]">Connected Android hardware</p>
+          <p className="mt-1 text-xs text-[#8c8b8f]">Connected Android targets</p>
         </Card>
       </div>
 
-      {/* Visual Analytics Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Framework Distribution Donut Chart */}
-        <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-4 shadow-sm">
+      {/* Visual Analytics Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left: Framework Architecture Distribution (Span 7) */}
+        <Card className="lg:col-span-7 p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-5 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-sm font-bold text-[#ffffff] tracking-tight">
                 Framework distribution
               </CardTitle>
               <p className="text-xs text-[#8c8b8f] mt-0.5">
-                Relative share of detected application runtimes
+                Breakdown of detected runtime technologies across inspected packages
               </p>
             </div>
             <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
-              <PieIcon className="h-4 w-4" strokeWidth={1.5} />
+              <Boxes className="h-4 w-4" strokeWidth={1.5} />
             </div>
           </div>
 
-          <div className="h-64 flex flex-col sm:flex-row items-center justify-center gap-6">
-            <div className="h-56 w-56 relative flex items-center justify-center shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={fwData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={62}
-                    outerRadius={88}
-                    paddingAngle={4}
-                    dataKey="value"
-                    stroke="#131315"
-                    strokeWidth={3}
+          {rankedFrameworks.length > 0 ? (
+            <div className="space-y-5">
+              {/* Proportional Stacked Spectrum Bar */}
+              <div className="space-y-2">
+                <div className="h-3 w-full rounded-full bg-[#18181b] border border-[#26262a] p-0.5 flex overflow-hidden">
+                  {rankedFrameworks.map((fw) => (
+                    <div
+                      key={fw.id}
+                      className="h-full first:rounded-l-full last:rounded-r-full transition-all duration-300 relative group cursor-pointer"
+                      style={{
+                        width: `${Math.max(fw.percentage, 4)}%`,
+                        backgroundColor: fw.color,
+                        opacity: hoveredFw && hoveredFw !== fw.id ? 0.35 : 1,
+                      }}
+                      onMouseEnter={() => setHoveredFw(fw.id)}
+                      onMouseLeave={() => setHoveredFw(null)}
+                      title={`${fw.name}: ${fw.count} apps (${fw.percentage}%)`}
+                    />
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-[#8c8b8f]">
+                  <span>Proportional runtime share</span>
+                  <span className="font-mono text-[#ffffff]">{total} total packages</span>
+                </div>
+              </div>
+
+              {/* Framework Rows with Proportional Tracks */}
+              <div className="space-y-3 pt-2">
+                {rankedFrameworks.slice(0, 6).map((fw) => (
+                  <div
+                    key={fw.id}
+                    onMouseEnter={() => setHoveredFw(fw.id)}
+                    onMouseLeave={() => setHoveredFw(null)}
+                    className={`p-3 rounded-[14px] border transition-all ${
+                      hoveredFw === fw.id
+                        ? "bg-[#18181b] border-[#333338]"
+                        : "bg-[#18181b]/50 border-transparent hover:border-[#26262a]"
+                    }`}
                   >
-                    {fwData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-xl font-bold text-[#ffffff] tracking-tight">
-                  {fwData.reduce((acc, curr) => acc + curr.value, 0)}
-                </span>
-                <span className="text-[10px] text-[#8c8b8f] uppercase tracking-wider">
-                  Apps
-                </span>
+                    <div className="flex items-center justify-between text-xs mb-1.5">
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className="h-2.5 w-2.5 rounded-full shrink-0 shadow-sm"
+                          style={{ backgroundColor: fw.color }}
+                        />
+                        <span className="font-semibold text-[#ffffff]">{fw.name}</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#26262a] text-[#8c8b8f]">
+                          {fw.category}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-mono text-[#ffffff] tabular-nums font-semibold">
+                          {fw.percentage}%
+                        </span>
+                        <span className="text-xs font-mono text-[#8c8b8f] tabular-nums">
+                          {fw.count} {fw.count === 1 ? "app" : "apps"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Progress Track */}
+                    <div className="h-1.5 w-full rounded-full bg-[#26262a]/60 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500 ease-out"
+                        style={{
+                          width: `${Math.max(fw.percentage, 2)}%`,
+                          backgroundColor: fw.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="py-16 text-center space-y-3">
+              <div className="flex justify-center">
+                <div className="p-3 rounded-full bg-[#18181b] border border-[#26262a] text-[#8c8b8f]">
+                  <Boxes className="h-6 w-6" strokeWidth={1.5} />
+                </div>
+              </div>
+              <p className="text-xs text-[#8c8b8f] max-w-sm mx-auto">
+                No framework distribution recorded yet. Drop an APK or inspect a connected device app to generate charts.
+              </p>
+            </div>
+          )}
+        </Card>
+
+        {/* Right: Confidence Scorecard & Ecosystem Tiers (Span 5) */}
+        <div className="lg:col-span-5 space-y-5">
+          {/* Confidence Scorecard */}
+          <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-sm font-bold text-[#ffffff] tracking-tight">
+                  Heuristic certainty
+                </CardTitle>
+                <p className="text-xs text-[#8c8b8f] mt-0.5">
+                  Detection confidence across analyzed binaries
+                </p>
+              </div>
+              <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
+                <Compass className="h-4 w-4" strokeWidth={1.5} />
               </div>
             </div>
 
-            {/* Legend chips */}
-            <div className="flex-1 space-y-2 w-full">
-              {fwData.slice(0, 5).map((entry) => (
-                <div
-                  key={entry.name}
-                  className="flex items-center justify-between p-2 rounded-full bg-[#18181b] border border-[#26262a] text-xs"
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <span
-                      className="h-2 w-2 rounded-full shrink-0"
-                      style={{ backgroundColor: entry.color }}
-                    />
-                    <span className="text-[#ffffff] font-medium truncate">{entry.name}</span>
+            <div className="space-y-3.5">
+              {confStats.map((lvl) => (
+                <div key={lvl.key} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-2 w-2 rounded-full shrink-0"
+                        style={{ backgroundColor: lvl.color }}
+                      />
+                      <span className="font-semibold text-[#ffffff]">{lvl.label}</span>
+                    </div>
+                    <div className="flex items-center gap-2 font-mono tabular-nums text-xs">
+                      <span className="font-semibold text-[#ffffff]">{lvl.percentage}%</span>
+                      <span className="text-[#8c8b8f]">({lvl.count})</span>
+                    </div>
                   </div>
-                  <span className="font-mono text-[#8c8b8f] tabular-nums font-semibold">
-                    {entry.value}
-                  </span>
+
+                  <div className="h-2 w-full rounded-full bg-[#18181b] border border-[#26262a] overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500 ease-out"
+                      style={{
+                        width: `${Math.max(lvl.percentage, lvl.count > 0 ? 3 : 0)}%`,
+                        backgroundColor: lvl.color,
+                      }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-[#8c8b8f]">{lvl.desc}</p>
                 </div>
               ))}
             </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Confidence Scores Bar Chart */}
-        <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
+          {/* Technology Tiers */}
+          <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-4 shadow-sm">
+            <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-bold text-[#ffffff] tracking-tight">
-                Confidence levels
+                Ecosystem tiers
               </CardTitle>
-              <p className="text-xs text-[#8c8b8f] mt-0.5">
-                Heuristic certainty breakdown across inspections
-              </p>
+              <span className="text-xs text-[#8c8b8f]">Category breakdown</span>
             </div>
-            <div className="p-2 rounded-full bg-[#18181b] border border-[#26262a] text-[#47ab61]">
-              <BarChart3 className="h-4 w-4" strokeWidth={1.5} />
-            </div>
-          </div>
 
-          <div className="h-64 flex items-center justify-center pt-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={confData} barCategoryGap="25%">
-                <XAxis
-                  dataKey="name"
-                  stroke="#8c8b8f"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={{ stroke: "#26262a" }}
-                />
-                <YAxis
-                  stroke="#8c8b8f"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={{ stroke: "#26262a" }}
-                  allowDecimals={false}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar
-                  dataKey="count"
-                  fill="#47ab61"
-                  radius={[9999, 9999, 9999, 9999]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
+            <div className="space-y-2.5">
+              {categoryGroups.map((cat) => {
+                const pct = total > 0 ? Math.round((cat.count / total) * 100) : 0;
+                return (
+                  <div
+                    key={cat.name}
+                    className="p-3 rounded-[14px] bg-[#18181b] border border-[#26262a] space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-[#ffffff]">{cat.name}</span>
+                      <span className="font-mono text-[#8c8b8f] font-semibold">{cat.count} apps</span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-[#26262a] overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${Math.max(pct, cat.count > 0 ? 4 : 0)}%`, backgroundColor: cat.color }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-[#8c8b8f]">{cat.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
       </div>
 
       {/* Quick Launch Actions */}
@@ -338,7 +411,7 @@ export function DashboardPage() {
             </div>
             <div>
               <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight">Runtime knowledge</h4>
-              <p className="text-xs text-[#8c8b8f]">14 runtime signatures</p>
+              <p className="text-xs text-[#8c8b8f]">Explore framework signatures</p>
             </div>
           </div>
           <ArrowRight className="h-4 w-4 text-[#8c8b8f] group-hover:text-[#47ab61] group-hover:translate-x-1 transition-all" strokeWidth={1.5} />
@@ -420,4 +493,28 @@ export function DashboardPage() {
       </Card>
     </div>
   );
+}
+
+function getFrameworkCategory(framework: string): string {
+  switch (framework) {
+    case "Flutter":
+    case "ReactNative":
+    case "Cordova":
+    case "Capacitor":
+    case "Ionic":
+    case "NativeScript":
+    case "Xamarin":
+    case "DotNetMaui":
+      return "Cross-Platform";
+    case "Unity":
+    case "UnrealEngine":
+    case "Godot":
+      return "Gaming";
+    case "NativeAndroidJava":
+    case "NativeAndroidKotlin":
+    case "JetpackCompose":
+      return "Native";
+    default:
+      return "Runtime";
+  }
 }

@@ -15,12 +15,12 @@ import { Button } from "@/components/ui/button";
 import { AppLogo } from "@/components/ui/app-logo";
 
 const PIPELINE_STEPS = [
-  { label: "Connect ADB Bridge", desc: "Establishing secure shell transport to target device" },
-  { label: "Resolve Package Path", desc: "Querying Android Package Manager for base.apk and splits" },
-  { label: "Stream APK Binary", desc: "Transferring APK payload over USB into local memory sandbox" },
-  { label: "Parse Manifest & Bytecode", desc: "Decoding binary AXML tables and indexing classes.dex" },
-  { label: "Run 14 Framework Detectors", desc: "Matching signatures across Flutter, Compose, Unity, and React Native" },
-  { label: "Synthesize Intelligence", desc: "Weighing confidence scores and building evidence graph" },
+  { label: "Connect ADB bridge", desc: "Establishing secure shell transport to target device" },
+  { label: "Resolve package path", desc: "Querying Android Package Manager for base.apk and splits" },
+  { label: "Stream APK binary", desc: "Transferring APK payload over USB into local memory sandbox" },
+  { label: "Parse manifest & bytecode", desc: "Decoding binary AXML tables and indexing classes.dex" },
+  { label: "Analyze framework runtimes", desc: "Evaluating binary signatures, native symbols, and bytecode structures" },
+  { label: "Synthesize intelligence", desc: "Weighing confidence scores and building evidence graph" },
 ];
 
 export function FullscreenPullLoader() {

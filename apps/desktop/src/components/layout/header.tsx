@@ -31,7 +31,7 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
   },
   explorer: {
     title: "Framework explorer",
-    subtitle: "Explore runtime signatures across 14 supported frameworks.",
+    subtitle: "Explore runtime signatures across supported Android frameworks.",
   },
   history: {
     title: "Analysis history",

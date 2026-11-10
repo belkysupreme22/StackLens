@@ -295,7 +295,7 @@ export function FrameworkExplorerPage() {
               Framework architecture library
             </h3>
             <p className="text-[11px] font-mono text-[#8c8b8f] mt-0.5">
-              Inspection signatures, binary markers, and heuristics for 14 supported Android frameworks.
+              Inspection signatures, binary markers, and heuristics for supported Android frameworks.
             </p>
           </div>
 
