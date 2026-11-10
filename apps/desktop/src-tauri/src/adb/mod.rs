@@ -254,4 +254,42 @@ impl AdbManager {
 
         primary_apk.ok_or_else(|| "No valid APK could be retrieved".to_string())
     }
+
+    /// Extract the base64-encoded app icon from an installed package on a device
+    pub fn get_package_icon(&self, serial: &str, package_name: &str) -> Result<Option<String>, String> {
+        let script = format!(
+            "APK=$(pm path {pkg} 2>/dev/null | head -n 1 | cut -d: -f2); \
+             if [ -n \"$APK\" ]; then \
+               ICON=$(unzip -l \"$APK\" 2>/dev/null | grep -iE 'res/(mipmap|drawable).*(ic_launcher|app_icon|logo).*\\.(png|webp)' | tail -n 1 | awk '{{print $NF}}'); \
+               if [ -n \"$ICON\" ]; then \
+                 unzip -p \"$APK\" \"$ICON\" 2>/dev/null | base64 | tr -d '\\r\\n'; \
+               fi; \
+             fi",
+            pkg = package_name
+        );
+
+        let output = Command::new(&self.adb_path)
+            .args(["-s", serial, "shell", &script])
+            .output()
+            .map_err(|e| format!("Failed to extract package icon: {e}"))?;
+
+        if !output.status.success() {
+            return Ok(None);
+        }
+
+        let b64 = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        if b64.is_empty() {
+            return Ok(None);
+        }
+
+        let mime = if b64.starts_with("iVBORw0KGgo") {
+            "image/png"
+        } else if b64.starts_with("UklGR") {
+            "image/webp"
+        } else {
+            "image/png"
+        };
+
+        Ok(Some(format!("data:{mime};base64,{b64}")))
+    }
 }

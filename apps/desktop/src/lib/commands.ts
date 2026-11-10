@@ -55,6 +55,16 @@ export async function getDevicePackages(
   return invoke<string[]>("get_device_packages", { serial });
 }
 
+export async function getDevicePackageIcon(
+  serial: string,
+  packageName: string
+): Promise<string | null> {
+  return invoke<string | null>("get_package_icon", {
+    serial,
+    packageName,
+  });
+}
+
 export async function pullPackageApk(
   serial: string,
   packageName: string

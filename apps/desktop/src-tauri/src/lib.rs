@@ -33,6 +33,7 @@ pub fn run() {
             commands::devices::check_adb_available,
             commands::devices::list_devices,
             commands::devices::get_device_packages,
+            commands::devices::get_package_icon,
             commands::devices::pull_and_analyze_package,
             // History
             commands::history::get_analysis_history,

@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import * as commands from "@/lib/commands";
 import { resolveAppProfile, AppProfile } from "@/lib/package-resolver";
+import { AppLogo } from "@/components/ui/app-logo";
 
 export function DevicePage() {
   const {
@@ -493,16 +494,15 @@ export function DevicePage() {
                   >
                     {/* App Icon + Title + Package ID */}
                     <div className="flex items-center gap-3.5 min-w-0">
-                      {/* Stylized App Icon with deterministic brand gradient */}
-                      <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] font-bold text-xs text-[#ffffff] shadow-sm"
-                        style={{
-                          backgroundColor: app.brandColor,
-                          boxShadow: `0 4px 14px ${app.brandColor}33`,
-                        }}
-                      >
-                        {app.initials}
-                      </div>
+                      {/* Real App Icon (Device-extracted or Official Vector Brand Logo) */}
+                      <AppLogo
+                        packageName={app.packageName}
+                        appName={app.appName}
+                        serial={selectedDeviceSerial}
+                        brandColor={app.brandColor}
+                        initials={app.initials}
+                        size="md"
+                      />
 
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">

@@ -52,17 +52,17 @@ export function Sidebar() {
         sidebarCollapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Brand Header - standard 68px */}
-      <div className="flex h-[68px] items-center justify-between border-b border-[#26262a] px-4">
+      {/* Brand Header - sleek 48px height aligned with header */}
+      <div className="flex h-12 items-center justify-between border-b border-[#26262a] px-3.5">
         <div
           onClick={() => setCurrentPage("dashboard")}
-          className="flex items-center gap-3 cursor-pointer overflow-hidden"
+          className="flex items-center gap-2.5 cursor-pointer overflow-hidden"
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full overflow-hidden shadow-sm">
-            <img src="/stacklens-icon.svg" alt="StackLens" className="h-8 w-8 object-contain" />
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full overflow-hidden shadow-sm">
+            <img src="/stacklens-icon.svg" alt="StackLens" className="h-7 w-7 object-contain" />
           </div>
           {!sidebarCollapsed && (
-            <div className="flex items-center gap-1.5 font-bold text-sm tracking-tight text-[#ffffff]">
+            <div className="flex items-center gap-1 font-bold text-xs tracking-tight text-[#ffffff]">
               <span>Stack<span className="text-[#47ab61]">Lens</span></span>
             </div>
           )}
@@ -70,13 +70,13 @@ export function Sidebar() {
 
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="p-1.5 rounded-full text-[#8c8b8f] hover:text-[#ffffff] hover:bg-[#18181b] transition-colors cursor-pointer"
+          className="p-1 rounded-full text-[#8c8b8f] hover:text-[#ffffff] hover:bg-[#18181b] transition-colors cursor-pointer"
           title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {sidebarCollapsed ? (
-            <ChevronRight className="h-4 w-4" strokeWidth={1.5} />
+            <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.5} />
           ) : (
-            <ChevronLeft className="h-4 w-4" strokeWidth={1.5} />
+            <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
           )}
         </button>
       </div>

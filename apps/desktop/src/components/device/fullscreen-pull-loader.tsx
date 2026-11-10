@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
+import { AppLogo } from "@/components/ui/app-logo";
 
 const PIPELINE_STEPS = [
   { label: "Connect ADB Bridge", desc: "Establishing secure shell transport to target device" },
@@ -67,12 +68,15 @@ export function FullscreenPullLoader() {
 
         {/* Hero Header */}
         <div className="flex items-center gap-4 pb-6 border-b border-[#26262a]">
-          <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#18181b] border border-[#26262a] shadow-inner">
-            <span className="text-xl font-bold text-[#47ab61]">
-              {appName.slice(0, 2).toUpperCase()}
-            </span>
+          <div className="relative shrink-0">
+            <AppLogo
+              packageName={packageName}
+              appName={appName}
+              initials={appName.slice(0, 2).toUpperCase()}
+              size="lg"
+            />
             {!error && (
-              <span className="absolute -inset-1 rounded-full border border-[#47ab61]/30 animate-ping opacity-30" />
+              <span className="absolute -inset-1 rounded-[18px] border border-[#47ab61]/40 animate-ping opacity-30 pointer-events-none" />
             )}
           </div>
           <div className="flex-1 min-w-0">
