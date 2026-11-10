@@ -11,6 +11,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     refreshDevices();
     loadDashboardStats();
     loadSettings();
+
+    // Automatically detect when devices are plugged in or unplugged over USB
+    const watcher = setInterval(() => {
+      refreshDevices(true);
+    }, 1500);
+
+    return () => clearInterval(watcher);
   }, []);
 
   return (
