@@ -58,8 +58,8 @@ export function Sidebar() {
           onClick={() => setCurrentPage("dashboard")}
           className="flex items-center gap-3 cursor-pointer overflow-hidden"
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#47ab61] text-[#0a0a0b] font-bold shadow-sm">
-            <ShieldCheck className="h-4 w-4 text-[#0a0a0b]" strokeWidth={2.2} />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full overflow-hidden shadow-sm">
+            <img src="/stacklens-icon.svg" alt="StackLens" className="h-8 w-8 object-contain" />
           </div>
           {!sidebarCollapsed && (
             <div className="flex items-center gap-1.5 font-bold text-sm tracking-tight text-[#ffffff]">

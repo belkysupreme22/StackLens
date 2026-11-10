@@ -27,6 +27,8 @@ export function PackageAnalyzerPage() {
     refreshDevices,
     activeAnalysis,
     setActiveAnalysis,
+    setPullProgress,
+    setCurrentPage,
   } = useAppStore();
 
   const [packageName, setPackageName] = useState("");
@@ -55,22 +57,60 @@ export function PackageAnalyzerPage() {
       return;
     }
 
-    setIsAnalyzing(true);
+    const pkg = packageName.trim();
     setErrorMessage(null);
-    setStatusMessage("Connecting to device via ADB...");
+
+    // Trigger fullscreen pull loader
+    setPullProgress({
+      active: true,
+      packageName: pkg,
+      appName: pkg.split(".").pop() || pkg,
+      stage: 0,
+      stageLabel: "Connecting ADB bridge",
+      details: `Connecting to ${selectedDeviceSerial}...`,
+      error: null,
+    });
 
     try {
-      setStatusMessage(`Locating APK binaries for package: ${packageName.trim()}...`);
-      const result = await commands.pullPackageApk(selectedDeviceSerial, packageName.trim());
+      setTimeout(() => {
+        setPullProgress({
+          active: true,
+          packageName: pkg,
+          appName: pkg.split(".").pop() || pkg,
+          stage: 2,
+          stageLabel: "Streaming APK payload",
+          details: `Extracting binary archive for ${pkg}...`,
+          error: null,
+        });
+      }, 700);
 
-      setStatusMessage("Parsing APK archive and evaluating framework indicators...");
+      setTimeout(() => {
+        setPullProgress({
+          active: true,
+          packageName: pkg,
+          appName: pkg.split(".").pop() || pkg,
+          stage: 4,
+          stageLabel: "Analyzing framework runtimes",
+          details: "Scanning DEX bytecode and matching signatures...",
+          error: null,
+        });
+      }, 1500);
+
+      const result = await commands.pullPackageApk(selectedDeviceSerial, pkg);
       setLocalResult(result);
       setActiveAnalysis(result);
+      setPullProgress(null);
     } catch (e) {
+      setPullProgress({
+        active: true,
+        packageName: pkg,
+        appName: pkg,
+        stage: 2,
+        stageLabel: "Extraction failed",
+        details: String(e),
+        error: `Failed to pull or inspect package: ${e}`,
+      });
       setErrorMessage(String(e));
-    } finally {
-      setIsAnalyzing(false);
-      setStatusMessage(null);
     }
   };
 

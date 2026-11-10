@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
+import { FullscreenPullLoader } from "@/components/device/fullscreen-pull-loader";
 import { useAppStore } from "@/stores/app-store";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -23,6 +24,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </main>
       </div>
+      {/* Immersive Fullscreen Pull & Analyze Loader */}
+      <FullscreenPullLoader />
     </div>
   );
 }

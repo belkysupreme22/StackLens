@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 72" width="340" height="72">
+  <defs>
+    <radialGradient id="mark-glow" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#182a1d" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0a0a0b" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="mark-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5be37e"/>
+      <stop offset="50%" stop-color="#47ab61"/>
+      <stop offset="100%" stop-color="#2a7741"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon Mark (48x48) positioned at x=12, y=12 -->
+  <g transform="translate(12, 12)">
+    <rect width="48" height="48" rx="12" fill="url(#mark-glow)" stroke="#26262a" stroke-width="1.5"/>
+    <circle cx="24" cy="24" r="17" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="2 2"/>
+    
+    <!-- Stack Layers -->
+    <path d="M 24 13 L 34 18.5 L 24 24 L 14 18.5 Z" fill="url(#mark-emerald)"/>
+    <path d="M 14 23 L 24 28.5 L 34 23 L 34 25.5 L 24 31 L 14 25.5 Z" fill="#47ab61" fill-opacity="0.8"/>
+    <path d="M 14 30 L 24 35.5 L 34 30 L 34 32.5 L 24 38 L 14 32.5 Z" fill="#2a7741" fill-opacity="0.9"/>
+  </g>
+
+  <!-- Wordmark in DM Sans geometry -->
+  <text x="74" y="44" font-family="'DM Sans', -apple-system, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.5px">
+    <tspan fill="#ffffff">Stack</tspan><tspan fill="#47ab61">Lens</tspan>
+  </text>
+  <text x="195" y="44" font-family="'DM Sans', -apple-system, sans-serif" font-size="11" font-weight="600" fill="#8c8b8f" letter-spacing="1.5px">
+    INTELLIGENCE
+  </text>
+</svg>

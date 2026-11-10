@@ -7,47 +7,47 @@ import { Badge } from "@/components/ui/badge";
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   dashboard: {
     title: "System dashboard",
-    subtitle: "Metrics, framework distribution, and recent analyses.",
+    subtitle: "Track framework distribution and recent application inspections.",
   },
   devices: {
     title: "Connected devices",
-    subtitle: "Manage connected Android hardware and emulators.",
+    subtitle: "Manage your connected Android hardware and running emulators.",
   },
   analyzer: {
     title: "Package analyzer",
-    subtitle: "Pull and inspect applications from connected devices.",
+    subtitle: "Pull and inspect applications directly from your device.",
   },
   inspector: {
     title: "APK inspector",
-    subtitle: "Reverse-engineer and detect frameworks from APK binaries.",
+    subtitle: "Drop any APK file to inspect its stack.",
   },
   batch: {
     title: "Batch analysis",
-    subtitle: "Concurrently inspect multiple Android application packages.",
+    subtitle: "Inspect multiple Android application packages at once.",
   },
   comparison: {
     title: "Comparison studio",
-    subtitle: "Compare application architectures and dependencies side-by-side.",
+    subtitle: "Compare application stacks and dependencies side by side.",
   },
   explorer: {
     title: "Framework explorer",
-    subtitle: "Reference signatures and heuristics for 14 runtimes.",
+    subtitle: "Explore runtime signatures across 14 supported frameworks.",
   },
   history: {
     title: "Analysis history",
-    subtitle: "Locally saved records and exported reports.",
+    subtitle: "Review your saved inspection records and exported reports.",
   },
   signatures: {
     title: "Custom signatures",
-    subtitle: "Author custom patterns and native library indicators.",
+    subtitle: "Create custom patterns to detect your own frameworks.",
   },
   settings: {
-    title: "Preferences and tooling",
-    subtitle: "Configure ADB, directories, concurrency, and logging.",
+    title: "Settings",
+    subtitle: "Configure your local ADB bridge, storage, and concurrency.",
   },
   about: {
     title: "About StackLens",
-    subtitle: "Offline application intelligence suite built with Rust.",
+    subtitle: "Local Android application intelligence built with Rust.",
   },
 };
 
