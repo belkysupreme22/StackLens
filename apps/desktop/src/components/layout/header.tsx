@@ -1,48 +1,48 @@
 import React from "react";
-import { RefreshCw, Smartphone, Shield, HelpCircle } from "lucide-react";
+import { RefreshCw, Smartphone, Shield } from "lucide-react";
 import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   dashboard: {
-    title: "System Dashboard",
+    title: "System dashboard",
     subtitle: "At-a-glance framework metrics, recent analyses, and inspection distribution",
   },
   devices: {
-    title: "Connected Devices",
+    title: "Connected devices",
     subtitle: "Manage Android hardware and emulators via Android Debug Bridge",
   },
   analyzer: {
-    title: "Package Analyzer",
+    title: "Package analyzer",
     subtitle: "Inspect installed applications from connected Android devices",
   },
   inspector: {
-    title: "APK Inspector",
+    title: "APK inspector",
     subtitle: "Direct local APK file reverse engineering, structure, and framework detection",
   },
   batch: {
-    title: "Batch Analysis",
+    title: "Batch analysis",
     subtitle: "Simultaneous automated inspection of multiple Android application packages",
   },
   comparison: {
-    title: "Comparison Studio",
+    title: "Comparison studio",
     subtitle: "Side-by-side structural, dependency, and framework diff analysis",
   },
   explorer: {
-    title: "Framework Explorer",
+    title: "Framework explorer",
     subtitle: "Comprehensive knowledge base of runtime signatures, indicators, and architectures",
   },
   history: {
-    title: "Analysis History",
+    title: "Analysis history",
     subtitle: "Local record of previous analyses, detections, and exported reports",
   },
   signatures: {
-    title: "Custom Signatures",
+    title: "Custom signatures",
     subtitle: "Manage, create, and calibrate framework detection rules and patterns",
   },
   settings: {
-    title: "Preferences & Tooling",
+    title: "Preferences and tooling",
     subtitle: "Configure ADB paths, storage locations, external tools, and engine limits",
   },
   about: {
@@ -71,37 +71,34 @@ export function Header() {
   const onlineCount = devices.filter((d) => d.state === "Online").length;
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-neutral-800 bg-neutral-950/80 px-6 backdrop-blur-md select-none">
+    <header className="flex h-11 items-center justify-between border-b border-[#1f1f1f] bg-[#000000] px-4 select-none">
       {/* Page Title & Subtitle */}
       <div>
-        <h1 className="text-sm font-semibold text-neutral-100 flex items-center gap-2">
+        <h1 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
           {currentMeta.title}
         </h1>
-        <p className="text-[11px] text-neutral-400 truncate max-w-xl">
-          {currentMeta.subtitle}
-        </p>
       </div>
 
       {/* Quick Status Bar */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {/* ADB Connectivity Pill */}
         <div
           onClick={() => setCurrentPage("devices")}
-          className="flex items-center gap-2 px-2.5 py-1 rounded-lg border border-neutral-800 bg-neutral-900/60 text-xs cursor-pointer hover:bg-neutral-800 transition-colors"
+          className="flex items-center gap-2 px-2 py-0.5 rounded-[2px] border border-[#1f1f1f] bg-[#070707] text-[11px] font-mono cursor-pointer hover:border-[#2a2a2a] transition-colors"
           title="Click to manage Android devices"
         >
-          <Smartphone className="h-3.5 w-3.5 text-neutral-400" />
+          <Smartphone className="h-3 w-3 text-[#7a7a7a]" strokeWidth={1.5} />
           {onlineCount > 0 ? (
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-neutral-200 font-mono text-[11px]">
-                {selectedDevice ? selectedDevice.model || selectedDevice.serial : `${onlineCount} Online`}
+              <span className="h-1.5 w-1.5 rounded-full bg-[#4ade80] animate-status-pulse" />
+              <span className="text-[#ffffff]">
+                {selectedDevice ? selectedDevice.model || selectedDevice.serial : `${onlineCount} online`}
               </span>
             </div>
           ) : adbAvailable ? (
-            <span className="text-neutral-400 text-[11px]">No devices</span>
+            <span className="text-[#7a7a7a]">No devices</span>
           ) : (
-            <span className="text-rose-400 text-[11px]">ADB Offline</span>
+            <span className="text-rose-400">ADB offline</span>
           )}
         </div>
 
@@ -111,16 +108,16 @@ export function Header() {
           size="sm"
           onClick={() => refreshDevices()}
           disabled={isRefreshingDevices}
-          className="h-8 gap-1.5 text-xs border-neutral-800 hover:bg-neutral-800"
+          className="h-7 px-2 gap-1 text-[11px]"
           title="Refresh connected devices"
         >
-          <RefreshCw className={`h-3 w-3 ${isRefreshingDevices ? "animate-spin" : ""}`} />
-          <span className="hidden sm:inline">Refresh</span>
+          <RefreshCw className={`h-3 w-3 ${isRefreshingDevices ? "animate-spin" : ""}`} strokeWidth={1.5} />
+          <span>Refresh</span>
         </Button>
 
-        {/* Privacy Indicator */}
-        <Badge variant="outline" className="text-[10px] gap-1 text-emerald-400 border-emerald-900/40 bg-emerald-950/20">
-          <Shield className="h-2.5 w-2.5" />
+        {/* Offline Badge */}
+        <Badge variant="outline" className="text-[10px] gap-1 text-[#4ade80] border-[#4ade80]/30 bg-[#4ade80]/5">
+          <Shield className="h-2.5 w-2.5" strokeWidth={1.5} />
           Offline
         </Badge>
       </div>
