@@ -27,7 +27,7 @@ export function TabsList({ className, ...props }: React.HTMLAttributes<HTMLDivEl
   return (
     <div
       className={cn(
-        "inline-flex h-9 items-center justify-center rounded-lg bg-neutral-900 border border-neutral-800 p-1 text-neutral-400",
+        "inline-flex h-9 items-center rounded-full bg-[#131315] border border-[#26262a] p-1 text-[#8c8b8f]",
         className
       )}
       {...props}
@@ -49,10 +49,10 @@ export function TabsTrigger({ value, className, children, ...props }: TabsTrigge
     <button
       type="button"
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+        "inline-flex items-center justify-center whitespace-nowrap rounded-full px-3.5 py-1 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#47ab61] disabled:pointer-events-none disabled:opacity-40 cursor-pointer",
         isActive
-          ? "bg-indigo-600 text-white shadow-sm"
-          : "hover:bg-neutral-800/60 hover:text-neutral-200",
+          ? "bg-[#26262a] text-[#ffffff] font-semibold shadow-sm"
+          : "hover:bg-[#18181b] hover:text-[#ffffff] text-[#8c8b8f]",
         className
       )}
       onClick={() => context.onValueChange(value)}
@@ -76,7 +76,7 @@ export function TabsContent({ value, className, children, ...props }: TabsConten
   return (
     <div
       className={cn(
-        "mt-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+        "mt-3 focus-visible:outline-none",
         className
       )}
       {...props}

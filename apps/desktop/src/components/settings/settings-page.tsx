@@ -75,51 +75,51 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-4">
       {/* Save status notification */}
       {notice && (
-        <div className="p-3 text-xs rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+        <div className="p-2.5 text-xs font-mono rounded-[20px] border border-[#26262a] bg-[#131315] text-[#47ab61]">
           {notice}
         </div>
       )}
 
       {/* External Tools Diagnostics */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-4">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-semibold text-neutral-200 flex items-center gap-2">
-            <Wrench className="h-4 w-4 text-indigo-400" />
-            External Inspection Tooling
+          <CardTitle className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+            <Wrench className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
+            External inspection tooling
           </CardTitle>
           <Button
             size="sm"
             variant="outline"
             onClick={checkTools}
-            className="text-xs h-7 border-neutral-700 gap-1"
+            className="text-xs font-mono h-7 border-[#26262a] bg-[#0a0a0b] rounded-[20px] hover:border-[#333338] gap-1"
           >
             <RefreshCw className="h-3 w-3" /> Re-check
           </Button>
         </div>
-        <p className="text-xs text-neutral-400">
-          StackLens operates with zero required external dependencies for core detection. Optional tools enhance decompiler and resource disassembly workflows when installed.
+        <p className="text-[11px] font-mono text-[#8c8b8f]">
+          StackLens operates with zero required external dependencies for core detection.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-1">
           {Object.entries(tools).map(([toolName, info]) => (
             <div
               key={toolName}
-              className="p-3 rounded-lg border border-neutral-800 bg-neutral-950 flex items-center justify-between text-xs"
+              className="p-2.5 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] flex items-center justify-between text-xs font-mono"
             >
               <div>
-                <span className="font-semibold text-neutral-200 font-mono block">
+                <span className="font-medium text-[#ffffff] block">
                   {toolName}
                 </span>
-                <span className="text-[10px] text-neutral-400 truncate block max-w-36">
-                  {info.version || (info.available ? "Installed" : "Not Found")}
+                <span className="text-[10px] text-[#8c8b8f] truncate block max-w-36">
+                  {info.version || (info.available ? "Installed" : "Not found")}
                 </span>
               </div>
               <Badge
                 variant={info.available ? "success" : "secondary"}
-                className="text-[10px]"
+                className="text-[9px]"
               >
                 {info.available ? "Ready" : "Missing"}
               </Badge>
@@ -129,16 +129,16 @@ export function SettingsPage() {
       </Card>
 
       {/* Path Configurations */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-4">
-        <CardTitle className="text-sm font-semibold text-neutral-200 flex items-center gap-2">
-          <Folder className="h-4 w-4 text-indigo-400" />
-          Filesystem & Execution Paths
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
+        <CardTitle className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+          <Folder className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
+          Filesystem and execution paths
         </CardTitle>
 
-        <div className="space-y-4 text-xs">
+        <div className="space-y-3 text-xs font-mono">
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              ADB (Android Debug Bridge) Binary Path
+            <label className="text-[#ffffff] block mb-1">
+              ADB binary path
             </label>
             <Input
               value={localSettings.adb_path}
@@ -146,54 +146,54 @@ export function SettingsPage() {
                 setLocalSettings({ ...localSettings, adb_path: e.target.value })
               }
               placeholder="adb (or /path/to/platform-tools/adb)"
-              className="font-mono text-xs h-8 border-neutral-700 bg-neutral-950"
+              className="font-mono text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
             />
-            <span className="text-[11px] text-neutral-400 mt-0.5 block">
+            <span className="text-[10px] text-[#8c8b8f] mt-0.5 block">
               Leave as 'adb' to use system PATH, or specify exact path to platform-tools/adb.
             </span>
           </div>
 
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              Pulled APKs Storage Directory
+            <label className="text-[#ffffff] block mb-1">
+              Pulled APKs storage directory
             </label>
             <Input
               value={localSettings.apk_output_dir}
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, apk_output_dir: e.target.value })
               }
-              className="font-mono text-xs h-8 border-neutral-700 bg-neutral-950"
+              className="font-mono text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-neutral-300 block mb-1">
-              Report Export Directory
+            <label className="text-[#ffffff] block mb-1">
+              Report export directory
             </label>
             <Input
               value={localSettings.report_export_dir}
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, report_export_dir: e.target.value })
               }
-              className="font-mono text-xs h-8 border-neutral-700 bg-neutral-950"
+              className="font-mono text-xs h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
             />
           </div>
         </div>
       </Card>
 
       {/* Analysis Engine Options */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-4">
-        <CardTitle className="text-sm font-semibold text-neutral-200 flex items-center gap-2">
-          <Settings className="h-4 w-4 text-indigo-400" />
-          Engine & Analysis Preferences
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
+        <CardTitle className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+          <Settings className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
+          Engine and analysis preferences
         </CardTitle>
 
-        <div className="space-y-4 text-xs">
-          <div className="flex items-center justify-between p-3 rounded-lg border border-neutral-800 bg-neutral-950">
+        <div className="space-y-3 text-xs font-mono">
+          <div className="flex items-center justify-between p-2.5 rounded-[20px] border border-[#26262a] bg-[#0a0a0b]">
             <div>
-              <span className="font-semibold text-neutral-200 block">Retain Pulled Device APKs</span>
-              <span className="text-[11px] text-neutral-400">
-                Keep local copies of extracted application binaries in your APK storage directory after inspection.
+              <span className="font-medium text-[#ffffff] block">Retain pulled device APKs</span>
+              <span className="text-[10px] text-[#8c8b8f]">
+                Keep local copies of extracted application binaries in storage directory.
               </span>
             </div>
             <input
@@ -202,14 +202,14 @@ export function SettingsPage() {
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, retain_apks: e.target.checked })
               }
-              className="h-4 w-4 rounded border-neutral-700 bg-neutral-900 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+              className="h-3.5 w-3.5 rounded-full border-[#26262a] bg-[#0a0a0b] text-[#47ab61] focus:ring-[#47ab61] cursor-pointer"
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="font-semibold text-neutral-300 block mb-1">
-                Batch Concurrency Limit
+              <label className="text-[#ffffff] block mb-1">
+                Batch concurrency limit
               </label>
               <Input
                 type="number"
@@ -222,20 +222,20 @@ export function SettingsPage() {
                     analysis_concurrency: parseInt(e.target.value) || 4,
                   })
                 }
-                className="text-xs h-8 border-neutral-700 bg-neutral-950"
+                className="text-xs font-mono h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px]"
               />
             </div>
 
             <div>
-              <label className="font-semibold text-neutral-300 block mb-1">
-                Logging Verbosity
+              <label className="text-[#ffffff] block mb-1">
+                Logging verbosity
               </label>
               <select
                 value={localSettings.log_level}
                 onChange={(e) =>
                   setLocalSettings({ ...localSettings, log_level: e.target.value as AppSettings["log_level"] })
                 }
-                className="w-full h-8 rounded-md border border-neutral-700 bg-neutral-950 px-3 text-xs text-neutral-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full h-8 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] px-2.5 text-xs font-mono text-[#ffffff] focus:outline-none focus:border-[#47ab61]"
               >
                 <option value="error">Error</option>
                 <option value="warn">Warn</option>
@@ -249,23 +249,23 @@ export function SettingsPage() {
       </Card>
 
       {/* Action Footer */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between pt-1">
         <Button
           variant="outline"
           size="sm"
           onClick={handleReset}
-          className="text-xs text-neutral-400 border-neutral-800 hover:text-neutral-200 gap-1.5"
+          className="text-xs font-mono text-[#8c8b8f] border-[#26262a] bg-[#131315] hover:text-[#ffffff] rounded-[20px] gap-1.5"
         >
-          <RotateCcw className="h-3 w-3" /> Restore Defaults
+          <RotateCcw className="h-3 w-3" /> Restore defaults
         </Button>
 
         <Button
           size="sm"
           onClick={handleSave}
           disabled={isSaving}
-          className="text-xs px-6"
+          className="text-xs font-mono px-5 rounded-[20px]"
         >
-          {isSaving ? "Saving..." : "Save Settings"}
+          {isSaving ? "Saving..." : "Save settings"}
         </Button>
       </div>
     </div>

@@ -27,6 +27,8 @@ export function PackageAnalyzerPage() {
     refreshDevices,
     activeAnalysis,
     setActiveAnalysis,
+    setPullProgress,
+    setCurrentPage,
   } = useAppStore();
 
   const [packageName, setPackageName] = useState("");
@@ -34,36 +36,81 @@ export function PackageAnalyzerPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [localResult, setLocalResult] = useState<AnalysisResult | null>(null);
+  const [shakeInput, setShakeInput] = useState(false);
 
   const isValidPackage =
     /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/.test(packageName.trim());
 
+  const triggerRefusal = (message: string) => {
+    setErrorMessage(message);
+    setShakeInput(true);
+    setTimeout(() => setShakeInput(false), 450);
+  };
+
   const handleAnalyze = async () => {
     if (!selectedDeviceSerial) {
-      setErrorMessage("Please select a target Android device.");
+      triggerRefusal("Please select a target Android device.");
       return;
     }
     if (!isValidPackage) {
-      setErrorMessage("Please enter a valid Android package name (e.g. com.google.android.youtube).");
+      triggerRefusal("Please enter a valid Android package name (e.g. com.google.android.youtube).");
       return;
     }
 
-    setIsAnalyzing(true);
+    const pkg = packageName.trim();
     setErrorMessage(null);
-    setStatusMessage("Connecting to device via ADB...");
+
+    // Trigger fullscreen pull loader
+    setPullProgress({
+      active: true,
+      packageName: pkg,
+      appName: pkg.split(".").pop() || pkg,
+      stage: 0,
+      stageLabel: "Connecting ADB bridge",
+      details: `Connecting to ${selectedDeviceSerial}...`,
+      error: null,
+    });
 
     try {
-      setStatusMessage(`Locating APK binaries for package: ${packageName.trim()}...`);
-      const result = await commands.pullPackageApk(selectedDeviceSerial, packageName.trim());
+      setTimeout(() => {
+        setPullProgress({
+          active: true,
+          packageName: pkg,
+          appName: pkg.split(".").pop() || pkg,
+          stage: 2,
+          stageLabel: "Streaming APK payload",
+          details: `Extracting binary archive for ${pkg}...`,
+          error: null,
+        });
+      }, 700);
 
-      setStatusMessage("Parsing APK archive and evaluating framework indicators...");
+      setTimeout(() => {
+        setPullProgress({
+          active: true,
+          packageName: pkg,
+          appName: pkg.split(".").pop() || pkg,
+          stage: 4,
+          stageLabel: "Analyzing framework runtimes",
+          details: "Scanning DEX bytecode and matching signatures...",
+          error: null,
+        });
+      }, 1500);
+
+      const result = await commands.pullPackageApk(selectedDeviceSerial, pkg);
       setLocalResult(result);
       setActiveAnalysis(result);
+      setPullProgress(null);
     } catch (e) {
+      setPullProgress({
+        active: true,
+        packageName: pkg,
+        appName: pkg,
+        stage: 2,
+        stageLabel: "Extraction failed",
+        details: String(e),
+        error: `Failed to pull or inspect package: ${e}`,
+      });
       setErrorMessage(String(e));
-    } finally {
-      setIsAnalyzing(false);
-      setStatusMessage(null);
     }
   };
 
@@ -78,20 +125,20 @@ export function PackageAnalyzerPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Card className="p-8 border-neutral-800 bg-neutral-900/60 shadow-xl space-y-6">
+      <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-5">
         <div>
-          <h3 className="text-lg font-bold text-neutral-100 flex items-center gap-2">
-            <PackageSearch className="h-5 w-5 text-indigo-400" />
-            Analyze Installed Application
+          <h3 className="text-sm font-mono font-medium text-[#ffffff] flex items-center gap-2">
+            <PackageSearch className="h-4 w-4 text-[#47ab61]" />
+            Extract and analyze application
           </h3>
-          <p className="text-xs text-neutral-400 mt-1">
-            Specify an installed Android package identifier to extract its APK directly over ADB and inspect its framework architecture.
+          <p className="text-xs text-[#8c8b8f] mt-1 font-mono">
+            Extract installed package APK over ADB and inspect runtime framework signatures.
           </p>
         </div>
 
         {/* Error message */}
         {errorMessage && (
-          <div className="p-3.5 rounded-lg border border-rose-900/50 bg-rose-950/20 text-xs text-rose-300 flex items-start gap-2">
+          <div className="p-3 rounded-[20px] border border-rose-900/50 bg-[#120507] text-xs font-mono text-rose-300 flex items-start gap-2">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" />
             <div>{errorMessage}</div>
           </div>
@@ -99,39 +146,39 @@ export function PackageAnalyzerPage() {
 
         {/* Device selector */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-neutral-300 flex items-center justify-between">
-            <span>Target Device</span>
+          <label className="text-xs font-mono text-[#ffffff] flex items-center justify-between">
+            <span>Target device</span>
             <button
               onClick={() => refreshDevices()}
-              className="text-[11px] text-indigo-400 hover:underline flex items-center gap-1"
+              className="text-[11px] font-mono text-[#47ab61] hover:underline flex items-center gap-1"
             >
               <RefreshCw className="h-3 w-3" /> Refresh
             </button>
           </label>
 
           {devices.length === 0 ? (
-            <div className="p-4 rounded-lg border border-neutral-800 bg-neutral-950 text-xs text-neutral-400 text-center">
-              No devices online. Connect your phone or launch an emulator with USB debugging enabled.
+            <div className="p-4 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] text-xs font-mono text-[#8c8b8f] text-center">
+              No devices online. Connect hardware via USB or start an emulator.
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {devices.map((dev) => (
                 <div
                   key={dev.serial}
                   onClick={() => setSelectedDeviceSerial(dev.serial)}
-                  className={`p-3 rounded-lg border cursor-pointer text-xs transition-all ${
+                  className={`p-2.5 rounded-[20px] border cursor-pointer text-xs font-mono transition-colors ${
                     dev.serial === selectedDeviceSerial
-                      ? "border-indigo-500 bg-indigo-950/20 text-neutral-100 shadow-sm"
-                      : "border-neutral-800 bg-neutral-950/80 text-neutral-400 hover:border-neutral-700"
+                      ? "border-[#47ab61] bg-[#18181b] text-[#ffffff]"
+                      : "border-[#26262a] bg-[#0a0a0b] text-[#8c8b8f] hover:border-[#333338] hover:text-[#ffffff]"
                   }`}
                 >
-                  <div className="flex items-center justify-between font-semibold">
-                    <span>{dev.model || "Android Device"}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-[#ffffff]">{dev.model || "Android device"}</span>
                     <Badge variant={dev.state === "Online" ? "success" : "secondary"} className="text-[9px]">
                       {dev.state}
                     </Badge>
                   </div>
-                  <div className="text-[11px] font-mono text-neutral-400 mt-1 truncate">
+                  <div className="text-[11px] text-[#8c8b8f] mt-1 truncate">
                     {dev.serial}
                   </div>
                 </div>
@@ -141,54 +188,59 @@ export function PackageAnalyzerPage() {
         </div>
 
         {/* Package input */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-neutral-300">
-            Package Name
+        <div className={`space-y-2 ${shakeInput ? "animate-refusal" : ""}`}>
+          <label className="text-xs font-mono font-medium text-[#ffffff]">
+            Package identifier
           </label>
           <div className="flex gap-2">
             <Input
-              placeholder="e.g. com.spotify.music or org.wikipedia"
+              placeholder="e.g. com.spotify.music"
               value={packageName}
               onChange={(e) => setPackageName(e.target.value)}
-              className="font-mono text-xs h-10 border-neutral-700 bg-neutral-950"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleAnalyze();
+                }
+              }}
+              className="font-mono text-xs h-9 border-[#26262a] bg-[#0a0a0b] rounded-[20px] focus-visible:border-[#47ab61]"
               disabled={isAnalyzing}
             />
             <Button
               onClick={handleAnalyze}
               disabled={isAnalyzing || !isValidPackage || !selectedDeviceSerial}
-              className="h-10 px-6 gap-2 shrink-0"
+              className="h-9 px-4 text-xs font-mono shrink-0 rounded-[20px]"
             >
               {isAnalyzing ? (
                 <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  Analyzing...
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                  Analyzing
                 </>
               ) : (
                 <>
-                  <Play className="h-4 w-4" />
-                  Start Analysis
+                  <Play className="h-3.5 w-3.5" />
+                  Inspect package
                 </>
               )}
             </Button>
           </div>
-          <p className="text-[11px] text-neutral-400">
-            Split APKs are automatically resolved and consolidated during analysis.
+          <p className="text-[11px] font-mono text-[#8c8b8f]">
+            Consolidates split APKs and native architecture binaries automatically.
           </p>
         </div>
 
         {/* Live Status indicator */}
         {isAnalyzing && (
-          <div className="p-4 rounded-lg border border-indigo-500/30 bg-indigo-950/20 text-xs text-indigo-300 flex items-center gap-3">
-            <RefreshCw className="h-4 w-4 animate-spin text-indigo-400 shrink-0" />
-            <span>{statusMessage}</span>
+          <div className="p-3 rounded-[20px] border border-[#26262a] bg-[#131315] text-xs font-mono text-[#ffffff] flex items-center gap-3">
+            <span className="h-2 w-2 rounded-full bg-[#47ab61] animate-status-pulse shrink-0" />
+            <span className="truncate">{statusMessage}</span>
           </div>
         )}
       </Card>
 
       {/* Suggested package examples */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/40">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">
-          Popular Application Package Names
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px]">
+        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#8c8b8f] mb-2.5">
+          Common packages
         </h4>
         <div className="flex flex-wrap gap-2 text-xs">
           {[
@@ -202,7 +254,7 @@ export function PackageAnalyzerPage() {
             <button
               key={pkg}
               onClick={() => setPackageName(pkg)}
-              className="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-indigo-300 hover:border-neutral-700 font-mono text-[11px] transition-colors"
+              className="px-2 py-1 rounded-[20px] border border-[#26262a] bg-[#0a0a0b] text-[#8c8b8f] hover:text-[#47ab61] hover:border-[#333338] font-mono text-[11px]"
             >
               {pkg}
             </button>

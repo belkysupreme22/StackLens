@@ -122,17 +122,17 @@ export function BatchAnalysisPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header Controls */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-neutral-100 flex items-center gap-2">
-              <Layers className="h-5 w-5 text-indigo-400" />
-              Batch Application Analysis
+            <h3 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+              <Layers className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
+              Batch application analysis
             </h3>
-            <p className="text-xs text-neutral-400 mt-1">
-              Select or drop multiple APK files (supports 50+ applications) to inspect runtimes concurrently.
+            <p className="text-[11px] font-mono text-[#8c8b8f] mt-0.5">
+              Select or drop multiple APK files to inspect runtimes concurrently.
             </p>
           </div>
 
@@ -146,8 +146,8 @@ export function BatchAnalysisPage() {
                 onChange={handleFilesSelected}
                 disabled={isRunning}
               />
-              <span className="inline-flex items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900 px-3.5 py-1.5 text-xs font-semibold text-neutral-200 hover:bg-neutral-800 cursor-pointer transition-colors gap-1.5">
-                <Upload className="h-3.5 w-3.5" />
+              <span className="inline-flex items-center justify-center rounded-[20px] border border-[#26262a] bg-[#0a0a0b] px-3 py-1 text-xs font-mono text-[#ffffff] hover:border-[#333338] cursor-pointer transition-colors gap-1.5">
+                <Upload className="h-3.5 w-3.5 text-[#47ab61]" strokeWidth={1.5} />
                 Add APKs
               </span>
             </label>
@@ -156,10 +156,10 @@ export function BatchAnalysisPage() {
               size="sm"
               onClick={startBatch}
               disabled={isRunning || items.length === 0}
-              className="gap-1.5 text-xs h-8"
+              className="gap-1.5 text-xs font-mono h-8 rounded-[20px]"
             >
-              <Play className="h-3.5 w-3.5" />
-              Run Batch
+              <Play className="h-3 w-3" />
+              Run batch
             </Button>
 
             {isRunning && (
@@ -167,9 +167,9 @@ export function BatchAnalysisPage() {
                 size="sm"
                 variant="destructive"
                 onClick={cancelBatch}
-                className="gap-1.5 text-xs h-8"
+                className="gap-1.5 text-xs font-mono h-8 rounded-[20px]"
               >
-                <XCircle className="h-3.5 w-3.5" />
+                <XCircle className="h-3 w-3" />
                 Stop
               </Button>
             )}
@@ -179,7 +179,7 @@ export function BatchAnalysisPage() {
               variant="outline"
               onClick={clearBatch}
               disabled={isRunning || items.length === 0}
-              className="text-xs h-8 border-neutral-800"
+              className="text-xs font-mono h-8 border-[#26262a] bg-[#0a0a0b] rounded-[20px] hover:border-[#333338]"
             >
               Clear
             </Button>
@@ -188,8 +188,8 @@ export function BatchAnalysisPage() {
 
         {/* Progress bar */}
         {items.length > 0 && (
-          <div className="mt-6 pt-4 border-t border-neutral-800/80 space-y-2">
-            <div className="flex justify-between text-xs font-mono text-neutral-400">
+          <div className="mt-3 pt-3 border-t border-[#26262a] space-y-1.5">
+            <div className="flex justify-between text-xs font-mono text-[#8c8b8f]">
               <span>
                 Progress: {completedCount + errorCount} / {items.length} completed
               </span>
@@ -201,7 +201,7 @@ export function BatchAnalysisPage() {
       </Card>
 
       {exportNotice && (
-        <div className="p-3 text-xs rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+        <div className="p-2.5 text-xs font-mono rounded-[20px] border border-[#26262a] bg-[#131315] text-[#47ab61]">
           {exportNotice}
         </div>
       )}
@@ -213,76 +213,76 @@ export function BatchAnalysisPage() {
             size="sm"
             variant="outline"
             onClick={() => handleExportBatch("csv")}
-            className="text-xs h-8 gap-1.5 border-neutral-700"
+            className="text-xs font-mono h-8 gap-1.5 border-[#26262a] bg-[#131315] rounded-[20px] hover:border-[#333338]"
           >
-            <Download className="h-3.5 w-3.5" /> Export CSV
+            <Download className="h-3.5 w-3.5" strokeWidth={1.5} /> Export CSV
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => handleExportBatch("json")}
-            className="text-xs h-8 gap-1.5 border-neutral-700"
+            className="text-xs font-mono h-8 gap-1.5 border-[#26262a] bg-[#131315] rounded-[20px] hover:border-[#333338]"
           >
-            <Download className="h-3.5 w-3.5" /> Export JSON
+            <Download className="h-3.5 w-3.5" strokeWidth={1.5} /> Export JSON
           </Button>
         </div>
       )}
 
       {/* Items Table */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60">
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px]">
         {items.length === 0 ? (
-          <div className="p-12 text-center text-xs text-neutral-400 space-y-2">
-            <Layers className="h-8 w-8 text-neutral-600 mx-auto" />
-            <p className="font-semibold text-neutral-300">Queue is Empty</p>
-            <p>Click "Add APKs" to select multiple application files for batch execution.</p>
+          <div className="p-8 text-center text-xs font-mono text-[#8c8b8f] space-y-1.5">
+            <Layers className="h-6 w-6 text-[#333338] mx-auto" strokeWidth={1.5} />
+            <p className="font-medium text-[#ffffff]">Queue empty</p>
+            <p>Click "Add APKs" to select multiple application files.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-neutral-800 text-neutral-400 font-mono">
+            <table className="w-full text-left text-xs font-mono">
+              <thead className="border-b border-[#26262a] text-[#8c8b8f]">
                 <tr>
                   <th className="py-2 pr-4">#</th>
-                  <th className="py-2 pr-4">File Name</th>
+                  <th className="py-2 pr-4">File name</th>
                   <th className="py-2 pr-4">Size</th>
                   <th className="py-2 pr-4">Status</th>
-                  <th className="py-2 pr-4">Detected Framework</th>
+                  <th className="py-2 pr-4">Detected framework</th>
                   <th className="py-2">Confidence</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60 font-mono">
+              <tbody className="divide-y divide-[#26262a] tabular-nums">
                 {items.map((it, idx) => {
                   const primary = it.result?.detections.find((d) => d.is_primary);
 
                   return (
-                    <tr key={it.id} className="hover:bg-neutral-800/30">
-                      <td className="py-2.5 pr-4 text-neutral-400">{idx + 1}</td>
-                      <td className="py-2.5 pr-4 font-semibold text-neutral-200 font-sans truncate max-w-xs">
+                    <tr key={it.id} className="hover:bg-[#18181b] transition-colors">
+                      <td className="py-2 pr-4 text-[#8c8b8f]">{idx + 1}</td>
+                      <td className="py-2 pr-4 font-medium text-[#ffffff] truncate max-w-xs">
                         {it.name}
                       </td>
-                      <td className="py-2.5 pr-4 text-neutral-400">{formatBytes(it.size)}</td>
-                      <td className="py-2.5 pr-4">
+                      <td className="py-2 pr-4 text-[#8c8b8f]">{formatBytes(it.size)}</td>
+                      <td className="py-2 pr-4">
                         {it.status === "completed" ? (
-                          <Badge variant="success" className="text-[10px] gap-1">
+                          <Badge variant="success" className="text-[9px] gap-1">
                             <CheckCircle2 className="h-2.5 w-2.5" /> Done
                           </Badge>
                         ) : it.status === "running" ? (
-                          <Badge variant="default" className="text-[10px] gap-1">
+                          <Badge variant="default" className="text-[9px] gap-1">
                             <RefreshCw className="h-2.5 w-2.5 animate-spin" /> Running
                           </Badge>
                         ) : it.status === "error" ? (
-                          <Badge variant="destructive" className="text-[10px] gap-1">
+                          <Badge variant="destructive" className="text-[9px] gap-1">
                             <AlertCircle className="h-2.5 w-2.5" /> Error
                           </Badge>
                         ) : (
-                          <Badge variant="secondary" className="text-[10px]">
+                          <Badge variant="secondary" className="text-[9px]">
                             Pending
                           </Badge>
                         )}
                       </td>
-                      <td className="py-2.5 pr-4 font-sans font-semibold text-indigo-300">
+                      <td className="py-2 pr-4 text-[#47ab61]">
                         {primary ? frameworkDisplayName(primary.framework) : it.status === "completed" ? "Unknown" : "—"}
                       </td>
-                      <td className="py-2.5">
+                      <td className="py-2">
                         {primary ? (
                           <Badge className={confidenceBadgeColor(primary.confidence)}>
                             {primary.confidence}

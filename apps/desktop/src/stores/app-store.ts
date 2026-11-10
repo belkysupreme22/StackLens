@@ -39,8 +39,23 @@ interface AppState {
   devices: DeviceInfo[];
   selectedDeviceSerial: string | null;
   isRefreshingDevices: boolean;
-  refreshDevices: () => Promise<void>;
+  refreshDevices: (quiet?: boolean) => Promise<void>;
   setSelectedDeviceSerial: (serial: string | null) => void;
+  devicePackagesCache: Record<string, string[]>;
+  setDevicePackagesCache: (serial: string, packages: string[]) => void;
+  invalidateDevicePackagesCache: (serial?: string) => void;
+
+  // Immersive Fullscreen Pull Loader State
+  pullProgress: {
+    active: boolean;
+    packageName: string;
+    appName: string;
+    stage: number;
+    stageLabel: string;
+    details: string;
+    error: string | null;
+  } | null;
+  setPullProgress: (progress: AppState["pullProgress"]) => void;
 
   // Dashboard Stats
   dashboardStats: DashboardStats | null;
@@ -81,27 +96,58 @@ export const useAppStore = create<AppState>((set, get) => ({
   devices: [],
   selectedDeviceSerial: null,
   isRefreshingDevices: false,
+  devicePackagesCache: {},
+  setDevicePackagesCache: (serial, packages) =>
+    set((state) => ({
+      devicePackagesCache: { ...state.devicePackagesCache, [serial]: packages },
+    })),
+  invalidateDevicePackagesCache: (serial) =>
+    set((state) => {
+      if (serial) {
+        const next = { ...state.devicePackagesCache };
+        delete next[serial];
+        return { devicePackagesCache: next };
+      }
+      return { devicePackagesCache: {} };
+    }),
 
-  refreshDevices: async () => {
-    set({ isRefreshingDevices: true });
+  pullProgress: null,
+  setPullProgress: (pullProgress) => set({ pullProgress }),
+
+  refreshDevices: async (quiet = false) => {
+    if (!quiet) set({ isRefreshingDevices: true });
     try {
       const available = await commands.checkAdbAvailable();
       set({ adbAvailable: available });
       if (available) {
         const devs = await commands.listDevices();
-        set({
-          devices: devs,
-          selectedDeviceSerial:
-            devs.length > 0 ? get().selectedDeviceSerial || devs[0].serial : null,
-        });
+        const currentDevs = get().devices;
+        const changed =
+          currentDevs.length !== devs.length ||
+          currentDevs.some((d, i) => d.serial !== devs[i]?.serial || d.state !== devs[i]?.state);
+
+        if (changed) {
+          set({
+            devices: devs,
+            selectedDeviceSerial:
+              devs.length > 0
+                ? devs.some((d) => d.serial === get().selectedDeviceSerial)
+                  ? get().selectedDeviceSerial
+                  : devs[0].serial
+                : null,
+          });
+        }
       } else {
-        set({ devices: [], selectedDeviceSerial: null });
+        if (get().devices.length > 0) {
+          set({ devices: [], selectedDeviceSerial: null });
+        }
       }
     } catch (e) {
-      console.error("Failed to refresh devices:", e);
-      set({ devices: [], selectedDeviceSerial: null });
+      if (get().devices.length > 0) {
+        set({ devices: [], selectedDeviceSerial: null });
+      }
     } finally {
-      set({ isRefreshingDevices: false });
+      if (!quiet) set({ isRefreshingDevices: false });
     }
   },
 

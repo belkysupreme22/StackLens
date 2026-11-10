@@ -3,27 +3,29 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-50 cursor-pointer select-none",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-full text-xs font-medium tracking-tight transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#47ab61] disabled:pointer-events-none disabled:opacity-40 cursor-pointer select-none",
   {
     variants: {
       variant: {
         default:
-          "bg-indigo-600 text-white shadow hover:bg-indigo-500 active:bg-indigo-700",
+          "bg-[#47ab61] text-[#0a0a0b] hover:bg-[#3b9352] active:bg-[#327e46] font-semibold shadow-sm",
+        filled:
+          "bg-[#ffffff] text-[#2f7a44] hover:bg-[#f2f2f2] font-semibold shadow-sm",
         destructive:
-          "bg-rose-600 text-white shadow-sm hover:bg-rose-500 active:bg-rose-700",
+          "border border-rose-900/60 bg-[#131315] text-rose-400 hover:bg-rose-950/40 hover:border-rose-700",
         outline:
-          "border border-neutral-700 bg-neutral-900 text-neutral-200 shadow-sm hover:bg-neutral-800 hover:text-white",
+          "border border-[#26262a] bg-transparent text-[#ffffff] hover:bg-[#18181b] hover:border-[#333338]",
         secondary:
-          "bg-neutral-800 text-neutral-100 shadow-sm hover:bg-neutral-700",
+          "border border-[#26262a] bg-[#18181b] text-[#ffffff] hover:bg-[#1f1f23] hover:border-[#333338]",
         ghost:
-          "text-neutral-300 hover:bg-neutral-800 hover:text-white",
-        link: "text-indigo-400 underline-offset-4 hover:underline",
+          "text-[#e7e6e7] hover:bg-[#18181b] hover:text-[#ffffff]",
+        link: "text-[#47ab61] underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8 text-base",
-        icon: "h-9 w-9",
+        default: "h-9 px-4 py-1.5",
+        sm: "h-7 px-3 text-[11px]",
+        lg: "h-11 px-6 text-sm font-semibold",
+        icon: "h-8 w-8 rounded-full",
       },
     },
     defaultVariants: {

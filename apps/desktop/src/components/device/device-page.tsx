@@ -1,21 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Smartphone,
   RefreshCw,
   AlertTriangle,
-  CheckCircle2,
   HelpCircle,
   Package,
   ArrowRight,
-  ShieldAlert,
   Search,
+  Filter,
+  Layers,
+  Sparkles,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { useAppStore } from "@/stores/app-store";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import * as commands from "@/lib/commands";
+import { resolveAppProfile, AppProfile } from "@/lib/package-resolver";
+import { AppLogo } from "@/components/ui/app-logo";
 
 export function DevicePage() {
   const {
@@ -25,27 +30,52 @@ export function DevicePage() {
     setSelectedDeviceSerial,
     refreshDevices,
     isRefreshingDevices,
+    devicePackagesCache,
+    setDevicePackagesCache,
     setActiveAnalysis,
     setCurrentPage,
+    setPullProgress,
   } = useAppStore();
 
   const [packageSearch, setPackageSearch] = useState("");
-  const [devicePackages, setDevicePackages] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [launcherPackages, setLauncherPackages] = useState<Set<string>>(new Set());
   const [isLoadingPackages, setIsLoadingPackages] = useState(false);
-  const [analyzingPackage, setAnalyzingPackage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const selectedDevice = devices.find((d) => d.serial === selectedDeviceSerial);
+  // Auto-select first device if none selected
+  useEffect(() => {
+    if (!selectedDeviceSerial && devices.length > 0) {
+      setSelectedDeviceSerial(devices[0].serial);
+    }
+  }, [devices, selectedDeviceSerial]);
+
+  // Fetch packages only if not cached for the selected device
+  useEffect(() => {
+    if (selectedDeviceSerial) {
+      if (!devicePackagesCache[selectedDeviceSerial]) {
+        fetchPackages(selectedDeviceSerial);
+      } else {
+        // Also fetch launcher packages if not yet resolved
+        commands.getLauncherPackages(selectedDeviceSerial)
+          .then((lp) => setLauncherPackages(new Set(lp)))
+          .catch(() => {});
+      }
+    }
+  }, [selectedDeviceSerial]);
 
   const fetchPackages = async (serial: string) => {
     setIsLoadingPackages(true);
     setErrorMessage(null);
     try {
-      const pkgs = await commands.getDevicePackages(serial);
-      setDevicePackages(pkgs);
+      const [pkgs, launcherList] = await Promise.all([
+        commands.getDevicePackages(serial),
+        commands.getLauncherPackages(serial).catch(() => [] as string[]),
+      ]);
+      setDevicePackagesCache(serial, pkgs);
+      setLauncherPackages(new Set(launcherList));
     } catch (e) {
       setErrorMessage(String(e));
-      setDevicePackages([]);
     } finally {
       setIsLoadingPackages(false);
     }
@@ -53,266 +83,533 @@ export function DevicePage() {
 
   const handleSelectDevice = (serial: string) => {
     setSelectedDeviceSerial(serial);
-    fetchPackages(serial);
-  };
-
-  const handlePullAndAnalyze = async (pkg: string) => {
-    if (!selectedDeviceSerial) return;
-    setAnalyzingPackage(pkg);
-    setErrorMessage(null);
-    try {
-      const result = await commands.pullPackageApk(selectedDeviceSerial, pkg);
-      setActiveAnalysis(result);
-      setCurrentPage("inspector");
-    } catch (e) {
-      setErrorMessage(`Failed to pull or inspect package: ${e}`);
-    } finally {
-      setAnalyzingPackage(null);
+    if (!devicePackagesCache[serial]) {
+      fetchPackages(serial);
     }
   };
 
-  const filteredPackages = devicePackages.filter((p) =>
-    p.toLowerCase().includes(packageSearch.toLowerCase())
-  );
+  const handlePullAndAnalyze = async (profile: AppProfile) => {
+    if (!selectedDeviceSerial) return;
+    setErrorMessage(null);
+
+    // Initialize fullscreen animated pull loader
+    setPullProgress({
+      active: true,
+      packageName: profile.packageName,
+      appName: profile.appName,
+      stage: 0,
+      stageLabel: "Connecting ADB bridge",
+      details: `Connecting to device ${selectedDeviceSerial}...`,
+      error: null,
+    });
+
+    try {
+      // Stage 1: Resolving binary
+      setTimeout(() => {
+        setPullProgress({
+          active: true,
+          packageName: profile.packageName,
+          appName: profile.appName,
+          stage: 1,
+          stageLabel: "Resolving package paths",
+          details: `Querying pm path for ${profile.packageName}...`,
+          error: null,
+        });
+      }, 400);
+
+      // Stage 2: Streaming APK
+      setTimeout(() => {
+        setPullProgress({
+          active: true,
+          packageName: profile.packageName,
+          appName: profile.appName,
+          stage: 2,
+          stageLabel: "Streaming APK payload",
+          details: `Streaming package binary from device into sandbox...`,
+          error: null,
+        });
+      }, 1000);
+
+      // Stage 3: Bytecode extraction
+      setTimeout(() => {
+        setPullProgress({
+          active: true,
+          packageName: profile.packageName,
+          appName: profile.appName,
+          stage: 3,
+          stageLabel: "Parsing DEX & Manifest",
+          details: `Decoding AXML headers and indexing DEX class hierarchies...`,
+          error: null,
+        });
+      }, 1800);
+
+      // Stage 4: Framework classification
+      setTimeout(() => {
+        setPullProgress({
+          active: true,
+          packageName: profile.packageName,
+          appName: profile.appName,
+          stage: 4,
+          stageLabel: "Evaluating framework runtimes",
+          details: `Matching runtime signatures against binary evidence...`,
+          error: null,
+        });
+      }, 2400);
+
+      // Actual Rust IPC Call
+      const result = await commands.pullPackageApk(selectedDeviceSerial, profile.packageName);
+
+      // Complete stage
+      setPullProgress({
+        active: true,
+        packageName: profile.packageName,
+        appName: profile.appName,
+        stage: 5,
+        stageLabel: "Analysis completed",
+        details: "Synthesizing evidence and launching inspector...",
+        error: null,
+      });
+
+      setTimeout(() => {
+        setPullProgress(null);
+        setActiveAnalysis(result);
+        setCurrentPage("inspector");
+      }, 600);
+    } catch (e) {
+      setPullProgress({
+        active: true,
+        packageName: profile.packageName,
+        appName: profile.appName,
+        stage: 2,
+        stageLabel: "Pull failed",
+        details: `ADB command error: ${e}`,
+        error: `Failed to pull or inspect ${profile.appName}: ${e}`,
+      });
+    }
+  };
+
+  const selectedDevice = devices.find((d) => d.serial === selectedDeviceSerial);
+  const rawPackages = (selectedDeviceSerial && devicePackagesCache[selectedDeviceSerial]) || [];
+
+  // Strictly user-facing applications (system daemons & internal bloatware avoided totally)
+  const userProfiles = useMemo(() => {
+    return rawPackages
+      .map((pkg) => resolveAppProfile(pkg, launcherPackages))
+      .filter((p) => !p.isSystem && !p.isBackgroundStub);
+  }, [rawPackages, launcherPackages]);
+
+  // Filtered list by search query
+  const filteredProfiles = useMemo(() => {
+    if (!packageSearch.trim()) return userProfiles;
+    const q = packageSearch.toLowerCase().trim();
+    return userProfiles.filter(
+      (p) =>
+        p.appName.toLowerCase().includes(q) ||
+        p.packageName.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+    );
+  }, [userProfiles, packageSearch]);
 
   return (
     <div className="space-y-6">
-      {/* ADB Status Banner */}
+      {/* ADB Unavailable Banner */}
       {!adbAvailable ? (
-        <Card className="p-4 border-amber-900/40 bg-amber-950/20 text-amber-300">
-          <div className="flex items-start gap-3">
+        <Card className="p-5 border-amber-900/40 bg-amber-950/20 text-amber-300 rounded-[20px]">
+          <div className="flex items-start gap-3.5">
             <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400 mt-0.5" />
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <h4 className="text-sm font-semibold text-amber-200">
-                Android Debug Bridge (ADB) Is Not Available
+                Android Debug Bridge (ADB) not found
               </h4>
-              <p className="text-xs text-neutral-300">
-                StackLens requires ADB to communicate with connected hardware devices and emulators.
-                Please ensure Android SDK Platform-Tools is installed and added to your system PATH, or specify the exact executable path in Settings.
+              <p className="text-xs text-neutral-300 leading-relaxed">
+                StackLens uses ADB to connect to your Android device and emulators.
+                Verify Platform-Tools is installed or configure the exact binary path in Settings.
               </p>
-              <div className="pt-2 flex gap-2">
+              <div className="pt-2 flex gap-3">
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => refreshDevices()}
-                  className="text-xs h-7 border-amber-800 hover:bg-amber-900/40 text-amber-200"
+                  className="text-xs rounded-full border-amber-800 text-amber-200 hover:bg-amber-900/40"
                 >
-                  Check Again
+                  Check again
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => setCurrentPage("settings")}
-                  className="text-xs h-7 text-amber-400 hover:text-amber-300"
+                  className="text-xs rounded-full text-amber-400 hover:text-amber-300"
                 >
-                  Configure ADB Path →
+                  Configure path
                 </Button>
               </div>
             </div>
           </div>
         </Card>
       ) : devices.length === 0 ? (
-        <Card className="p-4 border-neutral-800 bg-neutral-900/40 text-neutral-300">
-          <div className="flex items-start gap-3">
-            <Smartphone className="h-5 w-5 shrink-0 text-neutral-400 mt-0.5" />
-            <div className="space-y-1">
-              <h4 className="text-sm font-semibold text-neutral-200">
-                No Connected Android Devices Detected
-              </h4>
-              <p className="text-xs text-neutral-400">
-                Enable <strong>USB Debugging</strong> in your device's Developer Options and connect via USB. For wireless debugging, execute <code className="text-indigo-400">adb connect &lt;ip:port&gt;</code> in your terminal.
-              </p>
-            </div>
+        <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] text-center space-y-3">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#18181b] border border-[#26262a] text-[#8c8b8f]">
+            <Smartphone className="h-6 w-6 text-[#8c8b8f]" strokeWidth={1.5} />
           </div>
+          <div>
+            <h4 className="text-sm font-semibold text-[#ffffff]">
+              No connected Android devices detected
+            </h4>
+            <p className="text-xs text-[#8c8b8f] max-w-md mx-auto mt-1">
+              Enable USB debugging in Developer Options and connect your device with a data cable.
+            </p>
+          </div>
+          <Button
+            size="sm"
+            onClick={() => refreshDevices()}
+            disabled={isRefreshingDevices}
+            className="rounded-full px-5 text-xs bg-[#47ab61] text-[#0a0a0b]"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isRefreshingDevices ? "animate-spin" : ""}`} />
+            Refresh devices
+          </Button>
         </Card>
       ) : null}
 
-      {/* Connected Devices Grid */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-neutral-200 flex items-center gap-2">
-            Discovered Devices ({devices.length})
-          </h3>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => refreshDevices()}
-            disabled={isRefreshingDevices}
-            className="h-8 gap-1 text-xs border-neutral-800"
-          >
-            <RefreshCw className={`h-3 w-3 ${isRefreshingDevices ? "animate-spin" : ""}`} />
-            Refresh List
-          </Button>
-        </div>
+      {/* Discovered Devices Cards */}
+      {devices.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-[#ffffff] flex items-center gap-2 tracking-tight">
+              Connected devices ({devices.length})
+            </h3>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => refreshDevices()}
+              disabled={isRefreshingDevices}
+              className="h-8 gap-1.5 text-xs rounded-full border-[#26262a] hover:bg-[#18181b]"
+            >
+              <RefreshCw className={`h-3 w-3 ${isRefreshingDevices ? "animate-spin" : ""}`} />
+              Scan devices
+            </Button>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {devices.map((device) => {
-            const isSelected = device.serial === selectedDeviceSerial;
-            const isOnline = device.state === "Online";
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {devices.map((device) => {
+              const isSelected = device.serial === selectedDeviceSerial;
+              const isOnline = device.state === "Online";
 
-            return (
-              <Card
-                key={device.serial}
-                onClick={() => handleSelectDevice(device.serial)}
-                className={`p-4 border cursor-pointer transition-all duration-150 ${
-                  isSelected
-                    ? "border-indigo-500/50 bg-indigo-950/20 shadow-md"
-                    : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700"
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className={`p-2 rounded-lg ${
-                        isOnline ? "bg-emerald-500/10 text-emerald-400" : "bg-neutral-800 text-neutral-400"
-                      }`}
-                    >
-                      <Smartphone className="h-5 w-5" />
+              return (
+                <Card
+                  key={device.serial}
+                  onClick={() => handleSelectDevice(device.serial)}
+                  className={`p-4 border rounded-[20px] cursor-pointer transition-all ${
+                    isSelected
+                      ? "border-[#47ab61] bg-[#18181b] shadow-[0_0_0_1px_rgba(71,171,97,0.3)]"
+                      : "border-[#26262a] bg-[#131315] hover:border-[#333338]"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-full bg-[#0a0a0b] border border-[#26262a] text-[#47ab61]">
+                        <Smartphone className="h-4 w-4" strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-[#ffffff] truncate">
+                          {device.model || "Android Device"}
+                        </h4>
+                        <p className="text-xs text-[#8c8b8f]">
+                          {device.manufacturer || "Manufacturer"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {isOnline && (
+                        <span className="h-2 w-2 rounded-full bg-[#47ab61] animate-pulse" />
+                      )}
+                      <Badge
+                        variant={isOnline ? "success" : "secondary"}
+                        className="text-[10px] rounded-full px-2.5"
+                      >
+                        {device.state}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-3 border-t border-[#26262a] grid grid-cols-2 gap-2 text-xs text-[#8c8b8f]">
+                    <div>
+                      <span className="text-[#8c8b8f]/60 block text-[10px] uppercase">Serial</span>
+                      <span className="font-mono text-[#ffffff] truncate block">{device.serial}</span>
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-neutral-100">
-                        {device.model || "Android Device"}
-                      </h4>
-                      <p className="text-xs text-neutral-400">
-                        {device.manufacturer || "Manufacturer"}
-                      </p>
+                      <span className="text-[#8c8b8f]/60 block text-[10px] uppercase">OS / API</span>
+                      <span className="text-[#ffffff]">
+                        Android {device.android_version || "?"} (API {device.sdk_level || "?"})
+                      </span>
                     </div>
                   </div>
-
-                  <Badge
-                    variant={isOnline ? "success" : "secondary"}
-                    className="text-[10px]"
-                  >
-                    {device.state}
-                  </Badge>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-neutral-800/80 grid grid-cols-2 gap-2 text-[11px] font-mono text-neutral-400">
-                  <div>
-                    <span className="text-neutral-400 block">Serial:</span>
-                    <span className="truncate block text-neutral-200">{device.serial}</span>
-                  </div>
-                  <div>
-                    <span className="text-neutral-400 block">OS / SDK:</span>
-                    <span className="text-neutral-200">
-                      Android {device.android_version || "?"} (API {device.sdk_level || "?"})
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
+                </Card>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Package Browser on Selected Device */}
       {selectedDevice && (
-        <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] space-y-5">
+          {/* Header Row */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#26262a]">
             <div>
-              <CardTitle className="text-sm font-semibold text-neutral-200">
-                Installed Packages on {selectedDevice.model || selectedDevice.serial}
-              </CardTitle>
-              <p className="text-xs text-neutral-400">
-                Select an application package to pull and analyze its architecture
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-base font-bold text-[#ffffff] tracking-tight">
+                  Installed applications
+                </CardTitle>
+                <Badge variant="outline" className="text-xs rounded-full border-[#26262a] text-[#47ab61] font-mono">
+                  {userProfiles.length} user apps
+                </Badge>
+              </div>
+              <p className="text-xs text-[#8c8b8f] mt-0.5">
+                Inspect and pull applications directly from {selectedDevice.model || selectedDevice.serial}.
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <div className="relative w-64">
-                <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-neutral-400" />
+            {/* Actions: View Switcher (Grid default), Search, Sync */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* View Switcher: Grid vs List (Grid is default) */}
+              <div className="inline-flex items-center rounded-full bg-[#18181b] border border-[#26262a] p-1">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={`p-1.5 rounded-full transition-all cursor-pointer ${
+                    viewMode === "grid"
+                      ? "bg-[#47ab61] text-[#0a0a0b]"
+                      : "text-[#8c8b8f] hover:text-[#ffffff]"
+                  }`}
+                  title="Grid View"
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" strokeWidth={1.5} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className={`p-1.5 rounded-full transition-all cursor-pointer ${
+                    viewMode === "list"
+                      ? "bg-[#47ab61] text-[#0a0a0b]"
+                      : "text-[#8c8b8f] hover:text-[#ffffff]"
+                  }`}
+                  title="List View"
+                >
+                  <List className="h-3.5 w-3.5" strokeWidth={1.5} />
+                </button>
+              </div>
+
+              {/* Search Bar */}
+              <div className="relative w-56">
+                <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-[#8c8b8f]" />
                 <Input
-                  placeholder="Filter packages..."
+                  placeholder="Search applications..."
                   value={packageSearch}
                   onChange={(e) => setPackageSearch(e.target.value)}
-                  className="pl-8 text-xs h-8 border-neutral-700 bg-neutral-950"
+                  className="pl-8 text-xs h-8 rounded-full border-[#26262a] bg-[#18181b] placeholder:text-[#8c8b8f]"
                 />
               </div>
 
+              {/* Force Refresh Button */}
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => fetchPackages(selectedDevice.serial)}
                 disabled={isLoadingPackages}
-                className="h-8 text-xs border-neutral-700"
+                className="h-8 rounded-full border-[#26262a] text-xs hover:bg-[#18181b] px-3.5 gap-1.5"
+                title="Sync and refresh app list from device"
               >
-                <RefreshCw className={`h-3 w-3 ${isLoadingPackages ? "animate-spin" : ""}`} />
+                <RefreshCw className={`h-3.5 w-3.5 ${isLoadingPackages ? "animate-spin" : ""}`} />
+                <span>Sync</span>
               </Button>
             </div>
           </div>
 
+          {/* Error Message */}
           {errorMessage && (
-            <div className="p-3 rounded-lg border border-rose-900/40 bg-rose-950/20 text-xs text-rose-300">
-              {errorMessage}
+            <div className="p-3.5 rounded-[16px] border border-rose-900/50 bg-[#120507] text-xs text-rose-300 flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
+              <span>{errorMessage}</span>
             </div>
           )}
 
-          {isLoadingPackages ? (
-            <div className="p-12 text-center text-xs text-neutral-400">
-              <RefreshCw className="h-6 w-6 animate-spin mx-auto text-indigo-400 mb-2" />
-              Querying device package manager via ADB...
+          {/* Package Content List */}
+          {isLoadingPackages && rawPackages.length === 0 ? (
+            <div className="py-16 text-center space-y-3">
+              <div className="flex justify-center">
+                <span className="h-4 w-4 rounded-full bg-[#47ab61] animate-ping" />
+              </div>
+              <div className="text-sm font-semibold text-[#ffffff]">
+                Reading installed packages over ADB...
+              </div>
+              <p className="text-xs text-[#8c8b8f]">
+                Parsing application descriptors on {selectedDevice.model || selectedDevice.serial}.
+              </p>
             </div>
-          ) : devicePackages.length === 0 ? (
-            <div className="p-8 text-center text-xs text-neutral-400">
+          ) : rawPackages.length === 0 ? (
+            <div className="py-12 text-center space-y-3">
+              <p className="text-xs text-[#8c8b8f]">
+                No cached packages found for this device.
+              </p>
               <Button
                 size="sm"
                 onClick={() => fetchPackages(selectedDevice.serial)}
-                className="text-xs"
+                className="rounded-full px-5 text-xs bg-[#47ab61] text-[#0a0a0b]"
               >
-                Load Packages from Device
+                Load installed packages
               </Button>
             </div>
+          ) : filteredProfiles.length === 0 ? (
+            <div className="py-12 text-center text-xs text-[#8c8b8f]">
+              No applications match "{packageSearch}".
+            </div>
           ) : (
-            <div className="max-h-96 overflow-y-auto space-y-1.5 pr-2">
-              <div className="text-[11px] text-neutral-400 pb-1">
-                Showing {filteredPackages.length} of {devicePackages.length} packages
+            <div className="space-y-2">
+              <div className="text-xs text-[#8c8b8f] flex items-center justify-between px-1 pb-1">
+                <span>
+                  Showing {filteredProfiles.length} user applications
+                </span>
+                <span className="text-[11px] text-[#47ab61]">
+                  Instant offline cache active
+                </span>
               </div>
-              {filteredPackages.map((pkg) => (
-                <div
-                  key={pkg}
-                  className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-950/60 hover:bg-neutral-850 flex items-center justify-between text-xs font-mono transition-colors"
-                >
-                  <span className="truncate pr-4 text-neutral-200">{pkg}</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handlePullAndAnalyze(pkg)}
-                    disabled={analyzingPackage === pkg}
-                    className="h-7 text-xs border-indigo-500/30 text-indigo-300 hover:bg-indigo-600 hover:text-white shrink-0"
-                  >
-                    {analyzingPackage === pkg ? (
-                      <RefreshCw className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <span className="flex items-center gap-1 font-sans">
-                        Pull & Analyze <ArrowRight className="h-3 w-3" />
-                      </span>
-                    )}
-                  </Button>
+
+              {/* Grid or List View Presentation */}
+              {viewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[520px] overflow-y-auto pr-1">
+                  {filteredProfiles.map((app) => (
+                    <div
+                      key={app.packageName}
+                      className="p-4 rounded-[18px] border border-[#26262a] bg-[#18181b]/70 hover:bg-[#18181b] hover:border-[#333338] flex flex-col justify-between gap-3.5 transition-all group"
+                    >
+                      <div className="flex items-start gap-3">
+                        <AppLogo
+                          packageName={app.packageName}
+                          appName={app.appName}
+                          serial={selectedDeviceSerial}
+                          brandColor={app.brandColor}
+                          initials={app.initials}
+                          size="lg"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight truncate group-hover:text-[#47ab61] transition-colors">
+                            {app.appName}
+                          </h4>
+                          <p className="text-[11px] font-mono text-[#8c8b8f] truncate mt-0.5">
+                            {app.packageName}
+                          </p>
+                          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                            {app.isSystem ? (
+                              <span className="px-2 py-0.5 rounded-full bg-[#26262a] text-[10px] text-[#8c8b8f]">
+                                System
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-full bg-[#47ab61]/15 text-[10px] text-[#47ab61] font-medium border border-[#47ab61]/30">
+                                {app.category}
+                              </span>
+                            )}
+                            {app.isLauncher && (
+                              <span className="px-2 py-0.5 rounded-full bg-[#18181b] text-[10px] text-[#8c8b8f] border border-[#26262a]">
+                                Drawer
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        onClick={() => handlePullAndAnalyze(app)}
+                        className="w-full rounded-full h-8 text-xs font-semibold bg-[#26262a] text-[#ffffff] hover:bg-[#47ab61] hover:text-[#0a0a0b] transition-all gap-1.5 shadow-sm"
+                      >
+                        <span>Pull & Inspect</span>
+                        <ArrowRight className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <div className="max-h-[500px] overflow-y-auto space-y-2 pr-1">
+                  {filteredProfiles.map((app) => (
+                    <div
+                      key={app.packageName}
+                      className="p-3.5 rounded-[16px] border border-[#26262a] bg-[#18181b]/70 hover:bg-[#18181b] hover:border-[#333338] flex items-center justify-between gap-4 transition-all"
+                    >
+                      {/* App Icon + Title + Package ID */}
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <AppLogo
+                          packageName={app.packageName}
+                          appName={app.appName}
+                          serial={selectedDeviceSerial}
+                          brandColor={app.brandColor}
+                          initials={app.initials}
+                          size="md"
+                        />
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-semibold text-[#ffffff] tracking-tight truncate">
+                              {app.appName}
+                            </h4>
+                            {app.isSystem ? (
+                              <span className="px-2 py-0.5 rounded-full bg-[#26262a] text-[10px] text-[#8c8b8f]">
+                                System
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-full bg-[#47ab61]/15 text-[10px] text-[#47ab61] font-medium border border-[#47ab61]/30">
+                                {app.category}
+                              </span>
+                            )}
+                            {app.isLauncher && (
+                              <span className="px-2 py-0.5 rounded-full bg-[#18181b] text-[10px] text-[#8c8b8f] border border-[#26262a]">
+                                Drawer
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs font-mono text-[#8c8b8f] truncate mt-0.5">
+                            {app.packageName}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Pull & Inspect Button */}
+                      <Button
+                        size="sm"
+                        onClick={() => handlePullAndAnalyze(app)}
+                        className="rounded-full px-4 h-8 text-xs font-semibold bg-[#47ab61] text-[#0a0a0b] hover:bg-[#3b9352] shrink-0 gap-1.5 shadow-sm"
+                      >
+                        <span>Pull & Inspect</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </Card>
       )}
 
       {/* Troubleshooting Guidance */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/40 space-y-3">
-        <h4 className="text-xs font-semibold text-neutral-300 uppercase tracking-wider flex items-center gap-2">
-          <HelpCircle className="h-4 w-4 text-indigo-400" />
-          ADB Device Connection Troubleshooting
+      <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
+        <h4 className="text-xs font-semibold text-[#ffffff] flex items-center gap-2 tracking-tight">
+          <HelpCircle className="h-4 w-4 text-[#47ab61]" strokeWidth={1.5} />
+          Connecting your device via ADB
         </h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-neutral-400">
-          <div className="p-3 rounded-lg bg-neutral-950 border border-neutral-800">
-            <span className="font-semibold text-neutral-200 block mb-1">1. Enable USB Debugging</span>
-            Go to Settings &gt; About Phone &gt; Tap "Build Number" 7 times. Return to Developer Options and toggle USB Debugging ON.
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-[#8c8b8f]">
+          <div className="p-3.5 rounded-[16px] bg-[#0a0a0b] border border-[#26262a]">
+            <span className="font-semibold text-[#ffffff] block mb-1">1. Enable USB debugging</span>
+            Open Settings &gt; About phone &gt; Tap "Build number" 7 times. Return to Developer options and turn on USB debugging.
           </div>
-          <div className="p-3 rounded-lg bg-neutral-950 border border-neutral-800">
-            <span className="font-semibold text-neutral-200 block mb-1">2. Authorize Computer</span>
-            When connecting, look at your phone screen and accept the RSA fingerprint dialog: "Always allow from this computer".
+          <div className="p-3.5 rounded-[16px] bg-[#0a0a0b] border border-[#26262a]">
+            <span className="font-semibold text-[#ffffff] block mb-1">2. Authorize computer</span>
+            When the prompt appears on your phone screen, check "Always allow from this computer" and tap Allow.
           </div>
-          <div className="p-3 rounded-lg bg-neutral-950 border border-neutral-800">
-            <span className="font-semibold text-neutral-200 block mb-1">3. Check Cable & Drivers</span>
-            Ensure cable supports data transfer (not charge-only). On Windows, install Google USB Drivers or OEM drivers.
+          <div className="p-3.5 rounded-[16px] bg-[#0a0a0b] border border-[#26262a]">
+            <span className="font-semibold text-[#ffffff] block mb-1">3. Instant local cache</span>
+            Packages stay cached locally during your session. You can switch between tabs without any reloading lag.
           </div>
         </div>
       </Card>

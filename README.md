@@ -1,7 +1,6 @@
 # StackLens — Android Application Intelligence
 
 > **Discover. Analyze. Understand.**  
-> Application ID: `com.stacklens.desktop`
 
 StackLens is a desktop utility and decoupled detection engine for inspecting Android applications, reverse-engineering APK structures, and determining the underlying frameworks and runtime architectures with transparent, evidence-based confidence scoring.
 

@@ -16,99 +16,99 @@ export function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Brand Hero Card */}
-      <Card className="p-8 border-indigo-500/30 bg-gradient-to-b from-indigo-950/20 via-neutral-900 to-neutral-900 text-center space-y-4">
+      <Card className="p-8 border-[#26262a] bg-[#131315] rounded-[20px] text-center space-y-4 shadow-sm">
         <div className="flex justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 ring-8 ring-indigo-600/10">
-            <ShieldCheck className="h-9 w-9" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#18181b] border border-[#26262a] p-1 shadow-md">
+            <img src="/stacklens-icon.svg" alt="StackLens Logo" className="h-14 w-14 object-contain" />
           </div>
         </div>
 
         <div>
-          <h2 className="text-2xl font-black tracking-wider text-neutral-100">
-            STACK<span className="text-indigo-400">LENS</span>
+          <h2 className="text-2xl font-bold tracking-tight text-[#ffffff]">
+            Stack<span className="text-[#47ab61]">Lens</span>
           </h2>
-          <p className="text-sm text-indigo-300 font-medium mt-1">
-            Discover. Analyze. Understand.
+          <p className="text-xs text-[#8c8b8f] mt-1">
+            Inspect any Android app. Know the stack in seconds.
           </p>
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <Badge variant="outline" className="text-xs font-mono">
-              Version 0.1.0
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <Badge variant="outline" className="text-xs rounded-full px-3 border-[#26262a]">
+              v0.1.0
             </Badge>
-            <Badge variant="outline" className="text-xs font-mono text-indigo-400 border-indigo-500/30">
+            <Badge variant="outline" className="text-xs rounded-full px-3 text-[#47ab61] border-[#47ab61]/30 bg-[#47ab61]/10">
               com.stacklens.desktop
             </Badge>
           </div>
         </div>
 
-        <p className="text-xs text-neutral-300 max-w-xl mx-auto leading-relaxed">
-          StackLens is a professional Android application intelligence, reverse-engineering, and framework detection platform. It enables engineers, security analysts, and researchers to dissect APK binaries, identify runtime architectures, inspect Dalvik bytecode, and generate structured evidence reports.
+        <p className="text-xs text-[#8c8b8f] max-w-xl mx-auto leading-relaxed">
+          Offline Android application intelligence and reverse engineering desktop suite built with Rust and Tauri 2.
         </p>
       </Card>
 
       {/* Architecture Highlights */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-2">
-          <div className="flex items-center gap-2 text-indigo-400 font-semibold text-xs">
-            <Cpu className="h-4 w-4" />
-            Decoupled Rust Detection Engine
+        <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] space-y-2">
+          <div className="flex items-center gap-2 text-[#47ab61] font-semibold text-xs tracking-tight">
+            <Cpu className="h-4 w-4" strokeWidth={1.5} />
+            Pure Rust engine
           </div>
-          <p className="text-xs text-neutral-400 leading-relaxed">
-            The detection engine is implemented in pure Rust (`stacklens-engine`), completely independent of the desktop interface. It is reusable across command-line interfaces, automated CI pipelines, and future server or mobile environments.
+          <p className="text-xs text-[#8c8b8f] leading-relaxed">
+            Fast in-memory parsing of APK archives, binary AXML manifests, and DEX class descriptors without Java dependencies.
           </p>
         </Card>
 
-        <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-2">
-          <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs">
-            <Lock className="h-4 w-4" />
-            Offline-First Privacy Guarantee
+        <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] space-y-2">
+          <div className="flex items-center gap-2 text-[#47ab61] font-semibold text-xs tracking-tight">
+            <Lock className="h-4 w-4" strokeWidth={1.5} />
+            Offline privacy
           </div>
-          <p className="text-xs text-neutral-400 leading-relaxed">
-            Analyses execute 100% locally on your workstation. No application binaries, classes, assets, or extracted metadata are ever transmitted to any remote servers or third-party telemetry services.
+          <p className="text-xs text-[#8c8b8f] leading-relaxed">
+            All analysis executes locally on your workstation. No application binaries or telemetry leave your computer.
           </p>
         </Card>
 
-        <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-2">
-          <div className="flex items-center gap-2 text-sky-400 font-semibold text-xs">
-            <Terminal className="h-4 w-4" />
-            Unified CLI & Desktop Suite
+        <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] space-y-2">
+          <div className="flex items-center gap-2 text-[#47ab61] font-semibold text-xs tracking-tight">
+            <Terminal className="h-4 w-4" strokeWidth={1.5} />
+            Unified CLI & desktop
           </div>
-          <p className="text-xs text-neutral-400 leading-relaxed">
-            Includes the `stacklens` command-line utility for scripting, batch scans, and headless server environments with output formats in formatted JSON, CSV, and text reports.
+          <p className="text-xs text-[#8c8b8f] leading-relaxed">
+            Includes the `stacklens` command-line utility for CI pipelines and headless scripting with formatted JSON output.
           </p>
         </Card>
 
-        <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-2">
-          <div className="flex items-center gap-2 text-purple-400 font-semibold text-xs">
-            <Database className="h-4 w-4" />
-            Embedded SQLite Persistence
+        <Card className="p-5 border-[#26262a] bg-[#131315] rounded-[20px] space-y-2">
+          <div className="flex items-center gap-2 text-[#47ab61] font-semibold text-xs tracking-tight">
+            <Database className="h-4 w-4" strokeWidth={1.5} />
+            Local SQLite persistence
           </div>
-          <p className="text-xs text-neutral-400 leading-relaxed">
-            Historical inspections and custom signatures are securely cataloged in a versioned, migration-tracked SQLite database with indexed lookups and export facilities.
+          <p className="text-xs text-[#8c8b8f] leading-relaxed">
+            Historical inspections and custom signatures are cataloged in an embedded, migration-tracked SQLite database.
           </p>
         </Card>
       </div>
 
       {/* Technology Stack Specifications */}
-      <Card className="p-6 border-neutral-800 bg-neutral-900/60 space-y-4">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-          Technology Stack
+      <Card className="p-4 border-[#26262a] bg-[#131315] rounded-[20px] space-y-3">
+        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#8c8b8f]">
+          Technology stack
         </h4>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-          <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-950">
-            <span className="text-neutral-400 block text-[10px]">Desktop Core</span>
-            <span className="text-neutral-200 font-bold">Tauri 2</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
+          <div className="p-2.5 rounded-[20px] border border-[#26262a] bg-[#0a0a0b]">
+            <span className="text-[#8c8b8f] block text-[10px]">Desktop core</span>
+            <span className="text-[#ffffff] font-medium">Tauri 2</span>
           </div>
-          <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-950">
-            <span className="text-neutral-400 block text-[10px]">Engine & Backend</span>
-            <span className="text-neutral-200 font-bold">Rust 1.85+</span>
+          <div className="p-2.5 rounded-[20px] border border-[#26262a] bg-[#0a0a0b]">
+            <span className="text-[#8c8b8f] block text-[10px]">Engine backend</span>
+            <span className="text-[#ffffff] font-medium">Rust 1.85+</span>
           </div>
-          <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-950">
-            <span className="text-neutral-400 block text-[10px]">User Interface</span>
-            <span className="text-neutral-200 font-bold">React 18 & Vite</span>
+          <div className="p-2.5 rounded-[20px] border border-[#26262a] bg-[#0a0a0b]">
+            <span className="text-[#8c8b8f] block text-[10px]">Interface</span>
+            <span className="text-[#ffffff] font-medium">React 18 & Vite</span>
           </div>
-          <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-950">
-            <span className="text-neutral-400 block text-[10px]">Styling</span>
-            <span className="text-neutral-200 font-bold">Tailwind CSS</span>
+          <div className="p-2.5 rounded-[20px] border border-[#26262a] bg-[#0a0a0b]">
+            <span className="text-[#8c8b8f] block text-[10px]">Styling</span>
+            <span className="text-[#ffffff] font-medium">Tailwind CSS</span>
           </div>
         </div>
       </Card>

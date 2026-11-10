@@ -9,8 +9,8 @@ export function Separator({
   return (
     <div
       className={cn(
-        "shrink-0 bg-neutral-800",
-        orientation === "horizontal" ? "h-[1px] w-full my-4" : "h-full w-[1px] mx-4",
+        "shrink-0 bg-[#26262a]",
+        orientation === "horizontal" ? "h-[1px] w-full my-3" : "h-full w-[1px] mx-3",
         className
       )}
       {...props}
@@ -21,7 +21,7 @@ export function Separator({
 export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-neutral-800", className)}
+      className={cn("animate-pulse rounded-full bg-[#18181b]", className)}
       {...props}
     />
   );

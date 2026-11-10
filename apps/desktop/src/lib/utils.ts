@@ -62,30 +62,30 @@ export function frameworkColor(framework: string): string {
 export function confidenceBadgeColor(confidence: string): string {
   switch (confidence) {
     case "High":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+      return "bg-[#47ab61]/10 text-[#47ab61] border-[#47ab61]/30";
     case "Medium":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
+      return "bg-amber-400/10 text-amber-300 border-amber-400/30";
     case "Low":
-      return "bg-orange-500/15 text-orange-400 border-orange-500/30";
+      return "bg-neutral-800 text-neutral-400 border-neutral-700";
     case "Inconclusive":
-      return "bg-neutral-500/15 text-neutral-400 border-neutral-500/30";
+      return "bg-neutral-900 text-neutral-500 border-neutral-800";
     default:
-      return "bg-neutral-500/15 text-neutral-400 border-neutral-500/30";
+      return "bg-neutral-900 text-neutral-400 border-neutral-800";
   }
 }
 
 export function evidenceTypeColor(type: string): string {
   switch (type) {
     case "Confirmed":
-      return "text-emerald-400";
+      return "text-[#47ab61]";
     case "StrongIndicator":
-      return "text-blue-400";
+      return "text-emerald-300";
     case "Supporting":
-      return "text-sky-400";
+      return "text-neutral-300";
     case "Weak":
-      return "text-neutral-400";
+      return "text-neutral-500";
     case "Conflicting":
-      return "text-red-400";
+      return "text-rose-400";
     default:
       return "text-neutral-400";
   }
