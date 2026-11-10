@@ -71,32 +71,35 @@ export function Header() {
   const onlineCount = devices.filter((d) => d.state === "Online").length;
 
   return (
-    <header className="flex h-11 items-center justify-between border-b border-[#1f1f1f] bg-[#000000] px-4 select-none">
+    <header className="flex h-[68px] items-center justify-between border-b border-[#26262a] bg-[#0a0a0b]/80 backdrop-blur-md px-6 select-none">
       {/* Page Title & Subtitle */}
       <div>
-        <h1 className="text-xs font-mono font-medium text-[#ffffff] flex items-center gap-2">
+        <h1 className="text-base font-semibold text-[#ffffff] flex items-center gap-2.5 tracking-tight">
           {currentMeta.title}
         </h1>
+        <p className="text-xs text-[#8c8b8f] tracking-normal font-normal">
+          {currentMeta.subtitle}
+        </p>
       </div>
 
       {/* Quick Status Bar */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         {/* ADB Connectivity Pill */}
         <div
           onClick={() => setCurrentPage("devices")}
-          className="flex items-center gap-2 px-2 py-0.5 rounded-[2px] border border-[#1f1f1f] bg-[#070707] text-[11px] font-mono cursor-pointer hover:border-[#2a2a2a] transition-colors"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#26262a] bg-[#131315] text-xs font-medium cursor-pointer hover:border-[#333338] hover:bg-[#18181b] transition-all"
           title="Click to manage Android devices"
         >
-          <Smartphone className="h-3 w-3 text-[#7a7a7a]" strokeWidth={1.5} />
+          <Smartphone className="h-3.5 w-3.5 text-[#8c8b8f]" strokeWidth={1.5} />
           {onlineCount > 0 ? (
-            <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#4ade80] animate-status-pulse" />
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#47ab61] animate-pulse" />
               <span className="text-[#ffffff]">
                 {selectedDevice ? selectedDevice.model || selectedDevice.serial : `${onlineCount} online`}
               </span>
             </div>
           ) : adbAvailable ? (
-            <span className="text-[#7a7a7a]">No devices</span>
+            <span className="text-[#8c8b8f]">No devices</span>
           ) : (
             <span className="text-rose-400">ADB offline</span>
           )}
@@ -108,16 +111,16 @@ export function Header() {
           size="sm"
           onClick={() => refreshDevices()}
           disabled={isRefreshingDevices}
-          className="h-7 px-2 gap-1 text-[11px]"
+          className="h-8 px-3 gap-1.5 text-xs rounded-full border-[#26262a] hover:bg-[#18181b]"
           title="Refresh connected devices"
         >
-          <RefreshCw className={`h-3 w-3 ${isRefreshingDevices ? "animate-spin" : ""}`} strokeWidth={1.5} />
+          <RefreshCw className={`h-3.5 w-3.5 ${isRefreshingDevices ? "animate-spin" : ""}`} strokeWidth={1.5} />
           <span>Refresh</span>
         </Button>
 
         {/* Offline Badge */}
-        <Badge variant="outline" className="text-[10px] gap-1 text-[#4ade80] border-[#4ade80]/30 bg-[#4ade80]/5">
-          <Shield className="h-2.5 w-2.5" strokeWidth={1.5} />
+        <Badge variant="outline" className="text-xs gap-1.5 text-[#47ab61] border-[#47ab61]/30 bg-[#47ab61]/10 rounded-full px-3 py-1">
+          <Shield className="h-3 w-3" strokeWidth={1.5} />
           Offline
         </Badge>
       </div>
