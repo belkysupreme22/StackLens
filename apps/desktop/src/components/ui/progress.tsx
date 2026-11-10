@@ -12,13 +12,13 @@ export function Progress({ value = 0, max = 100, className, ...props }: Progress
   return (
     <div
       className={cn(
-        "relative h-2 w-full overflow-hidden rounded-full bg-neutral-800",
+        "relative h-1.5 w-full overflow-hidden rounded-[2px] bg-[#1f1f1f]",
         className
       )}
       {...props}
     >
       <div
-        className="h-full bg-indigo-500 transition-all duration-300 ease-out"
+        className="h-full bg-[#4ade80] transition-all duration-150 ease-out"
         style={{ width: `${percentage}%` }}
       />
     </div>
