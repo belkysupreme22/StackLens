@@ -3,27 +3,29 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-[3px] text-xs font-mono font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#4ade80] disabled:pointer-events-none disabled:opacity-40 cursor-pointer select-none",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-full text-xs font-medium tracking-tight transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#47ab61] disabled:pointer-events-none disabled:opacity-40 cursor-pointer select-none",
   {
     variants: {
       variant: {
         default:
-          "bg-[#4ade80] text-[#000000] hover:bg-[#22c55e] active:bg-[#16a34a] font-semibold",
+          "bg-[#47ab61] text-[#0a0a0b] hover:bg-[#3b9352] active:bg-[#327e46] font-semibold shadow-sm",
+        filled:
+          "bg-[#ffffff] text-[#2f7a44] hover:bg-[#f2f2f2] font-semibold shadow-sm",
         destructive:
-          "border border-rose-900/60 bg-[#070707] text-rose-400 hover:bg-rose-950/40 hover:border-rose-700",
+          "border border-rose-900/60 bg-[#131315] text-rose-400 hover:bg-rose-950/40 hover:border-rose-700",
         outline:
-          "border border-[#1f1f1f] bg-[#070707] text-[#ffffff] hover:bg-[#141414] hover:border-[#2e2e2e]",
+          "border border-[#26262a] bg-transparent text-[#ffffff] hover:bg-[#18181b] hover:border-[#333338]",
         secondary:
-          "border border-[#1f1f1f] bg-[#0e0e0e] text-[#ffffff] hover:bg-[#161616]",
+          "border border-[#26262a] bg-[#18181b] text-[#ffffff] hover:bg-[#1f1f23] hover:border-[#333338]",
         ghost:
-          "text-[#7a7a7a] hover:bg-[#141414] hover:text-[#ffffff]",
-        link: "text-[#4ade80] underline-offset-4 hover:underline",
+          "text-[#e7e6e7] hover:bg-[#18181b] hover:text-[#ffffff]",
+        link: "text-[#47ab61] underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-8 px-3 py-1",
-        sm: "h-7 px-2.5 text-[11px]",
-        lg: "h-9 px-4 text-xs",
-        icon: "h-8 w-8",
+        default: "h-9 px-4 py-1.5",
+        sm: "h-7 px-3 text-[11px]",
+        lg: "h-11 px-6 text-sm font-semibold",
+        icon: "h-8 w-8 rounded-full",
       },
     },
     defaultVariants: {

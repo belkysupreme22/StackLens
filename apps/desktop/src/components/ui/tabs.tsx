@@ -27,7 +27,7 @@ export function TabsList({ className, ...props }: React.HTMLAttributes<HTMLDivEl
   return (
     <div
       className={cn(
-        "inline-flex h-8 items-center rounded-[3px] bg-[#070707] border border-[#1f1f1f] p-0.5 text-[#7a7a7a]",
+        "inline-flex h-9 items-center rounded-full bg-[#131315] border border-[#26262a] p-1 text-[#8c8b8f]",
         className
       )}
       {...props}
@@ -49,10 +49,10 @@ export function TabsTrigger({ value, className, children, ...props }: TabsTrigge
     <button
       type="button"
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-[2px] px-2.5 py-1 text-[11px] font-mono transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#4ade80] disabled:pointer-events-none disabled:opacity-40 cursor-pointer",
+        "inline-flex items-center justify-center whitespace-nowrap rounded-full px-3.5 py-1 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#47ab61] disabled:pointer-events-none disabled:opacity-40 cursor-pointer",
         isActive
-          ? "bg-[#1f1f1f] text-[#ffffff] font-medium"
-          : "hover:bg-[#141414] hover:text-[#ffffff] text-[#7a7a7a]",
+          ? "bg-[#26262a] text-[#ffffff] font-semibold shadow-sm"
+          : "hover:bg-[#18181b] hover:text-[#ffffff] text-[#8c8b8f]",
         className
       )}
       onClick={() => context.onValueChange(value)}

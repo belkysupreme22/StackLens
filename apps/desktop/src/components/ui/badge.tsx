@@ -3,22 +3,22 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 export const badgeVariants = cva(
-  "inline-flex items-center rounded-[3px] border px-2 py-0.5 text-[10px] font-mono font-medium transition-colors select-none",
+  "inline-flex items-center rounded-full border px-3 py-0.5 text-[11px] font-medium transition-colors select-none tracking-tight",
   {
     variants: {
       variant: {
         default:
-          "border-[#4ade80]/40 bg-[#4ade80]/10 text-[#4ade80]",
+          "border-[#47ab61]/40 bg-[#47ab61]/15 text-[#47ab61]",
         secondary:
-          "border-[#1f1f1f] bg-[#0e0e0e] text-[#7a7a7a]",
+          "border-[#26262a] bg-[#18181b] text-[#e7e6e7]",
         success:
-          "border-[#4ade80]/40 bg-[#4ade80]/10 text-[#4ade80]",
+          "border-[#47ab61]/40 bg-[#47ab61]/15 text-[#47ab61]",
         warning:
           "border-amber-400/30 bg-amber-400/10 text-amber-300",
         destructive:
           "border-rose-900/50 bg-rose-950/20 text-rose-400",
         outline:
-          "border-[#1f1f1f] text-[#7a7a7a] bg-transparent",
+          "border-[#26262a] text-[#8c8b8f] bg-transparent",
       },
     },
     defaultVariants: {
