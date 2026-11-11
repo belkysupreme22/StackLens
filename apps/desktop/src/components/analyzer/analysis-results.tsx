@@ -366,43 +366,43 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
         <TabsList className="w-full justify-start overflow-x-auto bg-[#131315] border border-[#26262a] rounded-[20px] p-1.5 h-auto gap-1">
           <TabsTrigger
             value="frameworks"
-            className="rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
           >
             Frameworks ({result.detections.length})
           </TabsTrigger>
           <TabsTrigger
             value="stack"
-            className="rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
           >
             Architecture Stack
           </TabsTrigger>
           <TabsTrigger
             value="binaries"
-            className="rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
           >
             Native Libraries ({result.apk_structure.native_libraries.length})
           </TabsTrigger>
           <TabsTrigger
             value="dex"
-            className="rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
           >
             DEX Bytecode ({result.apk_structure.dex_files.length})
           </TabsTrigger>
           <TabsTrigger
             value="permissions"
-            className="rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
           >
             Permissions ({result.apk.permissions.length})
           </TabsTrigger>
           <TabsTrigger
             value="metadata"
-            className="rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
           >
             Manifest & Spec
           </TabsTrigger>
           <TabsTrigger
             value="signing"
-            className="rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
           >
             Signing & Security
           </TabsTrigger>

@@ -73,7 +73,7 @@ export function ApkCompositionBar({
   return (
     <div className="space-y-3">
       {/* Header Info */}
-      <div className="flex items-center justify-between text-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-[#ffffff] tracking-tight">Package Storage Composition</span>
           <span className="text-[10px] text-[#8c8b8f] font-mono">

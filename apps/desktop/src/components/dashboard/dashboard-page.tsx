@@ -361,34 +361,26 @@ export function DashboardPage() {
 
       {/* Interactive D3 Time Series Analysis: Inspection Velocity & Attribution Timeline */}
       <Card className="p-6 border-[#26262a] bg-[#131315] rounded-[20px] shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-base font-bold text-[#ffffff] tracking-tight">
-                Inspection Cadence & Attribution Timeline
-              </CardTitle>
-              <Badge variant="outline" className="text-[10px] bg-[#18181b] border-[#26262a] text-[#47ab61] font-mono">
-                D3 Interactive
-              </Badge>
-            </div>
-            <p className="text-xs text-[#8c8b8f] mt-0.5">
-              Historical progression of inspected Android packages vs. verified framework attributions
-            </p>
+        <div>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-base font-bold text-[#ffffff] tracking-tight">
+              Runtime Telemetry & Ingestion Cadence
+            </CardTitle>
+            <Badge variant="outline" className="text-[10px] bg-[#18181b] border-[#26262a] text-[#47ab61] font-mono">
+              Live D3 Stream
+            </Badge>
           </div>
-
-          <div className="flex items-center gap-4 text-xs font-mono">
-            <div className="flex items-center gap-1.5 text-[#8c8b8f]">
-              <span className="h-2 w-2 rounded-full bg-[#47ab61]" />
-              <span>Inspections</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-[#8c8b8f]">
-              <span className="h-2 w-2 rounded-full bg-[#38bdf8]" />
-              <span>Attributions</span>
-            </div>
-          </div>
+          <p className="text-xs text-[#8c8b8f] mt-0.5">
+            Real-time attribution yield, framework diversity flow, and engine execution throughput across inspections
+          </p>
         </div>
 
-        <InspectionAreaChart data={timelineData} height={210} />
+        <InspectionAreaChart
+          recentAnalyses={dashboardStats?.recent_analyses}
+          totalAnalyses={total}
+          height={230}
+          onSelectAnalysis={viewAnalysis}
+        />
       </Card>
 
       {/* Main Analytics Grid */}
