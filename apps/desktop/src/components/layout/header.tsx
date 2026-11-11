@@ -13,10 +13,6 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
     title: "Connected devices",
     subtitle: "Manage your connected Android hardware and running emulators.",
   },
-  analyzer: {
-    title: "Package analyzer",
-    subtitle: "Pull and inspect applications directly from your device.",
-  },
   inspector: {
     title: "APK inspector",
     subtitle: "Drop any APK file to inspect its stack.",
@@ -29,25 +25,13 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
     title: "Comparison studio",
     subtitle: "Compare application stacks and dependencies side by side.",
   },
-  explorer: {
-    title: "Framework explorer",
-    subtitle: "Explore runtime signatures across supported Android frameworks.",
-  },
   history: {
     title: "Analysis history",
     subtitle: "Review your saved inspection records and exported reports.",
   },
-  signatures: {
-    title: "Custom signatures",
-    subtitle: "Create custom patterns to detect your own frameworks.",
-  },
   settings: {
     title: "Settings",
     subtitle: "Configure your local ADB bridge, storage, and concurrency.",
-  },
-  about: {
-    title: "About StackLens",
-    subtitle: "Local Android application intelligence built with Rust.",
   },
 };
 
