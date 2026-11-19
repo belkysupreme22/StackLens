@@ -48,14 +48,347 @@ interface AnalysisResultsProps {
   onBack?: () => void;
 }
 
+function getFrameworkRoleInfo(framework: string, isPrimary: boolean) {
+  if (isPrimary) {
+    switch (framework) {
+      case "NativeAndroidJava":
+        return {
+          role: "Primary Host Runtime",
+          subtitle: "Standard Java bytecode executed on Android Runtime (ART)",
+          description: "Main application entry points and bytecode compiled from Java source files.",
+        };
+      case "NativeAndroidKotlin":
+        return {
+          role: "Primary Host Runtime",
+          subtitle: "Kotlin bytecode with kotlin.Metadata annotations on ART",
+          description: "Native Kotlin execution environment containing Kotlin standard library and runtime.",
+        };
+      case "Flutter":
+        return {
+          role: "Primary Cross-Platform Engine",
+          subtitle: "Dart AOT binary (libflutter.so / libapp.so)",
+          description: "Flutter engine directly controls UI rendering and application logic via Skia/Impeller.",
+        };
+      case "ReactNative":
+        return {
+          role: "Primary Hybrid Engine",
+          subtitle: "JavaScript / Hermes runtime with native bridge",
+          description: "React Native bridge communicates between JavaScript bytecode and native Android views.",
+        };
+      case "Unity":
+      case "UnrealEngine":
+      case "Godot":
+        return {
+          role: "Primary Game Engine",
+          subtitle: "Native game loop and graphics rendering pipeline",
+          description: "Native shared binaries execute the entire core game logic and GPU rendering pipeline.",
+        };
+      default:
+        return {
+          role: "Primary Runtime Engine",
+          subtitle: "Core runtime identified from bytecode and binary markers",
+          description: "The primary execution platform identified for this application.",
+        };
+    }
+  } else {
+    // Secondary / Transitive / Dependent
+    switch (framework) {
+      case "NativeAndroidKotlin":
+        return {
+          role: "Bundled Stdlib / Dependency",
+          subtitle: "Kotlin metadata & stdlib imported via AndroidX libraries",
+          description: "Commonly present when a Java application includes Kotlin-authored Jetpack libraries (e.g. androidx.core, coroutines).",
+        };
+      case "NativeAndroidJava":
+        return {
+          role: "Native Host Wrapper",
+          subtitle: "Android platform container (Activity wrapper)",
+          description: "Standard Android host entry points wrapping the primary cross-platform or game engine.",
+        };
+      case "JetpackCompose":
+        return {
+          role: "Declarative UI Toolkit",
+          subtitle: "Modern Android UI toolkit layered atop Kotlin",
+          description: "Declarative Compose runtime and compiler metrics integrated into DEX bytecode.",
+        };
+      case "Ionic":
+        return {
+          role: "Hybrid Web UI Layer",
+          subtitle: "Web components packaged inside Cordova/Capacitor WebView",
+          description: "Ionic UI components running within the mobile browser engine.",
+        };
+      default:
+        return {
+          role: "Secondary / Auxiliary Library",
+          subtitle: "Transitive runtime dependency identified in DEX bytecode",
+          description: "Auxiliary runtime artifacts identified alongside the primary execution target.",
+        };
+    }
+  }
+}
+
+function getEvidenceStats(evidence: Evidence[]) {
+  const counts: Record<string, number> = {};
+  const sampleSymbols: string[] = [];
+
+  for (const ev of evidence) {
+    counts[ev.category] = (counts[ev.category] || 0) + 1;
+    if (ev.class_name && !sampleSymbols.includes(ev.class_name)) {
+      sampleSymbols.push(ev.class_name);
+    } else if (ev.file_path && !sampleSymbols.includes(ev.file_path)) {
+      sampleSymbols.push(ev.file_path.split("/").pop() || ev.file_path);
+    }
+  }
+
+  return { counts, sampleSymbols: sampleSymbols.slice(0, 2) };
+}
+
+function FrameworkDetectionCard({
+  detection,
+  isExpanded,
+  onToggle,
+  copiedKey,
+  onCopy,
+}: {
+  detection: FrameworkDetection;
+  isExpanded: boolean;
+  onToggle: () => void;
+  copiedKey: string | null;
+  onCopy: (text: string, key: string) => void;
+}) {
+  const roleInfo = getFrameworkRoleInfo(detection.framework, detection.is_primary);
+  const { counts, sampleSymbols } = getEvidenceStats(detection.evidence);
+  const percentage = Math.round(detection.confidence_score * 100);
+
+  return (
+    <Card
+      className={`border rounded-[20px] transition-all overflow-hidden ${
+        detection.is_primary
+          ? "border-[#47ab61]/50 bg-gradient-to-r from-[#131315] via-[#141815] to-[#131315] shadow-[0_0_25px_-5px_rgba(71,171,97,0.15)]"
+          : "border-[#26262a] bg-[#131315] hover:border-[#333338]"
+      }`}
+    >
+      <div
+        onClick={onToggle}
+        className="flex flex-col lg:flex-row lg:items-center justify-between p-4 sm:p-5 cursor-pointer select-none gap-4 hover:bg-[#18181b]/50 transition-colors"
+      >
+        {/* Left: Framework Identity */}
+        <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+          <div
+            className={`p-2.5 rounded-[14px] border shrink-0 transition-all ${
+              detection.is_primary
+                ? "bg-[#18181b] border-[#47ab61]/40 shadow-inner"
+                : "bg-[#18181b] border-[#26262a]"
+            }`}
+          >
+            <FrameworkLogo framework={detection.framework} size="md" />
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-bold text-sm sm:text-base text-[#ffffff] tracking-tight truncate">
+                {frameworkDisplayName(detection.framework)}
+              </span>
+
+              {detection.is_primary ? (
+                <Badge className="text-[10px] rounded-full bg-[#47ab61] text-[#0a0a0b] font-bold px-2.5 py-0.5 tracking-wide hover:bg-[#47ab61]">
+                  Primary Runtime
+                </Badge>
+              ) : (
+                <Badge className="text-[10px] rounded-full bg-[#18181b] text-[#8c8b8f] border border-[#26262a] px-2 py-0.2">
+                  Secondary Runtime
+                </Badge>
+              )}
+
+              <Badge
+                className={`rounded-full text-[10px] px-2 py-0.2 font-mono ${confidenceBadgeColor(
+                  detection.confidence
+                )}`}
+              >
+                {detection.confidence} ({percentage}%)
+              </Badge>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <span className="text-xs text-[#8c8b8f]">
+                {roleInfo.subtitle}
+              </span>
+              <span className="text-[#8c8b8f]/40 hidden sm:inline">•</span>
+              <span className="text-xs font-mono text-[#8c8b8f]">
+                {detection.evidence.length} verified evidence {detection.evidence.length === 1 ? "marker" : "markers"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Center / Middle: Diagnostic Preview Pills */}
+        <div className="flex flex-wrap items-center gap-1.5 min-w-0 lg:max-w-md">
+          {Object.entries(counts).map(([cat, count]) => (
+            <span
+              key={cat}
+              className="px-2 py-0.5 rounded-full bg-[#18181b] border border-[#26262a] text-[10px] font-mono text-[#8c8b8f] flex items-center gap-1 shrink-0"
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${detection.is_primary ? "bg-[#47ab61]" : "bg-[#38bdf8]"}`} />
+              {count} {cat.replace(/([A-Z])/g, " $1").trim()}
+            </span>
+          ))}
+
+          {sampleSymbols.map((sym, sIdx) => (
+            <span
+              key={sIdx}
+              className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-[#0a0a0b] border border-[#26262a] text-[10px] font-mono text-[#47ab61] truncate max-w-[170px]"
+              title={sym}
+            >
+              {sym}
+            </span>
+          ))}
+        </div>
+
+        {/* Right: Confidence Metric & Expand Toggle */}
+        <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 pt-2 sm:pt-0 border-t border-[#26262a]/50 sm:border-t-0">
+          <div className="flex flex-col items-start sm:items-end gap-1">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] uppercase tracking-wider text-[#8c8b8f] font-mono">
+                Certainty
+              </span>
+              <span className="text-xs font-mono font-bold text-[#ffffff]">
+                {percentage}%
+              </span>
+            </div>
+            <div className="w-24 sm:w-28 h-1.5 rounded-full bg-[#18181b] border border-[#26262a] overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-300 ${
+                  detection.is_primary
+                    ? "bg-[#47ab61]"
+                    : percentage >= 70
+                    ? "bg-[#38bdf8]"
+                    : "bg-amber-400"
+                }`}
+                style={{ width: `${percentage}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-xs text-[#8c8b8f] hover:text-[#ffffff] px-2 py-1 rounded-full bg-[#18181b] border border-[#26262a] transition-colors">
+            <span className="text-[11px] font-medium hidden sm:inline">
+              {isExpanded ? "Collapse" : "Evidence"}
+            </span>
+            {isExpanded ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Expanded Evidence List */}
+      {isExpanded && (
+        <div className="border-t border-[#26262a] p-5 space-y-4 bg-[#0a0a0b]">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#8c8b8f] font-semibold">
+                Verified Evidence Markers
+              </span>
+              <span className="text-[10px] text-[#8c8b8f] px-2 py-0.5 rounded-full bg-[#18181b] border border-[#26262a] font-mono">
+                {detection.evidence.length} indicators
+              </span>
+            </div>
+            <span className="text-[10px] text-[#47ab61] font-mono">
+              Deterministic Bytecode & Archive Matching
+            </span>
+          </div>
+
+          {/* Role contextual note */}
+          <div className="p-3 rounded-[14px] bg-[#131315] border border-[#26262a] text-xs text-[#8c8b8f] flex items-start gap-2.5">
+            <Info className="h-4 w-4 text-[#47ab61] shrink-0 mt-0.5" />
+            <div>
+              <span className="text-[#ffffff] font-semibold block">{roleInfo.role}</span>
+              <p className="mt-0.5 leading-relaxed">{roleInfo.description}</p>
+            </div>
+          </div>
+
+          {detection.evidence.length === 0 ? (
+            <p className="text-xs font-mono text-[#8c8b8f] italic py-2">
+              No direct evidence markers registered.
+            </p>
+          ) : (
+            <div className="space-y-2.5">
+              {detection.evidence.map((ev, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 rounded-[16px] border border-[#26262a] bg-[#131315] text-xs font-mono flex flex-col gap-2"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`font-semibold ${evidenceTypeColor(ev.evidence_type)}`}>
+                      [{ev.evidence_type}] {ev.category}
+                    </span>
+                    <span className="text-[10px] text-[#8c8b8f] px-2 py-0.5 rounded-full bg-[#18181b] border border-[#26262a]">
+                      {ev.source}
+                    </span>
+                  </div>
+                  <p className="text-[#ffffff] leading-relaxed font-sans text-xs">
+                    {ev.description}
+                  </p>
+                  {(ev.file_path || ev.class_name) && (
+                    <div className="mt-0.5 flex items-center justify-between gap-2 text-[11px] font-mono bg-[#0a0a0b] px-3 py-1.5 rounded-[10px] border border-[#26262a]">
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="text-[#8c8b8f]">Symbol:</span>
+                        <span className="truncate text-[#47ab61]">
+                          {ev.file_path || ev.class_name}
+                        </span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onCopy(
+                            ev.file_path || ev.class_name || "",
+                            `${detection.framework}-ev-${idx}`
+                          );
+                        }}
+                        className="text-[#8c8b8f] hover:text-[#ffffff] p-0.5 shrink-0"
+                        title="Copy symbol identifier"
+                      >
+                        {copiedKey === `${detection.framework}-ev-${idx}` ? (
+                          <Check className="h-3.5 w-3.5 text-[#47ab61]" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Limitations */}
+          {detection.limitations.length > 0 && (
+            <div className="p-3 rounded-[16px] border border-amber-900/40 bg-[#160e04] text-xs font-mono text-amber-300 flex gap-2.5">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+              <div>
+                <span className="font-semibold block mb-1">
+                  Heuristic Analysis Limitations
+                </span>
+                <ul className="list-disc list-inside space-y-0.5 text-[#8c8b8f]">
+                  {detection.limitations.map((lim, lIdx) => (
+                    <li key={lIdx}>{lim}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
   const [activeTab, setActiveTab] = useState<string>("frameworks");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
-  const [expandedFrameworks, setExpandedFrameworks] = useState<Record<string, boolean>>({
-    [result.detections.find((d) => d.is_primary)?.framework || ""]: true,
-  });
 
   // Filter states for detailed tabs
   const [evidenceSearch, setEvidenceSearch] = useState<string>("");
@@ -83,6 +416,41 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
+  // Sort detections: primary runtime ALWAYS first, followed by confidence descending
+  const sortedDetections = useMemo(() => {
+    return [...result.detections].sort((a, b) => {
+      if (a.is_primary && !b.is_primary) return -1;
+      if (!a.is_primary && b.is_primary) return 1;
+      if (a.status === "Detected" && b.status !== "Detected") return -1;
+      if (a.status !== "Detected" && b.status === "Detected") return 1;
+      return (b.confidence_score || 0) - (a.confidence_score || 0);
+    });
+  }, [result.detections]);
+
+  const primaryDetection = useMemo(() => {
+    return (
+      sortedDetections.find((d) => d.is_primary) ||
+      sortedDetections.find((d) => d.status === "Detected") ||
+      sortedDetections[0]
+    );
+  }, [sortedDetections]);
+
+  const secondaryDetections = useMemo(() => {
+    return sortedDetections.filter((d) => d !== primaryDetection);
+  }, [sortedDetections, primaryDetection]);
+
+  const [expandedFrameworks, setExpandedFrameworks] = useState<Record<string, boolean>>({});
+
+  // Ensure primary framework is automatically expanded on initial load or result change
+  useEffect(() => {
+    if (primaryDetection) {
+      setExpandedFrameworks((prev) => ({
+        ...prev,
+        [primaryDetection.framework]: true,
+      }));
+    }
+  }, [primaryDetection?.framework, result.analysis_id]);
+
   const toggleFrameworkExpand = (framework: string) => {
     setExpandedFrameworks((prev) => ({
       ...prev,
@@ -105,10 +473,6 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
       setIsExporting(false);
     }
   };
-
-  const primaryDetection =
-    result.detections.find((d) => d.is_primary) ||
-    result.detections.find((d) => d.status === "Detected");
 
   // Storage metrics calculations
   const nativeBytes = useMemo(() => {
@@ -363,195 +727,105 @@ export function AnalysisResultsView({ result, onBack }: AnalysisResultsProps) {
 
       {/* Detailed Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="w-full justify-start overflow-x-auto bg-[#131315] border border-[#26262a] rounded-[20px] p-1.5 h-auto gap-1">
-          <TabsTrigger
-            value="frameworks"
-            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
-          >
-            Frameworks ({result.detections.length})
-          </TabsTrigger>
-          <TabsTrigger
-            value="stack"
-            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
-          >
-            Architecture Stack
-          </TabsTrigger>
-          <TabsTrigger
-            value="binaries"
-            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
-          >
-            Native Libraries ({result.apk_structure.native_libraries.length})
-          </TabsTrigger>
-          <TabsTrigger
-            value="dex"
-            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
-          >
-            DEX Bytecode ({result.apk_structure.dex_files.length})
-          </TabsTrigger>
-          <TabsTrigger
-            value="permissions"
-            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
-          >
-            Permissions ({result.apk.permissions.length})
-          </TabsTrigger>
-          <TabsTrigger
-            value="metadata"
-            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
-          >
-            Manifest & Spec
-          </TabsTrigger>
-          <TabsTrigger
-            value="signing"
-            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
-          >
-            Signing & Security
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-1 scrollbar-none">
+          <TabsList className="inline-flex items-center bg-[#131315] border border-[#26262a] rounded-[20px] p-1.5 h-auto gap-1">
+            <TabsTrigger
+              value="frameworks"
+              className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            >
+              Frameworks ({result.detections.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="stack"
+              className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            >
+              Architecture Stack
+            </TabsTrigger>
+            <TabsTrigger
+              value="binaries"
+              className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            >
+              Native Libraries ({result.apk_structure.native_libraries.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="dex"
+              className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            >
+              DEX Bytecode ({result.apk_structure.dex_files.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="permissions"
+              className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            >
+              Permissions ({result.apk.permissions.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="metadata"
+              className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            >
+              Manifest & Spec
+            </TabsTrigger>
+            <TabsTrigger
+              value="signing"
+              className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs data-[state=active]:bg-[#18181b] data-[state=active]:text-[#ffffff] data-[state=active]:shadow-sm"
+            >
+              Signing & Security
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* TAB 1: FRAMEWORKS & EVIDENCE */}
-        <TabsContent value="frameworks" className="space-y-3">
-          {result.detections.map((detection) => {
-            const isExpanded = !!expandedFrameworks[detection.framework];
+        <TabsContent value="frameworks" className="space-y-6">
+          {/* Section 1: Primary Architecture */}
+          {primaryDetection && (
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-[#47ab61] font-semibold flex items-center gap-1.5">
+                  <Zap className="h-3.5 w-3.5" />
+                  Primary Execution Architecture
+                </span>
+                <span className="text-[11px] text-[#8c8b8f] font-mono">
+                  Runtime Precedence Rank 1
+                </span>
+              </div>
 
-            return (
-              <Card
-                key={detection.framework}
-                className={`border rounded-[20px] transition-all overflow-hidden ${
-                  detection.is_primary
-                    ? "border-[#47ab61]/40 bg-[#131315] shadow-sm"
-                    : "border-[#26262a] bg-[#131315]"
-                }`}
-              >
-                <div
-                  onClick={() => toggleFrameworkExpand(detection.framework)}
-                  className="flex items-center justify-between p-4 cursor-pointer select-none hover:bg-[#18181b]/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="p-2 rounded-[12px] bg-[#18181b] border border-[#26262a] shrink-0">
-                      <FrameworkLogo framework={detection.framework} size="sm" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-[#ffffff] truncate">
-                          {frameworkDisplayName(detection.framework)}
-                        </span>
-                        {detection.is_primary && (
-                          <Badge className="text-[10px] rounded-full bg-[#47ab61] text-[#0a0a0b] font-semibold hover:bg-[#47ab61]">
-                            Primary Runtime
-                          </Badge>
-                        )}
-                        <Badge
-                          className={`rounded-full text-[10px] px-2 py-0.2 ${confidenceBadgeColor(
-                            detection.confidence
-                          )}`}
-                        >
-                          {detection.confidence} ({Math.round(detection.confidence_score * 100)}%)
-                        </Badge>
-                      </div>
-                      <span className="text-[11px] text-[#8c8b8f] mt-0.5 block">
-                        {detection.evidence.length} evidence marker(s) verified
-                      </span>
-                    </div>
-                  </div>
+              <FrameworkDetectionCard
+                detection={primaryDetection}
+                isExpanded={!!expandedFrameworks[primaryDetection.framework]}
+                onToggle={() => toggleFrameworkExpand(primaryDetection.framework)}
+                copiedKey={copiedKey}
+                onCopy={copyToClipboard}
+              />
+            </div>
+          )}
 
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="w-20 hidden sm:block">
-                      <Progress value={detection.confidence_score * 100} />
-                    </div>
-                    {isExpanded ? (
-                      <ChevronUp className="h-4 w-4 text-[#8c8b8f]" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-[#8c8b8f]" />
-                    )}
-                  </div>
-                </div>
+          {/* Section 2: Secondary / Auxiliary Frameworks (if any) */}
+          {secondaryDetections.length > 0 && (
+            <div className="space-y-2.5 pt-1">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between px-1 gap-1">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-[#8c8b8f] font-semibold flex items-center gap-1.5">
+                  <Layers className="h-3.5 w-3.5 text-[#38bdf8]" />
+                  Secondary Runtimes & Transitive Dependencies ({secondaryDetections.length})
+                </span>
+                <span className="text-[11px] text-[#8c8b8f]">
+                  Identified via standard libraries or bundled framework classes
+                </span>
+              </div>
 
-                {/* Expanded Evidence List */}
-                {isExpanded && (
-                  <div className="border-t border-[#26262a] p-5 space-y-4 bg-[#0a0a0b]">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-[11px] font-mono uppercase tracking-wider text-[#8c8b8f] font-semibold">
-                        Verified Evidence Markers
-                      </span>
-                      <span className="text-[10px] text-[#47ab61] font-mono">
-                        Deterministic matching
-                      </span>
-                    </div>
-
-                    {detection.evidence.length === 0 ? (
-                      <p className="text-xs font-mono text-[#8c8b8f] italic">
-                        No direct evidence markers registered.
-                      </p>
-                    ) : (
-                      <div className="space-y-2.5">
-                        {detection.evidence.map((ev, idx) => (
-                          <div
-                            key={idx}
-                            className="p-3 rounded-[16px] border border-[#26262a] bg-[#131315] text-xs font-mono flex flex-col gap-1.5"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <span className={`font-semibold ${evidenceTypeColor(ev.evidence_type)}`}>
-                                [{ev.evidence_type}] {ev.category}
-                              </span>
-                              <span className="text-[10px] text-[#8c8b8f] px-2 py-0.5 rounded-full bg-[#18181b] border border-[#26262a]">
-                                {ev.source}
-                              </span>
-                            </div>
-                            <p className="text-[#ffffff] leading-relaxed font-sans text-xs">
-                              {ev.description}
-                            </p>
-                            {(ev.file_path || ev.class_name) && (
-                              <div className="mt-1 flex items-center justify-between gap-2 text-[11px] font-mono bg-[#0a0a0b] px-2.5 py-1.5 rounded-[10px] border border-[#26262a]">
-                                <div className="flex items-center gap-2 truncate">
-                                  <span className="text-[#8c8b8f]">Path:</span>
-                                  <span className="truncate text-[#47ab61]">
-                                    {ev.file_path || ev.class_name}
-                                  </span>
-                                </div>
-                                <button
-                                  onClick={() =>
-                                    copyToClipboard(
-                                      ev.file_path || ev.class_name || "",
-                                      `ev-${idx}`
-                                    )
-                                  }
-                                  className="text-[#8c8b8f] hover:text-[#ffffff] p-0.5 shrink-0"
-                                  title="Copy path"
-                                >
-                                  {copiedKey === `ev-${idx}` ? (
-                                    <Check className="h-3 w-3 text-[#47ab61]" />
-                                  ) : (
-                                    <Copy className="h-3 w-3" />
-                                  )}
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Limitations */}
-                    {detection.limitations.length > 0 && (
-                      <div className="p-3 rounded-[16px] border border-amber-900/40 bg-[#160e04] text-xs font-mono text-amber-300 flex gap-2.5">
-                        <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
-                        <div>
-                          <span className="font-semibold block mb-1">
-                            Heuristic Analysis Limitations
-                          </span>
-                          <ul className="list-disc list-inside space-y-0.5 text-[#8c8b8f]">
-                            {detection.limitations.map((lim, lIdx) => (
-                              <li key={lIdx}>{lim}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </Card>
-            );
-          })}
+              <div className="space-y-3">
+                {secondaryDetections.map((detection) => (
+                  <FrameworkDetectionCard
+                    key={detection.framework}
+                    detection={detection}
+                    isExpanded={!!expandedFrameworks[detection.framework]}
+                    onToggle={() => toggleFrameworkExpand(detection.framework)}
+                    copiedKey={copiedKey}
+                    onCopy={copyToClipboard}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </TabsContent>
 
         {/* TAB 2: ARCHITECTURE STACK */}

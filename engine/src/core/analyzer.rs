@@ -236,6 +236,19 @@ impl Analyzer {
         // 10. Prioritize and select primary framework
         designate_primary_framework(&mut detections);
 
+        // Sort detections so primary runtime is always first, followed by confidence descending
+        detections.sort_by(|a, b| {
+            if a.is_primary && !b.is_primary {
+                std::cmp::Ordering::Less
+            } else if !a.is_primary && b.is_primary {
+                std::cmp::Ordering::Greater
+            } else {
+                b.confidence_score
+                    .partial_cmp(&a.confidence_score)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            }
+        });
+
         // If no framework was detected with reasonable confidence, append Unknown detection
         if !detections.iter().any(|d| d.status == DetectionStatus::Detected) {
             detections.push(FrameworkDetection {

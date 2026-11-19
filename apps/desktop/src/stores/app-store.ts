@@ -13,15 +13,11 @@ import * as commands from "@/lib/commands";
 export type PageId =
   | "dashboard"
   | "devices"
-  | "analyzer"
   | "inspector"
   | "batch"
   | "comparison"
-  | "explorer"
   | "history"
-  | "signatures"
-  | "settings"
-  | "about";
+  | "settings";
 
 interface AppState {
   // Navigation

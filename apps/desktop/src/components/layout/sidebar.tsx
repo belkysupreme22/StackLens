@@ -2,15 +2,11 @@ import React from "react";
 import {
   LayoutDashboard,
   Smartphone,
-  PackageSearch,
   FileSearch,
   Layers,
   GitCompare,
-  BookOpen,
   History,
-  Fingerprint,
   Settings,
-  Info,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
@@ -28,15 +24,11 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "devices", label: "Device manager", icon: Smartphone },
-  { id: "analyzer", label: "Package analyzer", icon: PackageSearch },
   { id: "inspector", label: "APK inspector", icon: FileSearch },
   { id: "batch", label: "Batch analysis", icon: Layers },
   { id: "comparison", label: "Comparison studio", icon: GitCompare },
-  { id: "explorer", label: "Framework explorer", icon: BookOpen },
   { id: "history", label: "Analysis history", icon: History },
-  { id: "signatures", label: "Custom signatures", icon: Fingerprint },
   { id: "settings", label: "Settings", icon: Settings },
-  { id: "about", label: "About", icon: Info },
 ];
 
 export function Sidebar() {
